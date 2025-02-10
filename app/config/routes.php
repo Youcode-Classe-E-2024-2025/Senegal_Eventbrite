@@ -7,10 +7,10 @@ $router = new Router();
 
 $routes = [
     'GET' => [
-        // '/' => [HomeController::class, 'index'],
+        '/' => [\Controller_front\HomeController::class, 'index'],
+
     ],
     'POST' => [
-        // '/login' => [AuthController::class, 'login'],
     ]
 ];
 
