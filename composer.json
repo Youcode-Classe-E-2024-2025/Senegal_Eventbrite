@@ -1,0 +1,22 @@
+{
+    "name": "collectif/team",
+    "autoload": {
+        "psr-4": {
+            "Core\\": "app/core",
+            "Config\\": "app/config",
+            "Model\\": "app/models",
+            "Controller_back\\": "app/controllers/back",
+            "Controller_front\\": "app/controllers/front"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ibrahim-Nidam",
+            "email": "ibrahim.nidam22@gmail.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^3.19",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
