@@ -106,9 +106,9 @@ CREATE INDEX idx_users_email ON users(email);
 
 -- Ajouter des utilisateurs
 INSERT INTO users (role, email, password, name, avatar_url) VALUES
-('user', 'user1@example.com', 'hashed_password1', 'Alice', 'https://example.com/avatar1.jpg'),
-('admin', 'admin@example.com', 'hashed_password2', 'Bob', 'https://example.com/avatar2.jpg'),
-('user', 'user2@example.com', 'hashed_password3', 'Charlie', 'https://example.com/avatar3.jpg');
+('admin', 'a@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Bob', 'https://example.com/avatar2.jpg'),
+('user', 'u1@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Alice', 'https://example.com/avatar1.jpg'),
+('user', 'u2@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Charlie', 'https://example.com/avatar3.jpg');
 
 -- Ajouter des événements
 INSERT INTO events (title, description, category, tags, date_start, date_end, location, price, capacity, organizer_id, status, isActif, image_url) VALUES
