@@ -1,3 +1,4 @@
+-- Active: 1738622539335@@127.0.0.1@5432@eventbrite_db
 -- Create the database
 CREATE DATABASE eventbrite_db;
 
@@ -65,9 +66,7 @@ CREATE TABLE event_statistics (
     event_id INT REFERENCES events(id) ON DELETE CASCADE,
     tickets_sold INT DEFAULT 0,
     revenue DECIMAL(10, 2) DEFAULT 0.00,
-    participants_count INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    participants_count INT DEFAULT 0
 );
 
 -- Promo codes table
@@ -77,8 +76,7 @@ CREATE TABLE promo_codes (
     discount DECIMAL(5, 2) CHECK (discount >= 0 AND discount <= 100),
     expiration_date TIMESTAMP NOT NULL,
     max_uses INT CHECK (max_uses > 0),
-    used_count INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    used_count INT DEFAULT 0
 );
 
 -- Notifications table
@@ -87,8 +85,7 @@ CREATE TABLE notifications (
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('read', 'not_read', 'archived')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    status VARCHAR(20) NOT NULL CHECK (status IN ('read', 'not_read', 'archived'))
 );
 
 -- Comments table
@@ -106,3 +103,44 @@ CREATE INDEX idx_reservations_user_event ON reservations(user_id, event_id);
 CREATE INDEX idx_payments_reservation_id ON payments(reservation_id);
 CREATE INDEX idx_comments_event_id ON comments(event_id);
 CREATE INDEX idx_users_email ON users(email);
+
+-- Ajouter des utilisateurs
+INSERT INTO users (role, email, password, name, avatar_url) VALUES
+('user', 'user1@example.com', 'hashed_password1', 'Alice', 'https://example.com/avatar1.jpg'),
+('admin', 'admin@example.com', 'hashed_password2', 'Bob', 'https://example.com/avatar2.jpg'),
+('user', 'user2@example.com', 'hashed_password3', 'Charlie', 'https://example.com/avatar3.jpg');
+
+-- Ajouter des événements
+INSERT INTO events (title, description, category, tags, date_start, date_end, location, price, capacity, organizer_id, status, isActif, image_url) VALUES
+('Tech Conference 2025', 'Une conférence sur la technologie', 'Tech', ARRAY['innovation', 'AI'], '2025-06-10 09:00:00', '2025-06-10 17:00:00', 'Paris', 50.00, 200, 2, 'ACTIVE', TRUE, 'https://example.com/event1.jpg'),
+('Music Festival', 'Un festival de musique incroyable', 'Music', ARRAY['rock', 'live'], '2025-07-20 18:00:00', '2025-07-21 02:00:00', 'Marseille', 30.00, 500, 2, 'ACTIVE', TRUE, 'https://example.com/event2.jpg');
+
+-- Ajouter des réservations
+INSERT INTO reservations (user_id, event_id, ticket_type, quantity, total_price, qr_code, status) VALUES
+(1, 1, 'paid', 2, 100.00, 'QR123ABC', 'reserved'),
+(3, 2, 'VIP', 1, 60.00, 'QR456DEF', 'reserved');
+
+-- Ajouter des paiements
+INSERT INTO payments (reservation_id, payment_method, transaction_id, amount, status) VALUES
+(1, 'credit_card', 'TXN789XYZ', 100.00, 'success'),
+(2, 'paypal', 'TXN654LMN', 60.00, 'success');
+
+-- Ajouter des statistiques d'événements
+INSERT INTO event_statistics (event_id, tickets_sold, revenue, participants_count) VALUES
+(1, 50, 2500.00, 50),
+(2, 100, 3000.00, 100);
+
+-- Ajouter des codes promo
+INSERT INTO promo_codes (code, discount, expiration_date, max_uses, used_count) VALUES
+('WELCOME10', 10.00, '2025-12-31 23:59:59', 100, 10),
+('SUMMER20', 20.00, '2025-07-30 23:59:59', 50, 5);
+
+-- Ajouter des notifications
+INSERT INTO notifications (user_id, message, is_read, status) VALUES
+(1, 'Votre réservation a été confirmée.', FALSE, 'not_read'),
+(3, 'Votre paiement a été accepté.', TRUE, 'read');
+
+-- Ajouter des commentaires
+INSERT INTO comments (user_id, event_id, content) VALUES
+(1, 1, 'Hâte d''assister à cet événement !'),
+(3, 2, 'Super organisation, j''ai adoré le concert !');
