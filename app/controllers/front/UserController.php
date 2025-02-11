@@ -6,10 +6,14 @@ use Core\Controller;
 
 class UserController extends Controller {
     public function index (){
-        $this->view("front/userProfile");
+        $this->view("front/userDash");
     }
 
     public function event(){
         $this->view("front/create_event");
+    }
+
+    public function info(){
+        $this->view("front/profileInfo");
     }
 }
