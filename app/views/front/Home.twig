@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>ZHOO HomePage</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+		<link rel="shortcut icon" href="../../../public/assets/Favicon/favicon-32x32.png" type="image/x-icon">
+		<style>
+			.juice {
+				background-image: url('https://i.ibb.co/SN2Sp4T/juice.png');
+			}
+
+			.juice2 {
+				background-image: url('https://i.ibb.co/yyMXMSF/juice2.png');
+			}
+
+			.juice3 {
+				z-index: 10;
+				position: relative;
+			}
+
+			.juice3::after {
+				content: '';
+				position: absolute;
+				opacity: .2;
+				z-index: -999;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				background-image: url('https://previews.123rf.com/images/olgasiv/olgasiv1403/olgasiv140300026/27343111-image-en-noir-sur-un-fond-blanc-dessin-de-l%C3%A9gumes-de-fruits-et-de-baies-.jpg');
+			}
+
+			.text-primary {
+				color: #f9b529;
+			}
+
+			.text-primary-lite {
+				color: #fac251;
+			}
+
+			.text-secondary {
+				color: #294356;
+			}
+
+			.text-secondary-lite {
+				color: #d5dee5;
+			}
+
+			.bg-primary {
+				background-color: #f9b529;
+			}
+
+			.bg-primary-lite {
+				background-color: #fac251;
+			}
+
+			.bg-secondary {
+				background-color: rgb(24, 25, 25);
+			}
+
+			.bg-secondary-lite {
+				background-color: #d5dee5;
+			}
+
+			.product {
+				background-image: url('https://i.ibb.co/L00dH6V/2021-11-07-14h07-51.png');
+			}
+			.product2 {
+				background-image: url('https://i.ibb.co/1fZMKPh/2021-11-07-14h08-07.png');
+			}
+			.product3 {
+				background-image: url('https://i.ibb.co/f9tpvV3/2021-11-07-14h08-32.png');
+			}
+			.product4 {
+				background-image: url('https://i.ibb.co/42BsKQ2/2021-11-07-14h08-17.png');
+			}
+
+			/*custome scroll bar*/
+			::-webkit-scrollbar {
+				width: 8px;
+			}
+
+			::-webkit-scrollbar-track {
+				background:rgb(18, 18, 18);
+			}
+
+			::-webkit-scrollbar-thumb {
+				background-color:rgb(212, 212, 198);
+				border-radius: 10px;
+				border: 2px solidrgb(255, 255, 255);
+			}
+
+		</style>
+	</head>
+	<body class="overflow-x-hidden">
+		<div
+			class="min-h-screen bg-[#0e1111]">
+			<!-- header -->
+			<header class="sticky top-0 z-50 bg-[#0e1111] shadow-sm text-white">
+				<div
+					class="container mx-auto px-4 py-8 flex items-center">
+					<!-- logo -->
+					<div class="mr-auto md:w-48 flex-shrink-0">
+						<img class="h-16 md:h-20 ml-4" src="../../../public/assets/Logo/banner.png" alt=""/>
+					</div>
+					<!-- search -->
+					<div class="w-full max-w-xs xl:max-w-lg 2xl:max-w-2xl bg-gray-100 rounded-md hidden lg:flex items-center">
+						<select class="bg-transparent uppercase font-bold text-sm p-4 mr-4 text-black" name="" id="">
+							<option>all categories</option>
+							<option>Electronics</option>
+							<option>Home & Garden</option>
+							<option>Sports & Outdoors</option>
+							<option>Fashion & Beauty</option>
+						</select>
+						<input class="bg-transparent font-semibold text-sm pl-4 text-black border-none" type="text" placeholder="I'm searching for ..."/>
+						<svg class="ml-auto h-5 px-4 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="search" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="svg-inline--fa fa-search fa-w-16 fa-9x">
+							<path fill="currentColor" d="M508.5 468.9L387.1 347.5c-2.3-2.3-5.3-3.5-8.5-3.5h-13.2c31.5-36.5 50.6-84 50.6-136C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c52 0 99.5-19.1 136-50.6v13.2c0 3.2 1.3 6.2 3.5 8.5l121.4 121.4c4.7 4.7 12.3 4.7 17 0l22.6-22.6c4.7-4.7 4.7-12.3 0-17zM208 368c-88.4 0-160-71.6-160-160S119.6 48 208 48s160 71.6 160 160-71.6 160-160 160z"></path>
+						</svg>
+					</div>
+					<!-- phone number -->
+					<div class="ml-auto md:w-48 hidden sm:flex flex-col place-items-end">
+						<span class="font-bold md:text-xl">support@zhoo.com</span>
+						<span class="font-semibold text-sm text-gray-400">Support 24/7</span>
+					</div>
+					<!-- buttons -->
+					<nav class="contents">
+						<ul class="ml-4 xl:w-48 flex items-center justify-end">
+							<li class="ml-2 lg:ml-4 relative inline-block">
+								<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="">
+									Login
+								</a>
+							</li>
+							<li class="ml-2 lg:ml-4 relative inline-block">
+								<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="">
+									Register
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+				<hr/>
+				<!-- header navigation -->
+				<div
+					class="container mx-auto px-4 py-2 flex items-center">
+					<!-- menu -->
+					<nav class="hidden xl:contents ml-8">
+						<ul class="flex items-center text-sm font-bold">
+							<li class="px-2 lg:px-3 flex items-center">
+								<svg class="h-7 lg:h-8 p-2 flex-shrink-0" aria-hidden="true" focusable="false" data-prefix="far" data-icon="bolt" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512" class="svg-inline--fa fa-bolt fa-w-12 fa-9x">
+									<path fill="currentColor" d="M377.8 167.9c-8.2-14.3-23.1-22.9-39.6-22.9h-94.4l28.7-87.5c3.7-13.8.8-28.3-7.9-39.7C255.8 6.5 242.5 0 228.2 0H97.7C74.9 0 55.4 17.1 52.9 37.1L.5 249.3c-1.9 13.8 2.2 27.7 11.3 38.2C20.9 298 34.1 304 48 304h98.1l-34.9 151.7c-3.2 13.7-.1 27.9 8.6 38.9 8.7 11.1 21.8 17.4 35.9 17.4 16.3 0 31.5-8.8 38.8-21.6l183.2-276.7c8.4-14.3 8.4-31.5.1-45.8zM160.1 457.4L206.4 256H47.5L97.7 48l127.6-.9L177.5 193H334L160.1 457.4z"></path>
+								</svg>
+								<span class="truncate max-w-24">Deal Today</span>
+							</li>
+							<li class="px-2 lg:px-3 flex items-center">
+								<svg class="h-7 lg:h-8 p-2 flex-shrink-0" aria-hidden="true" focusable="false" data-prefix="far" data-icon="tag" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="svg-inline--fa fa-tag fa-w-16 fa-9x">
+									<path fill="currentColor" d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a47.998 47.998 0 0 0 14.059 33.941l211.882 211.882c18.745 18.745 49.137 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM259.886 463.996L48 252.118V48h204.118L464 259.882 259.886 463.996zM192 144c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48 48 21.49 48 48z"></path>
+								</svg>
+								<span class="truncate max-w-24">Special Prices</span>
+							</li>
+							<li class="px-2 lg:px-3 flex items-center">
+								<span>Fresh</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
+									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
+								</svg>
+							</li>
+							<li class="px-2 lg:px-3 flex items-center">
+								<span>Frozen</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
+									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
+								</svg>
+							</li>
+							<li class="px-2 lg:px-3 flex items-center">
+								<span>Demos</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
+									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
+								</svg>
+							</li>
+							<li class="px-2 lg:px-3 flex items-center">
+								<span>Shop</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
+									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
+								</svg>
+							</li>
+							<li class="px-2 lg:px-3 flex items-center">
+								<span>Blog</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
+									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
+								</svg>
+							</li>
+							<li class="px-2 lg:px-3 flex items-center">
+								<span>Pages</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
+									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
+								</svg>
+							</li>
+							<li class="px-2 lg:px-3 flex items-center">
+								<span>Shop</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
+									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
+								</svg>
+							</li>
+						</ul>
+					</nav>
+					<a href="" class="ml-auto flex-shrink-0 flex items-center">
+						<svg class="h-7 lg:h-8 p-1 sm:p-2 md:text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="sync-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="svg-inline--fa fa-sync-alt fa-w-16 fa-9x">
+							<path fill="currentColor" d="M483.515 28.485L431.35 80.65C386.475 35.767 324.485 8 256 8 123.228 8 14.824 112.338 8.31 243.493 7.971 250.311 13.475 256 20.301 256h28.045c6.353 0 11.613-4.952 11.973-11.294C66.161 141.649 151.453 60 256 60c54.163 0 103.157 21.923 138.614 57.386l-54.128 54.129c-7.56 7.56-2.206 20.485 8.485 20.485H492c6.627 0 12-5.373 12-12V36.971c0-10.691-12.926-16.045-20.485-8.486zM491.699 256h-28.045c-6.353 0-11.613 4.952-11.973 11.294C445.839 370.351 360.547 452 256 452c-54.163 0-103.157-21.923-138.614-57.386l54.128-54.129c7.56-7.56 2.206-20.485-8.485-20.485H20c-6.627 0-12 5.373-12 12v143.029c0 10.691 12.926 16.045 20.485 8.485L80.65 431.35C125.525 476.233 187.516 504 256 504c132.773 0 241.176-104.338 247.69-235.493.339-6.818-5.165-12.507-11.991-12.507z"></path>
+						</svg>
+						<span class="hidden sm:inline ml-1 font-bold">Recently Viewed</span>
+					</a>
+				</div>
+			</header>
+
+			<!-- body -->
+			<main>
+				<section class="juice3 bg-[#0e1111] py-10">
+					<div
+						class="container mx-auto px-4 flex flex-col lg:flex-row">
+						<!-- left -->
+						<div class="juice relative lg:w-2/3 rounded-xl p-8 md:p-16 h-[400px] overflow-hidden">
+							<video class="absolute inset-0 w-full h-full object-cover" autoplay loop muted playsinline>
+								<source src="../../../public/assets/images/vi1.mp4" type="video/mp4">
+							</video>
+							<div class="absolute bottom-8 right-8 md:bottom-5 md:right-5 flex">
+								<a href class="h-6 w-6 flex items-center justify-center rounded-md bg-white">
+									<svg class="h-3 text-gray-700" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 512" class="svg-inline--fa fa-chevron-left fa-w-8 fa-3x">
+										<path fill="currentColor" d="M231.293 473.899l19.799-19.799c4.686-4.686 4.686-12.284 0-16.971L70.393 256 251.092 74.87c4.686-4.686 4.686-12.284 0-16.971L231.293 38.1c-4.686-4.686-12.284-4.686-16.971 0L4.908 247.515c-4.686 4.686-4.686 12.284 0 16.971L214.322 473.9c4.687 4.686 12.285 4.686 16.971-.001z"></path>
+									</svg>
+								</a>
+								<a href class="ml-1.5 h-6 w-6 flex items-center justify-center rounded-md bg-yellow-400">
+									<svg class="h-3 text-gray-700" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 512" class="svg-inline--fa fa-chevron-right fa-w-8 fa-3x">
+										<path fill="currentColor" d="M24.707 38.101L4.908 57.899c-4.686 4.686-4.686 12.284 0 16.971L185.607 256 4.908 437.13c-4.686 4.686-4.686 12.284 0 16.971L24.707 473.9c4.686 4.686 12.284 4.686 16.971 0l209.414-209.414c4.686-4.686 4.686-12.284 0-16.971L41.678 38.101c-4.687-4.687-12.285-4.687-16.971 0z"></path>
+									</svg>
+								</a>
+							</div>
+						</div>
+						<!-- right -->
+						<div class="juice2 mt-6 lg:mt-0 lg:ml-6 lg:w-1/3 rounded-xl bg-cover bg-no-repeat bg-center" style="background-image: url(../../../public/assets/images/im1.png);" p-8 md:p-16>
+							<div class="max-w-sm"></div>
+						</div>
+					</div>
+				</section>
+
+				<section
+					class="container mx-auto pt-12">
+					<!-- title -->
+					<div class="relative flex items-end font-bold">
+						<h2 class="text-4xl ml-20 text-white">Browse by Category</h2>
+						<a href class="ml-10 flex items-center text-gray-400">
+							<span class="text-sm">All Categories</span>
+							<svg class="ml-3 h-3.5" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 512" class="svg-inline--fa fa-chevron-right fa-w-8 fa-9x">
+								<path fill="currentColor" d="M24.707 38.101L4.908 57.899c-4.686 4.686-4.686 12.284 0 16.971L185.607 256 4.908 437.13c-4.686 4.686-4.686 12.284 0 16.971L24.707 473.9c4.686 4.686 12.284 4.686 16.971 0l209.414-209.414c4.686-4.686 4.686-12.284 0-16.971L41.678 38.101c-4.687-4.687-12.285-4.687-16.971 0z"></path>
+							</svg>
+						</a>
+						<div class="ml-auto flex">
+							<a href class="h-6 w-6 flex items-center justify-center rounded-md bg-gray-100">
+								<svg class="h-3 text-gray-700" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 512" class="svg-inline--fa fa-chevron-left fa-w-8 fa-3x">
+									<path fill="currentColor" d="M231.293 473.899l19.799-19.799c4.686-4.686 4.686-12.284 0-16.971L70.393 256 251.092 74.87c4.686-4.686 4.686-12.284 0-16.971L231.293 38.1c-4.686-4.686-12.284-4.686-16.971 0L4.908 247.515c-4.686 4.686-4.686 12.284 0 16.971L214.322 473.9c4.687 4.686 12.285 4.686 16.971-.001z"></path>
+								</svg>
+							</a>
+							<a href class="ml-1.5 h-6 w-6 flex items-center justify-center rounded-md bg-yellow-400">
+								<svg class="h-3 text-gray-700" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 512" class="svg-inline--fa fa-chevron-right fa-w-8 fa-3x">
+									<path fill="currentColor" d="M24.707 38.101L4.908 57.899c-4.686 4.686-4.686 12.284 0 16.971L185.607 256 4.908 437.13c-4.686 4.686-4.686 12.284 0 16.971L24.707 473.9c4.686 4.686 12.284 4.686 16.971 0l209.414-209.414c4.686-4.686 4.686-12.284 0-16.971L41.678 38.101c-4.687-4.687-12.285-4.687-16.971 0z"></path>
+								</svg>
+							</a>
+						</div>
+					</div>
+					<!-- cards -->
+					<div class="flex flex-col justify-center pt-10">
+						<div class="relative m-3 flex flex-wrap mx-auto justify-center">
+
+							<div class="relative max-w-sm min-w-[340px] bg-gray-700 bg-opacity-40 shadow-md rounded-3xl p-2 mx-1 my-3 cursor-pointer">
+								<div class="overflow-x-hidden rounded-2xl relative">
+									<img class="h-40 rounded-2xl w-full object-cover" src="../../../public/assets/images/im2.png">
+								</div>
+								<div class="mt-4 pl-2 mb-2 flex justify-between ">
+									<div>
+										<p class="text-lg font-semibold text-gray-900 mb-0 text-white">Music Events</p>
+										<p class="text-md text-gray-800 mt-0 text-white flex items-center">
+											View More
+											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+											</svg>
+										</p>
+									</div>
+									<div class="flex flex-col-reverse mb-1 mr-4 group cursor-pointer">
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:opacity-70" fill="none" viewbox="0 0 24 24" stroke="gray">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+										</svg>
+									</div>
+								</div>
+							</div>
+
+							<div class="relative max-w-sm min-w-[340px] bg-gray-700 bg-opacity-40 shadow-md rounded-3xl p-2 mx-1 my-3 cursor-pointer">
+								<div class="overflow-x-hidden rounded-2xl relative">
+									<img class="h-40 rounded-2xl w-full object-cover" src="../../../public/assets/images/im3.png">
+								</div>
+								<div class="mt-4 pl-2 mb-2 flex justify-between ">
+									<div>
+										<p class="text-lg font-semibold text-gray-900 mb-0 text-white">Party Events</p>
+										<p class="text-md text-gray-800 mt-0 text-white flex items-center">
+											View More
+											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+											</svg>
+										</p>
+									</div>
+									<div class="flex flex-col-reverse mb-1 mr-4 group cursor-pointer">
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:opacity-70" fill="none" viewbox="0 0 24 24" stroke="gray">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+										</svg>
+									</div>
+								</div>
+							</div>
+
+							<div class="relative max-w-sm min-w-[340px] bg-gray-700 bg-opacity-40 shadow-md rounded-3xl p-2 mx-1 my-3 cursor-pointer">
+								<div class="overflow-x-hidden rounded-2xl relative">
+									<img class="h-40 rounded-2xl w-full object-cover" src="../../../public/assets/images/im4.png">
+								</div>
+								<div class="mt-4 pl-2 mb-2 flex justify-between ">
+									<div>
+										<p class="text-lg font-semibold text-gray-900 mb-0 text-white">Boxing Events</p>
+										<p class="text-md text-gray-800 mt-0 text-white flex items-center">
+											View More
+											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+											</svg>
+										</p>
+									</div>
+									<div class="flex flex-col-reverse mb-1 mr-4 group cursor-pointer">
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:opacity-70" fill="none" viewbox="0 0 24 24" stroke="gray">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+										</svg>
+									</div>
+								</div>
+							</div>
+
+							<div class="relative max-w-sm min-w-[340px] bg-gray-700 bg-opacity-40 shadow-md rounded-3xl p-2 mx-1 my-3 cursor-pointer">
+								<div class="overflow-x-hidden rounded-2xl relative">
+									<img class="h-40 rounded-2xl w-full object-cover" src="../../../public/assets/images/im5.png">
+								</div>
+								<div class="mt-4 pl-2 mb-2 flex justify-between ">
+									<div>
+										<p class="text-lg font-semibold text-gray-900 mb-0 text-white">Football Events</p>
+										<p class="text-md text-gray-800 mt-0 text-white flex items-center">
+											View More
+											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+											</svg>
+										</p>
+									</div>
+									<div class="flex flex-col-reverse mb-1 mr-4 group cursor-pointer">
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:opacity-70" fill="none" viewbox="0 0 24 24" stroke="gray">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+										</svg>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</section>
+
+				<section
+					class="container mx-auto pt-12">
+					<!-- title -->
+					<div class="relative flex items-end font-bold">
+						<h2 class="text-4xl ml-20 text-white">Explosive Event Offers</h2>
+						<a href class="ml-10 flex items-center text-gray-400">
+							<span class="text-sm">All Offers</span>
+							<svg class="ml-3 h-3.5" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 512" class="svg-inline--fa fa-chevron-right fa-w-8 fa-9x">
+								<path fill="currentColor" d="M24.707 38.101L4.908 57.899c-4.686 4.686-4.686 12.284 0 16.971L185.607 256 4.908 437.13c-4.686 4.686-4.686 12.284 0 16.971L24.707 473.9c4.686 4.686 12.284 4.686 16.971 0l209.414-209.414c4.686-4.686 4.686-12.284 0-16.971L41.678 38.101c-4.687-4.687-12.285-4.687-16.971 0z"></path>
+							</svg>
+						</a>
+						<div class="ml-auto flex">
+							<a href class="h-6 w-6 flex items-center justify-center rounded-md bg-gray-100">
+								<svg class="h-3 text-gray-700" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 512" class="svg-inline--fa fa-chevron-left fa-w-8 fa-3x">
+									<path fill="currentColor" d="M231.293 473.899l19.799-19.799c4.686-4.686 4.686-12.284 0-16.971L70.393 256 251.092 74.87c4.686-4.686 4.686-12.284 0-16.971L231.293 38.1c-4.686-4.686-12.284-4.686-16.971 0L4.908 247.515c-4.686 4.686-4.686 12.284 0 16.971L214.322 473.9c4.687 4.686 12.285 4.686 16.971-.001z"></path>
+								</svg>
+							</a>
+							<a href class="ml-1.5 h-6 w-6 flex items-center justify-center rounded-md bg-gray-100">
+								<svg class="h-3 text-gray-700" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 512" class="svg-inline--fa fa-chevron-right fa-w-8 fa-3x">
+									<path fill="currentColor" d="M24.707 38.101L4.908 57.899c-4.686 4.686-4.686 12.284 0 16.971L185.607 256 4.908 437.13c-4.686 4.686-4.686 12.284 0 16.971L24.707 473.9c4.686 4.686 12.284 4.686 16.971 0l209.414-209.414c4.686-4.686 4.686-12.284 0-16.971L41.678 38.101c-4.687-4.687-12.285-4.687-16.971 0z"></path>
+								</svg>
+							</a>
+						</div>
+					</div>
+					<!-- cards -->
+					<div class="flex flex-row gap-20 justify-center pt-10 mt-10">
+						<div class='flex items-center justify-center flex-col p-10'>
+							<div class='break-inside relative overflow-hidden flex flex-col justify-between space-y-2 text-sm rounded-xl max-w-[23rem] p-4 mb-4 bg-[#5E17F4] text-white'>
+								<span class='uppercase text-xs text-[#D2BDFF]'>upgrade team</span>
+								<div class='flex flex-row items-center space-x-3'>
+									<svg width='58' height='56' viewbox='0 0 52 50' fill='none' xmlns='http://www.w3.org/2000/svg'>
+										<path d='M32.6458 38.4379C33.9918 37.1198 33.2655 34.0922 31.0668 30.5948C31.8658 30.4707 32.6129 30.281 33.178 29.9905C35.2112 28.9466 36.584 27.044 37.6232 25.0759C38.7403 22.9647 39.49 20.644 40.9477 18.7215C41.1939 18.3966 41.44 18.1052 41.6853 17.831C44.8304 18.206 47.3412 18.8784 47.3412 18.8784L48.3006 16.4534C47.0896 16.0212 45.848 15.6791 44.586 15.4302C45.3591 14.9931 45.8635 14.8569 45.8635 14.8569L44.9543 12.4121C43.4966 13.025 42.3136 13.9293 41.323 15.0121C37.6206 14.806 33.8921 15.5397 30.9506 17.8086C28.7389 19.5155 27.2447 21.8819 25.839 24.2491C24.5935 23.0333 23.2671 21.9023 21.8688 20.8638C22.134 20.4302 22.4182 20.0405 22.7242 19.7397C24.5728 17.9293 27.0116 16.7716 28.6115 14.7C31.9742 10.35 29.5146 3.53103 26.7481 0C26.2524 0.475 25.4325 1.16724 24.8155 1.71379C27.7561 4.70948 29.8127 9.95431 27.5082 13.8733C26.2203 16.0638 23.8404 17.4379 22.1764 19.3198C21.8887 19.6466 21.6313 20.0603 21.3982 20.5172C17.0466 17.4129 13.053 16.1638 11.4704 17.7138C11.3133 17.8737 11.1838 18.0584 11.0874 18.2603L11.0813 18.2543L11.0388 18.3776C10.9799 18.5112 10.9261 18.65 10.8897 18.8017L0 50L31.774 38.95L31.7653 38.9414C32.1068 38.8319 32.4075 38.6707 32.6458 38.4379ZM6.32065 45.9759L3.66863 44.7465L5.45831 39.6172L13.6666 43.4207L6.32065 45.9759ZM21.0116 40.8664L7.24972 34.4879L9.0394 29.3595L19.3233 34.494C13.1847 30.5198 10.8291 24.2293 10.8291 24.2293L11.441 22.4767C12.5286 25.2138 14.9215 28.6224 18.2097 31.8397C21.5256 35.0862 25.0399 37.4379 27.8488 38.4888L21.0116 40.8664ZM26.2975 24.7112C27.7344 22.6621 29.2156 20.594 31.2748 19.1224C33.2352 17.7207 36.4176 17.4647 39.4345 17.6328C38.4153 19.4034 37.6622 21.3681 36.9861 23.2552C36.1689 25.5397 35.0734 27.9086 32.9847 29.3095C32.4214 29.6871 31.6318 29.9629 30.7886 30.1672C29.6298 28.4009 28.1097 26.5336 26.2975 24.7112Z' fill='white'/>
+										<path d='M18.2287 16.3793C19.0971 16.3793 16.4937 13.7931 16.9287 11.525C18.5962 11.3974 22.4078 12.1448 20.1892 9.11379C22.699 9.55345 23.9991 7.68966 21.6296 5.92328C22.4182 5.97845 23.6437 4.49914 22.764 4.31207C19.9456 3.7181 18.8423 5.23448 20.6312 7.42155C18.7505 7.07328 17.2173 7.9431 18.63 9.89655C13.1994 9.22328 16.2891 16.3793 18.2287 16.3793ZM36.8726 14.081C37.6864 13.7155 36.3058 11.3009 35.8569 10.6836C39.2915 10.3181 39.1615 9.3 37.0078 7.11897C42.8631 7.31466 37.1889 4.00431 37.9846 2.69397C38.6736 1.55776 40.7874 2.74914 40.5915 2.11638C39.9311 0 33.6668 1.43103 37.631 5.38276C34.1712 5.45 33.8393 6.575 36.4176 8.9069C31.9265 8.95603 35.5908 14.6552 36.8726 14.081ZM51.7378 22.6078C50.3667 22.9897 50.1553 22.8466 50.3381 24.2043C47.1713 22.7543 43.8207 20.7379 45.854 26.0802C42.2573 23.95 42.4367 25.8155 41.7641 28.8853C40.8888 28.2069 39.6451 26.419 39.6451 26.419L38.3278 27.5319C38.3278 27.5319 40.7414 30.9181 41.9331 30.7259C42.9809 30.5578 43.5512 28.5879 43.6093 26.8517C46.946 28.2526 48.5432 28.4397 47.017 24.3431C49.6846 25.8336 52.9555 27.1483 51.7378 22.6078ZM3.50916 7.27328L5.96011 9.71207L3.50916 12.15L1.05734 9.71207L3.50916 7.27328ZM24.1005 26.5181L21.6478 28.956L19.1959 26.5164L21.6486 24.0776L24.1005 26.5181ZM13.1908 3.44828L15.6417 5.88621L13.1899 8.32586L10.7389 5.88621L13.1908 3.44828ZM39.8765 37.4862L37.4238 35.0474L39.8748 32.6078L42.3275 35.0466L39.8765 37.4862ZM34.4113 45.85L31.9603 43.4121L34.4113 40.9733L36.8631 43.4121L34.4113 45.85ZM45.1649 47.7759L42.7123 45.3371L45.1623 42.8974L47.615 45.3362L45.1649 47.7759ZM47.6159 36.669L45.1649 34.2302L47.6159 31.7922L50.0668 34.2302L47.6159 36.669ZM43.5243 6.03448L45.9753 8.47241L43.5235 10.9112L41.0725 8.47241L43.5243 6.03448Z' fill='white'/>
+									</svg>
+									<span class='text-base font-medium'>Unlock exclusive opportunities by logging in now and claim a special 50% discount on your next purchase. Elevate your experience with us!</span>
+								</div>
+								<div class='flex justify-between items-center'>
+									<span>Let's meet together</span>
+									<button class='flex items-center justify-center text-xs font-medium rounded-full px-4 py-2 space-x-1 bg-white text-black'>
+										<span>Next step</span>
+										<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewbox='0 0 24 24' fill='none' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+											<path d='M5 12h13M12 5l7 7-7 7'/>
+										</svg>
+									</button>
+								</div>
+							</div>
+							<div class='break-inside relative overflow-hidden flex flex-col justify-between space-y-3 text-sm rounded-xl max-w-[23rem] p-4 mb-4 bg-white text-black dark:bg-slate-800 dark:text-white'>
+								<div class='flex items-center justify-between font-medium'>
+									<span class='uppercase text-xs text-green-500'>get access</span>
+									<span class='text-xs text-slate-500'>#farmat</span>
+								</div>
+								<div class='flex flex-row items-center space-x-3'>
+									<div class='flex flex-none items-center justify-center w-10 h-10 rounded-full bg-green-500 text-white'>
+										<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewbox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+											<path d='M13 2L13 10L20 10L20 2L13 2Z'/>
+											<path d='M2 10L12 10'/>
+										</svg>
+									</div>
+									<span class='text-base font-medium'>Get access to special offers and discounts</span>
+								</div>
+								<div>
+									Sign up for our newsletter to receive exclusive promotions and discounts on our products.
+								</div>
+								<div class='flex justify-between items-center'>
+									<div>
+										<dt class='sr-only'>Users</dt>
+										<dd class='flex justify-start -space-x-1.5'>
+											<a href='#' class='inline-block -m-1'>
+												<img class='w-7 h-7 rounded-full ring-2 ring-white dark:ring-slate-800' src='https://randomuser.me/api/portraits/women/46.jpg' alt='avatar'/>
+											</a>
+											<a href='#' class='inline-block -m-1'>
+												<img class='w-7 h-7 rounded-full ring-2 ring-white dark:ring-slate-800' src='https://randomuser.me/api/portraits/men/45.jpg' alt='avatar'/>
+											</a>
+											<a href='#' class='inline-block -m-1'>
+												<img class='w-7 h-7 rounded-full ring-2 ring-white dark:ring-slate-800' src='https://randomuser.me/api/portraits/women/47.jpg' alt='avatar'/>
+											</a>
+											<span class='inline-block -m-1 rounded-full ring-2 ring-white dark:ring-slate-800'>
+												<svg width='28' height='28' viewbox='0 0 31 31' fill='none' xmlns='http://www.w3.org/2000/svg' class='text-slate-200 dark:text-slate-600'>
+													<path d='M31 15.5C31 24.0604 24.0604 31 15.5 31C6.93959 31 0 24.0604 0 15.5C0 6.93959 6.93959 0 15.5 0C24.0604 0 31 6.93959 31 15.5ZM8.20879 15.5C8.20879 19.5268 11.4732 22.7912 15.5 22.7912C19.5268 22.7912 22.7912 19.5268 22.7912 15.5C22.7912 11.4732 19.5268 8.20879 15.5 8.20879C11.4732 8.20879 8.20879 11.4732 8.20879 15.5Z' fill='currentColor'/>
+													<path d='M31 15.5C31 18.049 30.3714 20.5586 29.1698 22.8066C27.9682 25.0547 26.2307 26.9716 24.1113 28.3878C21.9919 29.8039 19.556 30.6755 17.0193 30.9254C14.4826 31.1752 11.9234 30.7956 9.56841 29.8201C7.21345 28.8447 5.1354 27.3035 3.51834 25.3331C1.90128 23.3627 0.795112 21.0239 0.297828 18.5239C-0.199455 16.0239 -0.0725081 13.4398 0.667425 11.0006C1.40736 8.56136 2.73744 6.34225 4.53984 4.53985L10.2876 10.2876C9.43046 11.1448 8.79791 12.2002 8.44602 13.3602C8.09413 14.5202 8.03376 15.7491 8.27025 16.9381C8.50675 18.127 9.03281 19.2393 9.80184 20.1764C10.5709 21.1134 11.5591 21.8464 12.6791 22.3103C13.799 22.7742 15.0161 22.9547 16.2225 22.8359C17.4289 22.7171 18.5874 22.3026 19.5953 21.6291C20.6033 20.9556 21.4295 20.0439 22.001 18.9748C22.5724 17.9058 22.8714 16.7122 22.8714 15.5H31Z' fill='#2BC86A'/>
+												</svg>
+											</span>
+										</dd>
+									</div>
+									<button class='flex items-center justify-center text-xs font-medium rounded-full px-4 py-1 space-x-1 border-2 border-black bg-white hover:bg-black hover:text-white text-black dark:bg-slate-800 dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-black'>
+										<span>Submit</span>
+										<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewbox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+											<path d='M5 12h13M12 5l7 7-7 7'/>
+										</svg>
+									</button>
+								</div>
+							</div>
+						</div>
+						<img src="../../../public/assets/images/offer.png" alt="" class="max-w-[40%] rounded-xl">
+					</div>
+				</section>
+
+				<section class="container mx-auto pt-12">
+					<div class="flex flex-col items-start font-bold">
+						<h2 class="text-4xl ml-20 text-white mb-12 mt-8">Our Managed Events</h2>
+					</div>
+                    <div class="flex items-center justify-center">
+                        <iframe width="80%" height="480" src="https://www.youtube.com/embed/iMAfIRaLl3k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+				</section>
+			</main>
+		</div>
+
+		<footer class="w-full min-h-screen flex items-center justify-center bg-[#0e1111]">
+			<div class="md:w-2/3 w-full px-4 text-white flex flex-col">
+				<div class="w-full text-7xl font-bold">
+					<h1 class="w-full md:w-2/3">How can we help you. get
+																	in touch</h1>
+				</div>
+				<div class="flex mt-8 flex-col md:flex-row md:justify-between">
+					<p class="w-full md:w-2/3 text-gray-400">If you need any help or have some questions, feel free to ask. We will be happy to assist you. You can also check our FAQs and Tutorials sections for more information on how to use our services.</p>
+					<div class="w-44 pt-6 md:pt-0">
+						<a class="bg-red-500 justify-center text-center rounded-lg shadow px-10 py-3 flex items-center">Contact US</a>
+					</div>
+				</div>
+				<div class="flex flex-col">
+					<div class="flex mt-24 mb-12 flex-row justify-center items-center gap-20">
+						<div class="">
+							<img class="w-40 md:w-64" src="../../../public/assets/Logo/banner.png" alt="logo banner">
+						</div>
+						<a class="hidden md:block cursor-pointer text-gray-600 hover:text-white uppercase">About</a>
+						<a class="hidden md:block cursor-pointer text-gray-600 hover:text-white uppercase">Services</a>
+						<a class="hidden md:block cursor-pointer text-gray-600 hover:text-white uppercase">Why us</a>
+						<a class="hidden md:block cursor-pointer text-gray-600 hover:text-white uppercase">Contact</a>
+						<div class="flex flex-row space-x-8 items-center justify-between">
+							<a>
+								<svg width="6" height="12" viewbox="0 0 6 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M3.89782 12V6.53514H5.67481L5.93895 4.39547H3.89782V3.03259C3.89782 2.41516 4.06363 1.99243 4.91774 1.99243H6V0.0847928C5.47342 0.0262443 4.94412 -0.00202566 4.41453 0.000112795C2.84383 0.000112795 1.76542 0.994936 1.76542 2.82122V4.39147H0V6.53114H1.76928V12H3.89782Z" fill="white"/>
+								</svg>
+							</a>
+							<a>
+								<svg width="12" height="13" viewbox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5.99536 2.91345C5.17815 2.91345 4.39441 3.23809 3.81655 3.81594C3.2387 4.3938 2.91406 5.17754 2.91406 5.99475C2.91406 6.81196 3.2387 7.5957 3.81655 8.17356C4.39441 8.75141 5.17815 9.07605 5.99536 9.07605C6.81257 9.07605 7.59631 8.75141 8.17417 8.17356C8.75202 7.5957 9.07666 6.81196 9.07666 5.99475C9.07666 5.17754 8.75202 4.3938 8.17417 3.81594C7.59631 3.23809 6.81257 2.91345 5.99536 2.91345ZM5.99536 7.99586C5.46446 7.99586 4.9553 7.78496 4.57989 7.40955C4.20448 7.03415 3.99358 6.52499 3.99358 5.99408C3.99358 5.46318 4.20448 4.95402 4.57989 4.57861C4.9553 4.20321 5.46446 3.99231 5.99536 3.99231C6.52626 3.99231 7.03542 4.20321 7.41083 4.57861C7.78624 4.95402 7.99714 5.46318 7.99714 5.99408C7.99714 6.52499 7.78624 7.03415 7.41083 7.40955C7.03542 7.78496 6.52626 7.99586 5.99536 7.99586Z" fill="white"/>
+									<path d="M9.19863 3.51848C9.59537 3.51848 9.91698 3.19687 9.91698 2.80013C9.91698 2.4034 9.59537 2.08179 9.19863 2.08179C8.8019 2.08179 8.48029 2.4034 8.48029 2.80013C8.48029 3.19687 8.8019 3.51848 9.19863 3.51848Z" fill="white"/>
+									<path d="M11.6821 2.06975C11.5279 1.67138 11.2921 1.30961 10.99 1.00759C10.6879 0.705576 10.326 0.469972 9.92759 0.31586C9.46135 0.140842 8.9688 0.0462069 8.4709 0.0359839C7.82919 0.00799638 7.62594 0 5.99867 0C4.37139 0 4.16282 -6.70254e-08 3.52643 0.0359839C3.02891 0.0456842 2.53671 0.140339 2.07108 0.31586C1.67255 0.469792 1.31059 0.705333 1.00844 1.00737C0.706289 1.30941 0.47061 1.67127 0.316526 2.06975C0.141474 2.53595 0.0470554 3.02855 0.0373167 3.52643C0.00866281 4.16748 0 4.37072 0 5.99867C0 7.62594 -4.96485e-09 7.83319 0.0373167 8.4709C0.0473123 8.96935 0.14127 9.46113 0.316526 9.92825C0.471042 10.3266 0.70695 10.6883 1.00918 10.9903C1.3114 11.2923 1.6733 11.5279 2.07175 11.6821C2.5365 11.8642 3.0289 11.9656 3.52777 11.982C4.16948 12.01 4.37272 12.0187 6 12.0187C7.62728 12.0187 7.83585 12.0187 8.47223 11.982C8.97008 11.9719 9.46262 11.8775 9.92892 11.7028C10.3272 11.5483 10.689 11.3125 10.9911 11.0104C11.2932 10.7083 11.529 10.3466 11.6835 9.94825C11.8587 9.48179 11.9527 8.99 11.9627 8.49156C11.9913 7.85051 12 7.64727 12 6.01932C12 4.39138 12 4.18481 11.9627 3.54709C11.9549 3.04216 11.86 2.54237 11.6821 2.06975ZM10.8705 8.42159C10.8662 8.80562 10.7961 9.18608 10.6633 9.54642C10.5632 9.80555 10.41 10.0409 10.2135 10.2372C10.017 10.4336 9.78162 10.5867 9.52243 10.6866C9.16608 10.8188 8.78967 10.8889 8.4096 10.8938C7.77654 10.9231 7.59796 10.9305 5.97468 10.9305C4.35007 10.9305 4.18414 10.9305 3.53909 10.8938C3.15921 10.8892 2.78298 10.8191 2.42692 10.6866C2.16683 10.5873 1.93048 10.4345 1.73316 10.2381C1.53584 10.0417 1.38194 9.80605 1.28143 9.54642C1.15045 9.18995 1.08039 8.81398 1.07419 8.43425C1.04554 7.8012 1.03887 7.62261 1.03887 5.99933C1.03887 4.37539 1.03887 4.20946 1.07419 3.56375C1.0785 3.17993 1.14859 2.7997 1.28143 2.43958C1.48467 1.91382 1.90116 1.5 2.42692 1.29876C2.78316 1.16691 3.15928 1.09682 3.53909 1.09151C4.17281 1.06286 4.35073 1.05486 5.97468 1.05486C7.59862 1.05486 7.76522 1.05486 8.4096 1.09151C8.7897 1.09609 9.16617 1.1662 9.52243 1.29876C9.7816 1.39889 10.017 1.55211 10.2134 1.74858C10.4099 1.94504 10.5631 2.18041 10.6633 2.43958C10.7942 2.79606 10.8643 3.17203 10.8705 3.55175C10.8992 4.18547 10.9065 4.36339 10.9065 5.98734C10.9065 7.61062 10.9065 7.78521 10.8778 8.42226H10.8705V8.42159Z" fill="white"/>
+								</svg>
+							</a>
+							<a href="https://www.youtube.com/channel/UCjtCbnkIaiCJgj13sEZ9iqw">
+								<svg width="13" height="9" viewbox="0 0 13 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M12.7355 1.415C12.6616 1.14357 12.517 0.896024 12.3162 0.697014C12.1154 0.498004 11.8654 0.354468 11.5911 0.280692C10.5739 0.00450089 6.5045 4.87928e-06 6.5045 4.87928e-06C6.5045 4.87928e-06 2.43578 -0.00449139 1.41795 0.259496C1.14379 0.336667 0.894302 0.482233 0.693428 0.68222C0.492554 0.882207 0.347041 1.1299 0.270859 1.40152C0.00259923 2.40737 9.51671e-07 4.49358 9.51671e-07 4.49358C9.51671e-07 4.49358 -0.0025972 6.59006 0.263714 7.58564C0.413109 8.13609 0.851549 8.57094 1.40885 8.71931C2.43643 8.9955 6.49476 9 6.49476 9C6.49476 9 10.5641 9.00449 11.5813 8.74115C11.8557 8.6675 12.106 8.52429 12.3073 8.32569C12.5086 8.12709 12.6539 7.87996 12.729 7.60876C12.998 6.60355 12.9999 4.51798 12.9999 4.51798C12.9999 4.51798 13.0129 2.42086 12.7355 1.415ZM5.20282 6.42628L5.20607 2.57244L8.58823 4.50257L5.20282 6.42628Z" fill="white"/>
+								</svg>
+							</a>
+						</div>
+					</div>
+					<hr class="border-gray-600"/>
+					<p class="w-full text-center my-12 text-gray-600">Copyright © 2025 ZHOO</p>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>
