@@ -42,7 +42,7 @@ CREATE TABLE reservations (
     total_price DECIMAL(10, 2) CHECK (total_price >= 0),
     reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     qr_code TEXT,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('reserved', 'canceled', 'failed')),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('reserved', 'canceled', 'failed','paid')),
     full_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     vip_options JSONB NOT NULL DEFAULT '{}'::jsonb, 
@@ -58,6 +58,20 @@ CREATE TABLE payments (
     amount DECIMAL(10, 2) CHECK (amount >= 0),
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(20) NOT NULL CHECK (status IN ('success', 'pending', 'failed'))
+);
+
+CREATE TABLE tickets (
+    id SERIAL PRIMARY KEY,
+    event_id INT REFERENCES events(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    stock INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE vip_options (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL
 );
 
 -- Event statistics table
