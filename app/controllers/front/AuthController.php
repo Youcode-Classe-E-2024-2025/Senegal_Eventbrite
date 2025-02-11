@@ -8,26 +8,27 @@ use Core\Auth;
 use Core\Validator;
 use Model\User;
 use Core\Session;
-
+use Exception; // Add this to handle exceptions
 
 class AuthController extends Controller
 {
     public function signup()
     {
-
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = $_POST;
-            $validator = new Validator($_POST, [
-                'username' => ['required', 'min:3', 'max:20', 'unique:users,username'],
-                'email' => ['required', 'email', 'unique:users,email'],
-                'password' => ['required', 'confirmed', 'min:6'],
-                'password_confirmation' => ['required']
-            ]);
+            $validator = new Validator();
 
-            if ($validator->fails()) {
+            $validator->validateRequired('username', $data['username']);
+            $validator->validateLength('username', $data['username'], 3, 20);
+            $validator->validateRequired('email', $data['email']);
+            $validator->validateEmail('email', $data['email']);
+            $validator->validateRequired('password', $data['password']);
+            $validator->validateLength('password', $data['password'], 6, 100);
+            $validator->validateRequired('password_confirmation', $data['password_confirmation']);
+
+            if ($validator->hasErrors()) {
                 return $this->view('front/Signup', [
-                    'errors' => $validator->errors(),
+                    'errors' => $validator->getErrors(),
                     'data' => $_POST
                 ]);
             }
@@ -47,23 +48,22 @@ class AuthController extends Controller
 
     public function login()
     {
-
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = $_POST;
-            $validator = new Validator($_POST, [
-                'email' => ['required', 'email'],
-                'password' => ['required', 'min:6']
-            ]);
+            $validator = new Validator();
 
-            if ($validator->fails()) {
+            $validator->validateRequired('email', $data['email']);
+            $validator->validateEmail('email', $data['email']);
+            $validator->validateRequired('password', $data['password']);
+
+            if ($validator->hasErrors()) {
                 return $this->view('front/Login', [
-                    'errors' => $validator->errors(),
+                    'errors' => $validator->getErrors(),
                     'data' => $_POST
                 ]);
             }
 
-            $user = User::where('email', $data['email'])->first();
+            $user = User::findByEmail($data['email']);
 
             if (!$user || !password_verify($data['password'], $user->password)) {
                 return $this->view('front/Login', [
@@ -83,10 +83,6 @@ class AuthController extends Controller
 
     public function signupPost()
     {
-        if (Auth::check()) {
-            return $this->redirect('/');
-        }
-
         $data = $_POST;
 
         $validator = new Validator();
@@ -139,7 +135,7 @@ class AuthController extends Controller
             Session::start();
             Session::set('user', $user);
 
-            header('Location: /home');
+            header('Location: /');
             exit();
         } else {
             return $this->view('front/Login', [
@@ -148,10 +144,9 @@ class AuthController extends Controller
         }
     }
 
-    
     public function logout()
     {
         Session::destroy();
-        header('Location: /login');
+        header('Location: /');
     }
 }

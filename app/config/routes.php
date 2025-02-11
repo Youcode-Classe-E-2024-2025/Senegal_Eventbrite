@@ -12,11 +12,12 @@ $routes = [
         '/' => [HomeController::class, 'index'],
         '/signup' => [AuthController::class, 'signup'],
         '/login' => [AuthController::class, 'login'],
+        '/logout'=> [AuthController::class, 'logout'],
 
     ],
     'POST' => [
         '/signup' => [AuthController::class, 'signupPost'],
-        
+        '/login' => [AuthController::class, 'loginPost'],
     ]
 ];
 
@@ -25,5 +26,4 @@ foreach ($routes as $method => $routesList) {
         $router->{strtolower($method)}($uri, $controller);
     }
 }
-
 $router->dispatch();
