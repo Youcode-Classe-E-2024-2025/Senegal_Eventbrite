@@ -15,12 +15,13 @@ class Database {
             $dbname = Config::get('DB_NAME');
             $user = Config::get('DB_USER');
             $pass = Config::get('DB_PASS');
+            $port = Config::get('DB_PORT');
 
             if (!$host || !$dbname || !$user) {
                 throw new PDOException("Database configuration is missing. Please check your .env file.");
             }
 
-            $dsn = sprintf("pgsql:host=%s;port=5432;dbname=%s", $host, $dbname);
+            $dsn = sprintf("pgsql:host=%s;port=%d;dbname=%s", $host, $port,$dbname);
 
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
