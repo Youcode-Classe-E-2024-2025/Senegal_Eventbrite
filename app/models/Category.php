@@ -16,4 +16,9 @@ class Category extends Model {
     {
        return $this->fetchAll("categorys");
     }
+
+    public function deleteCategory($id)
+    {
+        return $this->delete("categorys" , $id);
+    }
 }
