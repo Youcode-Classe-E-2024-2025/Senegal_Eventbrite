@@ -212,8 +212,8 @@
         <a href="/" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
           <span>Dashboard</span>
         </a>
-        <a href="#" class="flex items-center gap-2 p-2 rounded-sm text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
-          <span>Create Event</span>
+        <a href="/profileInfo" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
+          <span>Profile Info</span>
         </a>
       </nav>
     </aside>
@@ -292,7 +292,7 @@
       <!-- Create New Event Form -->
       <div class="bg-card p-6 rounded-sm shadow-sm border border-border w-full">
         <h2 class="text-2xl font-bold text-foreground mb-6">Create New Event</h2>
-        <form class="space-y-6" method="POST" enctype="multipart/form-data">
+        <form id="form" class="space-y-6" method="POST" enctype="multipart/form-data">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Event Title -->
             <div>
@@ -348,7 +348,7 @@
           </div>
           <!-- Action Buttons -->
           <div class="flex justify-end gap-4">
-            <button id="reset" type="button" class="px-4 py-2 border border-border rounded-sm hover:bg-muted transition-colors">Reset</button>
+            <button id="reset" type="reset" class="px-4 py-2 border border-border rounded-sm hover:bg-muted transition-colors">Reset</button>
             <button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-sm hover:bg-destructive transition-colors">Create Event</button>
           </div>
         </form>
@@ -358,7 +358,6 @@
 
   <!-- JavaScript for live updating the ticket preview -->
   <script>
-  document.getElementById
     // Update the ticket title in both containers as the user types
     document.getElementById('title').addEventListener('input', function() {
       document.querySelectorAll('.ticket-title').forEach(el => {
