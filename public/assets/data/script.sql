@@ -1,4 +1,3 @@
--- Active: 1738924164017@@127.0.0.1@7777@eventbrite_db
 -- Create the database
 CREATE DATABASE eventbrite_db;
 
@@ -19,6 +18,7 @@ CREATE TABLE users (
 CREATE TABLE events (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    artist_name VARCHAR(255) NOT NULL,
     category VARCHAR(50),
     tags TEXT[],
     date_start TIMESTAMP NOT NULL,
@@ -30,8 +30,16 @@ CREATE TABLE events (
     status VARCHAR(20) NOT NULL CHECK (status IN ('FULL', 'EXPIRED', 'ACTIVE')),
     isActif BOOLEAN NOT NULL DEFAULT FALSE,
 );
-
 ALTER TABLE events ADD CONSTRAINT chk_date_consistency CHECK (date_start < date_end);
+
+CREATE TABLE promo (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    discount_percentage DECIMAL(5, 2) CHECK (discount_percentage BETWEEN 0 AND 100),
+    event_id INT REFERENCES events(id) ON DELETE CASCADE,
+    usage_limit INT CHECK (usage_limit > 0),
+    expiration_date TIMESTAMP NOT NULL
+);
 
 -- Reservations table
 CREATE TABLE reservations (
