@@ -22,6 +22,8 @@ $routes = [
         '/admin' => [dashboardController::class, 'dashboard'],
     ],
     'POST' => [
+        '/createCtaegory' => [categoryController::class, 'createCategory'],
+        '/deleteCategory' => [categoryController::class, 'deleteCategory'],
         '/signup' => [AuthController::class, 'signupPost'],
         '/login' => [AuthController::class, 'loginPost'],
     ]
