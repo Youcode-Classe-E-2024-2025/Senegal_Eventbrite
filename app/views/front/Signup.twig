@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>ZHOO Login</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+		<link rel="shortcut icon" href="../../../public/assets/Favicon/favicon-32x32.png" type="image/x-icon">
+		<style>
+		/*custome scroll bar*/
+		::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		::-webkit-scrollbar-track {
+			background: rgb(18, 18, 18);
+		}
+
+		::-webkit-scrollbar-thumb {
+			background-color: rgb(212, 212, 198);
+			border-radius: 10px;
+			border: 2px solidrgb(255, 255, 255);
+		}
+	</style>
+</head>
+<body class="overflow-x-hidden bg-[#0e1111]">
+	<div class="flex flex-row bg-[#0e1111]">
+		<video class="fixed top-0 left-0 h-screen w-[70vw] object-cover" autoplay loop muted>
+			<source src="../../../public/assets/images/vid.mp4" type="video/mp4">
+			Your browser does not support the video tag.
+		</video>
+		<div class="fixed top-[25%] right-0 h-screen w-[30vw] bg-[#0e1111] text-gray-100 font-[Jura]">
+			<form class="max-w-md mx-auto p-8" action="/signup" method="POST">
+				<h2 class="text-4xl font-extrabold mb-6 text-center text-blue-400">Signup</h2>
+				<div class="mb-4">
+					<label for="email" class="block mb-2 text-base font-semibold text-gray-300">Email</label>
+					<input type="email" name="email" id="email" class="block w-full px-4 py-2 border border-gray-700 bg-[#1a1f24] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+				</div>
+				<div class="mb-4">
+					<label for="password" class="block mb-2 text-base font-semibold text-gray-300">Password</label>
+					<input type="password" name="password" id="password" class="block w-full px-4 py-2 border border-gray-700 bg-[#1a1f24] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+					<div id="password-indicator" class="mt-2 text-sm text-gray-400"></div>
+				</div>
+				<div class="mb-4 text-center">
+					<a href="/login" class="text-sm text-blue-400 hover:text-blue-500 hover:underline">
+						You Have An Account?
+					</a>
+				</div>
+				<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-2xl w-full transition-all duration-300">
+					Signup
+				</button>
+			</form>
+		</div>
+
+		<script>
+			const passwordInput = document.getElementById("password");
+const passwordIndicator = document.getElementById("password-indicator");
+
+const requirements = [
+{
+regex: /.{8,}/,
+message: "At least 8 characters"
+},
+{
+regex: /[A-Z]/,
+message: "Uppercase letter"
+},
+{
+regex: /[a-z]/,
+message: "Lowercase letter"
+},
+{
+regex: /[0-9]/,
+message: "Number"
+}, {
+regex: /[\W_]/,
+message: "Symbol (e.g., !@#$%^&*)"
+}
+];
+
+passwordInput.addEventListener("input", () => {
+const password = passwordInput.value;
+let allMet = true;
+
+const list = requirements.map(req => {
+if (req.regex.test(password)) {
+return `<span class="text-green-400">✔ ${
+req.message
+}</span>`;
+} else {
+allMet = false;
+return `<span class="text-red-400">✗ ${
+req.message
+}</span>`;
+}
+}).join("<br>");
+
+passwordIndicator.innerHTML = allMet ? '<span class="text-green-400 font-semibold">✔ Strong Password</span>' : list;
+});
+		</script>
+	</div>
+</body></html>

@@ -21,7 +21,8 @@ class Database {
                 throw new PDOException("Database configuration is missing. Please check your .env file.");
             }
 
-            $dsn = sprintf("pgsql:host=%s;port=%d;dbname=%s", $host,$port, $dbname);
+            $dsn = sprintf("pgsql:host=%s;port=%d;dbname=%s", $host, $port,$dbname);
+
 
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
