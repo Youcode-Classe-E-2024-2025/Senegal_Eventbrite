@@ -8,8 +8,9 @@ $router = new Router();
 
 $routes = [
     'GET' => [
-        '/userDashboard' => [UserController::class, 'index'],
+        '/userDash' => [UserController::class, 'index'],
         '/createEvent' => [UserController::class, 'event'],
+        '/profileInfo' => [UserController::class, 'info'],
     ],
     'POST' => [
         // '/login' => [AuthController::class, 'login'],
