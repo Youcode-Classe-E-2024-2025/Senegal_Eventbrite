@@ -22,6 +22,8 @@ $routes = [
         '/admin' => [dashboardController::class, 'dashboard'],
     ],
     'POST' => [
+        '/signup' => [AuthController::class, 'signupPost'],
+        '/login' => [AuthController::class, 'loginPost'],
     ]
 ];
 
