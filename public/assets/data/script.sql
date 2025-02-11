@@ -19,7 +19,6 @@ CREATE TABLE users (
 CREATE TABLE events (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    description TEXT,
     category VARCHAR(50),
     tags TEXT[],
     date_start TIMESTAMP NOT NULL,
@@ -30,7 +29,6 @@ CREATE TABLE events (
     organizer_id INT REFERENCES users(id) ON DELETE CASCADE,
     status VARCHAR(20) NOT NULL CHECK (status IN ('FULL', 'EXPIRED', 'ACTIVE')),
     isActif BOOLEAN NOT NULL DEFAULT FALSE,
-    image_url VARCHAR(255)
 );
 
 ALTER TABLE events ADD CONSTRAINT chk_date_consistency CHECK (date_start < date_end);
@@ -79,6 +77,13 @@ CREATE TABLE promo_codes (
     used_count INT DEFAULT 0
 );
 
+
+CREATE TABLE categorys(
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    image VARCHAR(255)
+)
+
 -- Notifications table
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
@@ -97,6 +102,11 @@ CREATE TABLE comments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE categorys(
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    image VARCHAR(255)
+);
 -- Index for performance optimization
 CREATE INDEX idx_events_date_start ON events(date_start);
 CREATE INDEX idx_reservations_user_event ON reservations(user_id, event_id);
