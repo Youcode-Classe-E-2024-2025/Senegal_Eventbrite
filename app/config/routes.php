@@ -14,6 +14,8 @@ $routes = [
     ],
     'POST' => [
         '/createCtaegory' => [categoryController::class, 'createCategory'],
+        '/' => [\Controller_front\HomeController::class, 'index'],
+
     ]
 ];
 
