@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Profile</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet" />
+  <style>
+    /* Global Dark Theme Overrides */
+    body {
+      background-color: #333;
+      color: #eee;
+    }
+    .bg-card {
+      background-color: #444;
+    }
+    .border-border {
+      border-color: #555;
+    }
+    .text-foreground {
+      color: #eee;
+    }
+    .text-accent {
+      color: #f39c12;
+    }
+    .bg-primary {
+      background-color: #e74c3c;
+    }
+    .text-primary-foreground {
+      color: #fff;
+    }
+    .bg-secondary {
+      background-color: #3498db;
+    }
+    .text-secondary-foreground {
+      color: #fff;
+    }
+    .bg-muted {
+      background-color: #555;
+    }
+    /* Sidebar (reuse styling from your other pages) */
+    .sidebar {
+      width: 16rem;
+    }
+    /* Simple reset for form elements */
+    input, button, select, textarea {
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="flex">
+    <!-- Sidebar Navigation -->
+    <aside class="fixed inset-y-0 left-0 sidebar bg-card shadow-sm border-r border-border p-4">
+      <div class="mb-8">
+        <div class="flex items-center gap-2">
+          <img src="https://images.unsplash.com/photo-1517292987719-0369a794ec0f" alt="Logo" class="w-8 h-8 rounded-full">
+          <h1 class="text-xl font-bold text-foreground">EventHub</h1>
+        </div>
+      </div>
+      <nav class="space-y-2">
+        <a href="/" class="block p-2 rounded-sm text-primary hover:bg-primary hover:text-primary-foreground transition-colors">Dashboard</a>
+        <a href="create-event.html" class="block p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">Create Event</a>
+        <a href="profile.html" class="block p-2 rounded-sm text-secondary hover:bg-primary hover:text-primary-foreground transition-colors">Profile</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-64 p-8 w-full space-y-8">
+      <section id="profile" class="bg-card p-6 rounded-sm shadow-sm border border-border">
+        <h2 class="text-2xl font-bold text-foreground mb-6">User Profile</h2>
+        
+        <!-- Profile Image Update Section -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-foreground mb-4">Update Profile Image</h3>
+          <form id="profile-image-form" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <div class="flex items-center gap-4">
+              <!-- Profile image preview (default image here) -->
+              <img id="profile-image-preview" src="/assets/uploads/userAvatar/5856.jpg" alt="Profile Image" class="w-20 h-20 rounded-full object-cover border border-border">
+              <div>
+                <input type="file" id="profile-image" name="profile_image" accept="image/*" class="hidden">
+                <button type="button" onclick="document.getElementById('profile-image').click()" class="px-4 py-2 bg-secondary text-secondary-foreground rounded-sm hover:bg-muted transition-colors">
+                  Choose Image
+                </button>
+              </div>
+            </div>
+            <div>
+              <button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-sm hover:bg-destructive transition-colors">
+                Update Image
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Password Update Section -->
+        <div>
+          <h3 class="text-xl font-semibold text-foreground mb-4">Change Password</h3>
+          <form id="password-form" method="POST" class="space-y-4">
+            <div>
+              <label for="current-password" class="block text-sm font-medium text-accent mb-2">Current Password</label>
+              <input type="password" id="current-password" name="current_password" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+            <div>
+              <label for="new-password" class="block text-sm font-medium text-accent mb-2">New Password</label>
+              <input type="password" id="new-password" name="new_password" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+            <div>
+              <label for="confirm-password" class="block text-sm font-medium text-accent mb-2">Confirm New Password</label>
+              <input type="password" id="confirm-password" name="confirm_password" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+            <div>
+              <button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-sm hover:bg-destructive transition-colors">
+                Change Password
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- JavaScript for profile image preview -->
+  <script>
+    const profileImageInput = document.getElementById('profile-image');
+    profileImageInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('profile-image-preview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>

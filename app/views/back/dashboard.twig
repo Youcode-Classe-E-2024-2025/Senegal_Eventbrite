@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Admin</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navbar fixe -->
+    <nav class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-indigo-600">AdminPro</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Rechercher..." class="w-64 pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="relative">
+                            <button class="p-2 rounded-full hover:bg-gray-100">
+                                <i class="fas fa-bell text-gray-600"></i>
+                                <span class="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+                            </button>
+                        </div>
+                        <img src="" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-indigo-500">
+                        <span class="font-medium text-gray-700">Admin</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar fixe -->
+    <aside class="fixed left-0 top-16 h-full w-64 bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-900 text-white">
+        <nav class="mt-6 px-4">
+            <div class="space-y-3">
+                <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-indigo-800 bg-opacity-50 hover:bg-opacity-75 transition-all">
+                    <i class="fas fa-home"></i>
+                    <span>Tableau de bord</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-indigo-800 hover:bg-opacity-50 transition-all">
+                    <i class="fas fa-users"></i>
+                    <span>Utilisateurs</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-indigo-800 hover:bg-opacity-50 transition-all">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-indigo-800 hover:bg-opacity-50 transition-all">
+                    <i class="fas fa-cog"></i>
+                    <span>Paramètres</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Contenu principal -->
+    <main class="ml-64 pt-16 p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition-all duration-300">
+                <div class="absolute -right-6 -bottom-6 opacity-10">
+                    <i class="fas fa-users text-9xl"></i>
+                </div>
+                <h3 class="text-lg font-medium mb-2">Utilisateurs Actifs</h3>
+                <p class="text-4xl font-bold">{{ active_users }}</p>
+                <p class="text-blue-100 mt-2">+12% ce mois</p>
+            </div>
+            <div class="relative overflow-hidden bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition-all duration-300">
+                <div class="absolute -right-6 -bottom-6 opacity-10">
+                    <i class="fas fa-shopping-cart text-9xl"></i>
+                </div>
+                <h3 class="text-lg font-medium mb-2">Commandes Totales</h3>
+                <p class="text-4xl font-bold">{{ total_orders }}</p>
+                <p class="text-emerald-100 mt-2">+5% cette semaine</p>
+            </div>
+            <div class="relative overflow-hidden bg-gradient-to-br from-amber-500 to-amber-600 p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition-all duration-300">
+                <div class="absolute -right-6 -bottom-6 opacity-10">
+                    <i class="fas fa-dollar-sign text-9xl"></i>
+                </div>
+                <h3 class="text-lg font-medium mb-2">Revenus Mensuels</h3>
+                <p class="text-4xl font-bold">{{ monthly_revenue }}€</p>
+                <p class="text-amber-100 mt-2">+8% ce mois</p>
+            </div>
+        </div>
+
+        <!-- Table des utilisateurs -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8">
+            <div class="p-6 border-b border-gray-100">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-gray-800">Utilisateurs</h2>
+                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Ajouter
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for user in users %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <img src="" alt="User" class="w-10 h-10 rounded-full">
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ user.email }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ user.status == 'Actif' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">{{ user.status }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <button class="text-indigo-600 hover:text-indigo-900 mr-3"><i class="fas fa-edit"></i></button>
+                                <button class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="px-6 py-4 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        Affichage de <span class="font-medium">1</span> à <span class="font-medium">10</span> sur <span class="font-medium">{{ users|length }}</span> résultats
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200">Précédent</button>
+                        <button class="px-3 py-1 rounded-md bg-indigo-600 text-white">1</button>
+                        <button class="px-3 py-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200">2</button>
+                        <button class="px-3 py-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200">Suivant</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table des catégories -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100">
+            <div class="p-6 border-b border-gray-100">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-gray-800">Catégories</h2>
+                    <button onclick="openModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Ajouter
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produits</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for category in categorys %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ category.title }}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900">{{ category.description }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <img src="{{ category.image }}" alt="{{ category.title }}" width="30" height="30">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <button class="text-indigo-600 hover:text-indigo-900 mr-3"><i class="fas fa-edit"></i></button>
+                                <button class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="px-6 py-4 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        Affichage de <span class="font-medium">1</span> à <span class="font-medium">10</span> sur <span class="font-medium">{{ categorys|length }}</span> résultats
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200">Précédent</button>
+                        <button class="px-3 py-1 rounded-md bg-indigo-600 text-white">1</button>
+                        <button class="px-3 py-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200">2</button>
+                        <button class="px-3 py-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200">Suivant</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+<div id="articleModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 class="text-xl font-bold mb-4">Créer une catégorie</h2>
+        
+        <form id="articleForm" action="/createCtaegory" method="POST" enctype="multipart/form-data">
+            <label class="block text-gray-700">Titre :</label>
+            <input type="text" name="title" id="title" class="w-full p-2 border rounded mb-4" required>
+
+            <label class="block text-gray-700">Image :</label>
+            <input type="file" name="image" id="image" class="w-full p-2 border rounded mb-4" accept="image/*" required>
+
+            <div class="flex justify-end space-x-2">
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+                    Publier
+                </button>
+                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+                    Fermer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+    <script>
+    function openModal() {
+        document.getElementById("articleModal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+        document.getElementById("articleModal").classList.add("hidden");
+    }
+</script>
+</body>
+</html>
