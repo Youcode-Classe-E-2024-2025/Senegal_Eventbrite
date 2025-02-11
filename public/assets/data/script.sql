@@ -1,4 +1,4 @@
--- Active: 1738622539335@@127.0.0.1@5432@eventbrite_db
+-- Active: 1738833309622@@127.0.0.1@5432@eventbrite_db
 -- Create the database
 CREATE DATABASE eventbrite_db;
 

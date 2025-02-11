@@ -15,6 +15,8 @@ $routes = [
 
     ],
     'POST' => [
+        '/signup' => [AuthController::class, 'signupPost'],
+        
     ]
 ];
 
