@@ -1,6 +1,8 @@
 <?php
 namespace Config;
 
+use Controller_back\categoryController;
+use Controller_back\dashboardController;
 use Core\Router;
 
 $router = new Router();
@@ -8,9 +10,10 @@ $router = new Router();
 $routes = [
     'GET' => [
         // '/' => [HomeController::class, 'index'],
+        '/admin' => [dashboardController::class, 'dashboard'],
     ],
     'POST' => [
-        // '/login' => [AuthController::class, 'login'],
+        '/createCtaegory' => [categoryController::class, 'createCategory'],
     ]
 ];
 
