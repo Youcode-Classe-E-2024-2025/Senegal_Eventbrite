@@ -1,5 +1,11 @@
 <?php
+
 namespace Core;
+
+use App\Controllers\ReservationsController;
+use Core\View;
+
+
 
 class Router {
     private $routes = [];
@@ -17,8 +23,11 @@ class Router {
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = urldecode($uri);
         $uri = '/' . trim($uri, '/');
-
         if (isset($this->routes[$method][$uri])) {
+            if (!class_exists(\App\Controllers\ReservationsController::class)) {
+                die("Erreur : ReservationsController introuvable");
+            }
+            
             $this->executeRoute($this->routes[$method][$uri]);
             return;
         }

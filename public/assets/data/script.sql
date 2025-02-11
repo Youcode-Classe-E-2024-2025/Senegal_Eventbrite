@@ -33,18 +33,19 @@ CREATE TABLE events (
 );
 
 ALTER TABLE events ADD CONSTRAINT chk_date_consistency CHECK (date_start < date_end);
-
--- Reservations table
 CREATE TABLE reservations (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     event_id INT REFERENCES events(id) ON DELETE CASCADE,
-    ticket_type VARCHAR(50) NOT NULL CHECK (ticket_type IN ('free', 'paid', 'VIP', 'early_bird')),
+    ticket_type VARCHAR(50) NOT NULL CHECK (ticket_type IN ('VIP', 'Premium', 'Standard')),
     quantity INT CHECK (quantity > 0),
     total_price DECIMAL(10, 2) CHECK (total_price >= 0),
     reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     qr_code TEXT,
     status VARCHAR(20) NOT NULL CHECK (status IN ('reserved', 'canceled', 'failed')),
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    vip_options JSONB NOT NULL DEFAULT '{}'::jsonb, 
     UNIQUE(user_id, event_id)
 );
 

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #ffffff; /* Blanc */
+            --secondary: #000000; /* Noir */
+            --accent: #fdbc4b; /* Jaune */
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="min-h-screen bg-white text-black p-6">
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-8 border border-gray-200">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 text-transparent bg-clip-text mb-2">
+                Festival International de Jazz 2025
+            </h1>
+            <p class="text-gray-600">Une expérience musicale unique au cœur de Paris</p>
+        </div>
+
+        <!-- Formulaire global -->
+        <form id="reservation-form" class="space-y-8">
+            <!-- Étape 1 : Réservation -->
+            <div id="reservation-step" class="space-y-8">
+                <h2 class="text-2xl font-bold">Étape 1 : Détails de la réservation</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-lg font-medium text-gray-700">Sélectionnez votre Pass</label>
+                        <select id="ticket-type" name="ticket_type" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
+                            <option value="vip">Pass VIP - Accès All Inclusive (599€)</option>
+                            <option value="premium">Pass Premium - Accès Privilégié (299€)</option>
+                            <option value="standard">Pass Standard - 3 jours (149€)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-lg font-medium text-gray-700">Nombre de places</label>
+                        <input id="quantity" name="quantity" type="number" min="1" max="10" value="1" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-lg font-medium text-gray-700">Options VIP</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                                <input type="checkbox" name="vip_backstage" class="w-5 h-5 accent-yellow-400">
+                                <span>Accès backstage (+199€)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                                <input type="checkbox" name="vip_dinner" class="w-5 h-5 accent-yellow-400">
+                                <span>Dîner avec les artistes (+299€)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                                <input type="checkbox" name="vip_suite" class="w-5 h-5 accent-yellow-400">
+                                <span>Suite privée (+499€)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-lg font-medium text-gray-700">Informations personnelles</label>
+                        <input id="full-name" name="full_name" type="text" placeholder="Nom complet" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 mb-3 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
+                        <input id="email" name="email" type="email" placeholder="Email" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
+                    </div>
+                </div>
+                <div class="border-t border-gray-200 pt-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div class="text-xl">
+                            Total: <span id="total-display" class="font-bold text-yellow-600">599€</span>
+                        </div>
+                        <button type="button" id="next-to-payment" class="px-8 py-3 bg-yellow-400 rounded-lg font-medium hover:opacity-90 transition-all transform hover:scale-105">
+                            Continuer vers le paiement
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Étape 2 : Paiement -->
+            <div id="payment-step" class="space-y-8 hidden">
+                <h2 class="text-2xl font-bold">Étape 2 : Informations de paiement</h2>
+                <div class="space-y-4">
+                    <label class="block text-lg font-medium text-gray-700">Numéro de carte</label>
+                    <input type="text" name="card_number" placeholder="XXXX XXXX XXXX XXXX" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="block text-lg font-medium text-gray-700">Date d'expiration</label>
+                        <input type="month" name="expiry_date" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-lg font-medium text-gray-700">CVV</label>
+                        <input type="text" name="cvv" maxlength="3" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <button type="button" id="back-to-reservation" class="px-6 py-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                        Retour
+                    </button>
+                    <button type="submit" class="px-8 py-3 bg-yellow-400 rounded-lg font-medium hover:opacity-90 transition-all transform hover:scale-105">
+                        Valider le paiement
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const passSelect = document.getElementById('ticket-type');
+        const vipOptions = document.querySelectorAll('input[type="checkbox"]');
+        const quantityInput = document.getElementById('quantity');
+        const totalDisplay = document.getElementById('total-display');
+
+        function calculateTotal() {
+            let basePrice = 0;
+            switch (passSelect.value) {
+                case 'vip': basePrice = 599; break;
+                case 'premium': basePrice = 299; break;
+                case 'standard': basePrice = 149; break;
+            }
+
+            let vipExtras = 0;
+            vipOptions.forEach(option => {
+                if (option.checked) {
+                    switch (option.nextElementSibling.textContent.trim()) {
+                        case 'Accès backstage (+199€)': vipExtras += 199; break;
+                        case 'Dîner avec les artistes (+299€)': vipExtras += 299; break;
+                        case 'Suite privée (+499€)': vipExtras += 499; break;
+                    }
+                }
+            });
+
+            const quantity = parseInt(quantityInput.value) || 1;
+            const total = (basePrice + vipExtras) * quantity;
+            totalDisplay.textContent = `${total}€`;
+        }
+
+        passSelect.addEventListener('change', calculateTotal);
+        vipOptions.forEach(option => option.addEventListener('change', calculateTotal));
+        quantityInput.addEventListener('input', calculateTotal);
+
+        calculateTotal();
+
+        // Passage à l'étape de paiement
+        document.getElementById('next-to-payment').addEventListener('click', () => {
+            const formData = new FormData(document.getElementById('reservation-form'));
+            const data = Object.fromEntries(formData.entries());
+
+            // Validation des champs obligatoires
+            if (!data.full_name || !data.email || !data.ticket_type || !data.quantity) {
+                alert('Veuillez remplir tous les champs obligatoires.');
+                return;
+            }
+
+            // Afficher l'étape de paiement
+            document.getElementById('reservation-step').classList.add('hidden');
+            document.getElementById('payment-step').classList.remove('hidden');
+        });
+
+        // Retour à l'étape de réservation
+        document.getElementById('back-to-reservation').addEventListener('click', () => {
+            document.getElementById('reservation-step').classList.remove('hidden');
+            document.getElementById('payment-step').classList.add('hidden');
+        });
+
+        // Soumission finale
+        document.getElementById('reservation-form').addEventListener('submit', event => {
+            event.preventDefault(); // Empêche la soumission par défaut
+
+            // Collecte des données du formulaire
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Affichage des données envoyées (simule une requête API)
+            console.log(data);
+
+            alert('Paiement confirmé ! Vous recevrez un e-mail de confirmation sous peu.');
+        });
+    });
+    </script>
+</body>
+</html>

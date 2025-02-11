@@ -1,5 +1,5 @@
 <?php
-namespace Core;
+namespace App\Core;
 
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -9,7 +9,7 @@ class View
     private $twig;
 
     public function __construct() {
-        $loader = new FilesystemLoader(dirname(__DIR__) . '/Views');
+        $loader = new FilesystemLoader(dirname(__DIR__) . '/views');
         $this->twig = new Environment($loader);
     }
 

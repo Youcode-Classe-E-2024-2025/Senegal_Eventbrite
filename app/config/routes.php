@@ -1,13 +1,17 @@
 <?php
-namespace Config;
+namespace App\Config;
 
 use Core\Router;
+use App\Controllers\ReservationsController;
+use Core\View;
+
 
 $router = new Router();
 
 $routes = [
     'GET' => [
         // '/' => [HomeController::class, 'index'],
+        '/reservations' => [ReservationsController::class, 'reservations'],
     ],
     'POST' => [
         // '/login' => [AuthController::class, 'login'],

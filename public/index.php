@@ -5,4 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 session_start();
 
-require_once __DIR__ . '/../App/Config/Routes.php';
+require_once __DIR__ . '/../app/core/View.php';
+require_once __DIR__ . '/../app/core/Router.php';
+require_once __DIR__ . '/../app/controllers/front/ReservationsController.php';
+require_once __DIR__ . '/../app/config/routes.php';
