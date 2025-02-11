@@ -162,3 +162,12 @@ INSERT INTO notifications (user_id, message, is_read, status) VALUES
 INSERT INTO comments (user_id, event_id, content) VALUES
 (1, 1, 'Hâte d''assister à cet événement !'),
 (3, 2, 'Super organisation, j''ai adoré le concert !');
+
+
+INSERT INTO users (role, email, password, name, avatar_url) VALUES
+('user', 'a@eefe.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Bodqsdb', 'https://example.com/avatar2.jpg'),
+('user', 'ufeez1@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Aldsqice', 'https://example.com/avatar1.jpg'),
+('user', 'uesdff2@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Chardsqlie', 'https://example.com/avatar3.jpg'),
+('user', 'uefsdsqqf2@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Chddsqarlie', 'https://example.com/avatar3.jpg'),
+('user', 'uef55f2@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Chdsqarlie', 'https://example.com/avatar3.jpg'),
+('user', 'ue6546ff2@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Chadsqrlie', 'https://example.com/avatar3.jpg');

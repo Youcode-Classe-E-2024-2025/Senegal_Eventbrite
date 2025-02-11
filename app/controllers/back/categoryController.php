@@ -25,7 +25,6 @@ class CategoryController extends Controller {
                 mkdir($imageDir, 0777, true);
             }
 
-            // Vérification du format de l'image
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
             $fileInfo = pathinfo($_FILES['image']['name']);
             $extension = strtolower($fileInfo['extension']);
@@ -35,7 +34,6 @@ class CategoryController extends Controller {
                 return;
             }
 
-            // Générer un nom de fichier unique
             $imagePath = $imageDir . uniqid() . '.' . $extension;
 
             if ($_FILES['image']['size'] > 2 * 1024 * 1024) {
@@ -44,19 +42,30 @@ class CategoryController extends Controller {
             }
 
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $imagePath)) {
-                // Insérer la catégorie dans la base de données
                 $categoryModel = new Category();
                 $categoryModel->addCategory($title, $imagePath);
 
-                // Redirection après succès
                 header("Location: /admin");
                 exit();
             } else {
                 echo "Erreur lors du téléchargement de l'image.";
             }
         }
-
-        // Afficher le formulaire
         $this->view('back/dashboard');
+    } 
+
+    public function deleteCategory(){
+        $id = $_POST['id'] ?? null ;
+
+        if (!$id) {
+            echo "ID non valide.";
+            return;
+        }
+
+        $categoryModel= new Category();
+        $categoryModel->deleteCategory($id);
+
+        header("Location: /admin");
+        exit();
     }
 }
