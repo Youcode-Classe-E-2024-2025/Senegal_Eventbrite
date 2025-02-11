@@ -36,7 +36,7 @@ class AuthController extends Controller
             $user = new User();
             $user->username = $data['username'];
             $user->email = $data['email'];
-            $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
+            $user->password = password_hash($data['password'], PASSWORD_BCRYPT);
             $user->save();
 
             Auth::login($user);
@@ -104,7 +104,7 @@ class AuthController extends Controller
         $user = new User();
         $user->username = $data['username'];
         $user->email = $data['email'];
-        $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
+        $user->password = password_hash($data['password'], PASSWORD_BCRYPT);
 
         try {
             $user->save();
@@ -133,7 +133,12 @@ class AuthController extends Controller
         if ($user && password_verify($data['password'], $user->password)) {
             // Start session
             Session::start();
-            Session::set('user', $user);
+            Session::set('user', [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar_url' => $user->avatar_url 
+            ]);
 
             header('Location: /');
             exit();
