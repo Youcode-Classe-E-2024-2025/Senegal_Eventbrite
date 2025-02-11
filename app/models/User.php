@@ -41,4 +41,14 @@ class User
         $stmt->execute();
     }
 
+    public static function findByEmail($email) {
+        $db = Database::getInstance()->getConnection();
+        $query = 'SELECT * FROM users WHERE email = :email LIMIT 1';
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        $result = $stmt->fetchObject(self::class);
+        return $result;
+    }
+
 }

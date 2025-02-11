@@ -7,13 +7,14 @@ use Core\View;
 use Core\Auth;
 use Core\Validator;
 use Model\User;
+use Core\Session;
 
 
 class AuthController extends Controller
 {
     public function signup()
     {
-        
+
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = $_POST;
@@ -46,7 +47,7 @@ class AuthController extends Controller
 
     public function login()
     {
-        
+
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = $_POST;
@@ -120,5 +121,37 @@ class AuthController extends Controller
 
         Auth::login($user);
         return $this->redirect('/');
+    }
+
+    public function loginPost()
+    {
+        $data = $_POST;
+
+        if (empty($data['email']) || empty($data['password'])) {
+            return $this->view('front/Login', [
+                'error' => 'Email or password cannot be empty.'
+            ]);
+        }
+
+        $user = User::findByEmail($data['email']);
+        if ($user && password_verify($data['password'], $user->password)) {
+            // Start session
+            Session::start();
+            Session::set('user', $user);
+
+            header('Location: /home');
+            exit();
+        } else {
+            return $this->view('front/Login', [
+                'error' => 'Invalid credentials, please try again.'
+            ]);
+        }
+    }
+
+    
+    public function logout()
+    {
+        Session::destroy();
+        header('Location: /login');
     }
 }

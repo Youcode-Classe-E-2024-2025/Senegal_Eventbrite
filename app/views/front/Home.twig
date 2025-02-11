@@ -84,15 +84,14 @@
 			}
 
 			::-webkit-scrollbar-track {
-				background:rgb(18, 18, 18);
+				background: rgb(18, 18, 18);
 			}
 
 			::-webkit-scrollbar-thumb {
-				background-color:rgb(212, 212, 198);
+				background-color: rgb(212, 212, 198);
 				border-radius: 10px;
 				border: 2px solidrgb(255, 255, 255);
 			}
-
 		</style>
 	</head>
 	<body class="overflow-x-hidden">
@@ -128,16 +127,29 @@
 					<!-- buttons -->
 					<nav class="contents">
 						<ul class="ml-4 xl:w-48 flex items-center justify-end">
-							<li class="ml-2 lg:ml-4 relative inline-block">
-								<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/login">
-									Login
-								</a>
-							</li>
-							<li class="ml-2 lg:ml-4 relative inline-block">
-								<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/signup">
-									Register
-								</a>
-							</li>
+							{% if session.user %}
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/profile">
+										Profile ({{ session.user.username }})
+									</a>
+								</li>
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/logout">
+										Logout
+									</a>
+								</li>
+							{% else %}
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/login">
+										Login
+									</a>
+								</li>
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/signup">
+										Register
+									</a>
+								</li>
+							{% endif %}
 						</ul>
 					</nav>
 				</div>
@@ -464,9 +476,9 @@
 					<div class="flex flex-col items-start font-bold">
 						<h2 class="text-4xl ml-20 text-white mb-12 mt-8">Our Managed Events</h2>
 					</div>
-                    <div class="flex items-center justify-center">
-                        <iframe width="80%" height="480" src="https://www.youtube.com/embed/iMAfIRaLl3k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
+					<div class="flex items-center justify-center">
+						<iframe width="80%" height="480" src="https://www.youtube.com/embed/iMAfIRaLl3k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+					</div>
 				</section>
 			</main>
 		</div>
@@ -475,7 +487,7 @@
 			<div class="md:w-2/3 w-full px-4 text-white flex flex-col">
 				<div class="w-full text-7xl font-bold">
 					<h1 class="w-full md:w-2/3">How can we help you. get
-																	in touch</h1>
+																							in touch</h1>
 				</div>
 				<div class="flex mt-8 flex-col md:flex-row md:justify-between">
 					<p class="w-full md:w-2/3 text-gray-400">If you need any help or have some questions, feel free to ask. We will be happy to assist you. You can also check our FAQs and Tutorials sections for more information on how to use our services.</p>
