@@ -1,4 +1,4 @@
--- Active: 1738622539335@@127.0.0.1@5432@eventbrite_db
+-- Active: 1738924164017@@127.0.0.1@7777@eventbrite_db
 -- Create the database
 CREATE DATABASE eventbrite_db;
 
@@ -78,6 +78,13 @@ CREATE TABLE promo_codes (
     max_uses INT CHECK (max_uses > 0),
     used_count INT DEFAULT 0
 );
+
+
+CREATE TABLE categorys(
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    image VARCHAR(255)
+)
 
 -- Notifications table
 CREATE TABLE notifications (

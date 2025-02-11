@@ -1,16 +1,21 @@
 <?php
 namespace Config;
 
+use Controller_back\categoryController;
+use Controller_back\dashboardController;
 use Core\Router;
 
 $router = new Router();
 
 $routes = [
     'GET' => [
-        '/' => [\Controller_front\HomeController::class, 'index'],
-
+        // '/' => [HomeController::class, 'index'],
+        '/admin' => [dashboardController::class, 'dashboard'],
     ],
     'POST' => [
+        '/createCtaegory' => [categoryController::class, 'createCategory'],
+        '/' => [\Controller_front\HomeController::class, 'index'],
+
     ]
 ];
 
