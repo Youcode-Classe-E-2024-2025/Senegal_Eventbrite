@@ -29,8 +29,9 @@ CREATE TABLE events (
     organizer_id INT REFERENCES users(id) ON DELETE CASCADE,
     status VARCHAR(20) NOT NULL CHECK (status IN ('FULL', 'EXPIRED', 'ACTIVE')),
     isActif BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT chk_date_consistency CHECK (date_start < date_end)
 );
-ALTER TABLE events ADD CONSTRAINT chk_date_consistency CHECK (date_start < date_end);
+
 
 CREATE TABLE promo (
     id SERIAL PRIMARY KEY,
@@ -75,16 +76,6 @@ CREATE TABLE event_statistics (
     participants_count INT DEFAULT 0
 );
 
--- Promo codes table
-CREATE TABLE promo_codes (
-    id SERIAL PRIMARY KEY,
-    code VARCHAR(50) UNIQUE NOT NULL,
-    discount DECIMAL(5, 2) CHECK (discount >= 0 AND discount <= 100),
-    expiration_date TIMESTAMP NOT NULL,
-    max_uses INT CHECK (max_uses > 0),
-    used_count INT DEFAULT 0
-);
-
 
 CREATE TABLE categorys(
     id SERIAL PRIMARY KEY,
@@ -110,11 +101,6 @@ CREATE TABLE comments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE categorys(
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    image VARCHAR(255)
-);
 -- Index for performance optimization
 CREATE INDEX idx_events_date_start ON events(date_start);
 CREATE INDEX idx_reservations_user_event ON reservations(user_id, event_id);
@@ -128,46 +114,62 @@ INSERT INTO users (role, email, password, name, avatar_url) VALUES
 ('user', 'u1@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Alice', 'https://example.com/avatar1.jpg'),
 ('user', 'u2@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Charlie', 'https://example.com/avatar3.jpg');
 
--- Ajouter des événements
-INSERT INTO events (title, description, category, tags, date_start, date_end, location, price, capacity, organizer_id, status, isActif, image_url) VALUES
-('Tech Conference 2025', 'Une conférence sur la technologie', 'Tech', ARRAY['innovation', 'AI'], '2025-06-10 09:00:00', '2025-06-10 17:00:00', 'Paris', 50.00, 200, 2, 'ACTIVE', TRUE, 'https://example.com/event1.jpg'),
-('Music Festival', 'Un festival de musique incroyable', 'Music', ARRAY['rock', 'live'], '2025-07-20 18:00:00', '2025-07-21 02:00:00', 'Marseille', 30.00, 500, 2, 'ACTIVE', TRUE, 'https://example.com/event2.jpg');
+INSERT INTO events (id, title, artist_name, category, tags, date_start, date_end, location, price, capacity, organizer_id, status, isActif)
+VALUES
+(1, 'Concert of Legends', 'Band X', 'Music', '{"rock", "live"}', '2025-05-01 19:00:00', '2025-05-01 22:00:00', 'Stadium A', 100.00, 5000, 2, 'ACTIVE', TRUE),
+(2, 'Jazz Night', 'Artist Y', 'Music', '{"jazz", "night"}', '2025-06-15 20:00:00', '2025-06-15 23:00:00', 'Jazz Club B', 50.00, 200, 2, 'ACTIVE', TRUE),
+(3, 'Art Exhibition', 'Gallery Z', 'Art', '{"painting", "exhibition"}', '2025-07-10 10:00:00', '2025-07-10 18:00:00', 'Gallery Center', 20.00, 300, 2, 'ACTIVE', TRUE),
+(4, 'Tech Conference 2025', 'Tech Co.', 'Conference', '{"technology", "conference"}', '2025-08-20 09:00:00', '2025-08-20 17:00:00', 'Convention Center', 250.00, 1000, 2, 'ACTIVE', TRUE),
+(5, 'Food Festival', 'Food Corp', 'Festival', '{"food", "festival"}', '2025-09-05 11:00:00', '2025-09-05 20:00:00', 'Park C', 0.00, 10000, 2, 'ACTIVE', TRUE);
 
--- Ajouter des réservations
-INSERT INTO reservations (user_id, event_id, ticket_type, quantity, total_price, qr_code, status) VALUES
-(1, 1, 'paid', 2, 100.00, 'QR123ABC', 'reserved'),
-(3, 2, 'VIP', 1, 60.00, 'QR456DEF', 'reserved');
+INSERT INTO promo (id, code, discount_percentage, event_id, usage_limit, expiration_date)
+VALUES
+(1, 'SUMMER20', 20.00, 2, 100, '2025-06-14 23:59:59'),
+(2, 'TECH50', 50.00, 4, 50, '2025-08-19 23:59:59'),
+(3, 'FOOD10', 10.00, 5, 200, '2025-09-04 23:59:59'),
+(4, 'ART25', 25.00, 3, 30, '2025-07-09 23:59:59'),
+(5, 'VIPDISCOUNT', 15.00, 2, 50, '2025-06-14 23:59:59');
 
--- Ajouter des paiements
-INSERT INTO payments (reservation_id, payment_method, transaction_id, amount, status) VALUES
-(1, 'credit_card', 'TXN789XYZ', 100.00, 'success'),
-(2, 'paypal', 'TXN654LMN', 60.00, 'success');
+INSERT INTO reservations (id, user_id, event_id, ticket_type, quantity, total_price, status)
+VALUES
+(2, 1, 2, 'early_bird', 3, 120.00, 'reserved'),
+(3, 3, 3, 'paid', 1, 20.00, 'reserved'),
+(5, 2, 5, 'VIP', 1, 50.00, 'reserved');
 
--- Ajouter des statistiques d'événements
-INSERT INTO event_statistics (event_id, tickets_sold, revenue, participants_count) VALUES
-(1, 50, 2500.00, 50),
-(2, 100, 3000.00, 100);
+INSERT INTO payments (id, reservation_id, payment_method, transaction_id, amount, status)
+VALUES
+(2, 2, 'PayPal', 'TXN12346', 120.00, 'success'),
+(3, 3, 'Debit Card', 'TXN12347', 20.00, 'pending'),
+(5, 5, 'PayPal', 'TXN12349', 50.00, 'success');
 
--- Ajouter des codes promo
-INSERT INTO promo_codes (code, discount, expiration_date, max_uses, used_count) VALUES
-('WELCOME10', 10.00, '2025-12-31 23:59:59', 100, 10),
-('SUMMER20', 20.00, '2025-07-30 23:59:59', 50, 5);
+INSERT INTO event_statistics (id, event_id, tickets_sold, revenue, participants_count)
+VALUES
+(1, 1, 500, 50000.00, 450),
+(2, 2, 200, 10000.00, 150),
+(3, 3, 100, 2000.00, 80),
+(4, 4, 800, 200000.00, 750),
+(5, 5, 10000, 50000.00, 9000);
 
--- Ajouter des notifications
-INSERT INTO notifications (user_id, message, is_read, status) VALUES
-(1, 'Votre réservation a été confirmée.', FALSE, 'not_read'),
-(3, 'Votre paiement a été accepté.', TRUE, 'read');
+INSERT INTO categorys (id, title, image)
+VALUES
+(1, 'Music', 'music_image.png'),
+(2, 'Art', 'art_image.png'),
+(3, 'Technology', 'tech_image.png'),
+(4, 'Food', 'food_image.png'),
+(5, 'Sports', 'sports_image.png');
 
--- Ajouter des commentaires
-INSERT INTO comments (user_id, event_id, content) VALUES
-(1, 1, 'Hâte d''assister à cet événement !'),
-(3, 2, 'Super organisation, j''ai adoré le concert !');
+INSERT INTO notifications (id, user_id, message, status)
+VALUES
+(1, 2, 'Your reservation for Jazz Night is confirmed!', 'not_read'),
+(2, 2, 'VIP tickets for Tech Conference 2025 are now available.', 'not_read'),
+(3, 3, 'Your payment for the Art Exhibition has been processed successfully.', 'read'),
+(5, 2, 'Reminder: Your event starts in 2 days!', 'not_read');
 
+INSERT INTO comments (id, user_id, event_id, content)
+VALUES
+(1, 1, 2, 'Can’t wait for this event!'),
+(2, 2, 2, 'I hope there are enough tickets left for early bird.'),
+(3, 3, 3, 'This art exhibition looks amazing!'),
+(4, 2, 4, 'Looking forward to the tech conference, will there be a live stream?'),
+(5, 2, 5, 'The food festival looks delicious, can’t wait to try the new dishes!');
 
-INSERT INTO users (role, email, password, name, avatar_url) VALUES
-('user', 'a@eefe.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Bodqsdb', 'https://example.com/avatar2.jpg'),
-('user', 'ufeez1@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Aldsqice', 'https://example.com/avatar1.jpg'),
-('user', 'uesdff2@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Chardsqlie', 'https://example.com/avatar3.jpg'),
-('user', 'uefsdsqqf2@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Chddsqarlie', 'https://example.com/avatar3.jpg'),
-('user', 'uef55f2@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Chdsqarlie', 'https://example.com/avatar3.jpg'),
-('user', 'ue6546ff2@e.com', '$2a$12$pEJ7apZihAAc7MiXRpfnleKELAY7CPumM6YwluK4sgqD3k2eGIMN2', 'Chadsqrlie', 'https://example.com/avatar3.jpg');
