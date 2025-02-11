@@ -2,6 +2,8 @@
 namespace Config;
 
 use Controller_front\UserController;
+use Controller_back\categoryController;
+use Controller_back\dashboardController;
 use Core\Router;
 
 $router = new Router();
@@ -11,9 +13,12 @@ $routes = [
         '/userDash' => [UserController::class, 'index'],
         '/createEvent' => [UserController::class, 'event'],
         '/profileInfo' => [UserController::class, 'info'],
+        // '/' => [HomeController::class, 'index'],
+        '/admin' => [dashboardController::class, 'dashboard'],
     ],
     'POST' => [
-        // '/login' => [AuthController::class, 'login'],
+        '/createCtaegory' => [categoryController::class, 'createCategory'],
+        '/' => [\Controller_front\HomeController::class, 'index'],
     ]
 ];
 
