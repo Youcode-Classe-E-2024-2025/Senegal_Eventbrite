@@ -15,6 +15,7 @@ $routes = [
         '/' => [HomeController::class, 'index'],
         '/signup' => [AuthController::class, 'signup'],
         '/login' => [AuthController::class, 'login'],
+        '/logout'=> [AuthController::class, 'logout'],
         '/userDash' => [UserController::class, 'index'],
         '/createEvent' => [UserController::class, 'event'],
         '/profileInfo' => [UserController::class, 'info'],
@@ -23,6 +24,8 @@ $routes = [
     'POST' => [
         '/createCtaegory' => [categoryController::class, 'createCategory'],
         '/deleteCategory' => [categoryController::class, 'deleteCategory'],
+        '/signup' => [AuthController::class, 'signupPost'],
+        '/login' => [AuthController::class, 'loginPost'],
     ]
 ];
 
@@ -31,5 +34,4 @@ foreach ($routes as $method => $routesList) {
         $router->{strtolower($method)}($uri, $controller);
     }
 }
-
 $router->dispatch();
