@@ -1,13 +1,17 @@
 <?php
 namespace Config;
 
+use Controller_front\HomeController;
 use Core\Router;
+use Controller_front\AuthController;
 
 $router = new Router();
 
 $routes = [
     'GET' => [
-        '/' => [\Controller_front\HomeController::class, 'index'],
+        '/' => [HomeController::class, 'index'],
+        '/signup' => [AuthController::class, 'signup'],
+        '/login' => [AuthController::class, 'login'],
 
     ],
     'POST' => [

@@ -19,7 +19,6 @@ class HomeController extends Controller
             'description' => 'Welcome to the Home Page'
         ];
 
-        // Render the home view with the data
         $this->view('front/Home', $data);
     }
 }
