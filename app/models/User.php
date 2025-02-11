@@ -27,6 +27,10 @@ class User
                   VALUES (:role, :email, :password, :name, :avatar_url)';
 
         $stmt = $db->prepare($query);
+        
+        $role = 'user';
+        $name = $this->username;
+        $avatar_url = 'assets/uploads/userAvatar/5856.jpg';
 
         $stmt->bindParam(':role', $role);
         $stmt->bindParam(':email', $this->email);
@@ -34,9 +38,6 @@ class User
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':avatar_url', $avatar_url);
 
-        $role = 'user';
-        $name = $this->username;
-        $avatar_url = '';
 
         $stmt->execute();
     }
