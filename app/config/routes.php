@@ -14,6 +14,7 @@ $routes = [
     ],
     'POST' => [
         '/createCtaegory' => [categoryController::class, 'createCategory'],
+        '/deleteCategory' => [categoryController::class, 'deleteCategory'],
     ]
 ];
 

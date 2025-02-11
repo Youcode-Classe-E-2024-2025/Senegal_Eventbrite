@@ -53,4 +53,21 @@ class Model {
         $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+
+    public function getPaginated($table, $limit, $offset) {
+        $query = "SELECT * FROM $table LIMIT :limit OFFSET :offset";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function count($table) {
+        $query = "SELECT COUNT(*) as total FROM $table";
+        $stmt = $this->db->query($query);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $result['total'];
+    }
 }
