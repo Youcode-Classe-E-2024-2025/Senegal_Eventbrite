@@ -13,9 +13,7 @@ class AuthController extends Controller
 {
     public function signup()
     {
-        if (Auth::check()) {
-            return $this->redirect('/');
-        }
+        
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = $_POST;
@@ -48,9 +46,7 @@ class AuthController extends Controller
 
     public function login()
     {
-        if (Auth::check()) {
-            return $this->redirect('/');
-        }
+        
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = $_POST;
@@ -82,5 +78,47 @@ class AuthController extends Controller
         }
 
         return $this->view('front/Login');
+    }
+
+    public function signupPost()
+    {
+        if (Auth::check()) {
+            return $this->redirect('/');
+        }
+
+        $data = $_POST;
+
+        $validator = new Validator();
+
+        $validator->validateRequired('username', $data['username']);
+        $validator->validateLength('username', $data['username'], 3, 20);
+        $validator->validateRequired('email', $data['email']);
+        $validator->validateEmail('email', $data['email']);
+        $validator->validateRequired('password', $data['password']);
+        $validator->validateLength('password', $data['password'], 6, 100);
+
+        if ($validator->hasErrors()) {
+            return $this->view('front/Signup', [
+                'errors' => $validator->getErrors(),
+                'data' => $data
+            ]);
+        }
+
+        $user = new User();
+        $user->username = $data['username'];
+        $user->email = $data['email'];
+        $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
+
+        try {
+            $user->save();
+        } catch (Exception $e) {
+            return $this->view('front/Signup', [
+                'errors' => ['email' => $e->getMessage()],
+                'data' => $data
+            ]);
+        }
+
+        Auth::login($user);
+        return $this->redirect('/');
     }
 }
