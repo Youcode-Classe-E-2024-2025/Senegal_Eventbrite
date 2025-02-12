@@ -31,7 +31,6 @@
                     <div class="space-y-2">
                         <label class="block text-lg font-medium text-gray-700">Sélectionnez votre Pass</label>
                         <select id="ticket-type" name="ticket_type" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
-                            <option value="free">Gratuit</option>
                             <option value="vip">Pass VIP - Accès All Inclusive (599€)</option>
                             <option value="premium">Pass Premium - Accès Privilégié (299€)</option>
                             <option value="standard">Pass Standard - 3 jours (149€)</option>
@@ -44,7 +43,7 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
-                        <label class="block text-lg font-medium text-gray-700">Options VIP</label>
+                        {# <label class="block text-lg font-medium text-gray-700">Options VIP</label>
                         <div class="space-y-2">
                             <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
                                 <input type="checkbox" name="vip_backstage" class="w-5 h-5 accent-yellow-400">
@@ -58,8 +57,24 @@
                                 <input type="checkbox" name="vip_suite" class="w-5 h-5 accent-yellow-400">
                                 <span>Suite privée (+499€)</span>
                             </label>
+                        </div> #}
+                        <label class="block text-lg font-medium text-gray-700">Options VIP</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                                <input type="checkbox" name="vip_options[backstage]" value="199" class="w-5 h-5 accent-yellow-400">
+                                <span>Accès backstage (+199€)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                                <input type="checkbox" name="vip_options[dinner]" value="299" class="w-5 h-5 accent-yellow-400">
+                                <span>Dîner avec les artistes (+299€)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                                <input type="checkbox" name="vip_options[suite]" value="499" class="w-5 h-5 accent-yellow-400">
+                                <span>Suite privée (+499€)</span>
+                            </label>
                         </div>
-                    </div>
+
+                                            </div>
                     <div class="space-y-2">
                         <label class="block text-lg font-medium text-gray-700">Informations personnelles</label>
                         <input id="full-name" name="full_name" type="text" placeholder="Nom complet" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 mb-3 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
@@ -88,7 +103,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
                         <label class="block text-lg font-medium text-gray-700">Date d'expiration</label>
-                        <input type="month" name="expiry_date" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
+                        <input type="date" name="expiry_date" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
                     </div>
                     <div class="space-y-2">
                         <label class="block text-lg font-medium text-gray-700">CVV</label>
@@ -119,10 +134,10 @@
             let basePrice = 0;
             switch (passSelect.value) {
                 case 'free': basePrice = 0; break;
-                case 'early_bird': basePrice = 99; break;
                 case 'vip': basePrice = 599; break;
                 case 'premium': basePrice = 299; break;
                 case 'standard': basePrice = 149; break;
+                default: basePrice = 0; break;
             }
 
             let vipExtras = 0;
@@ -188,37 +203,46 @@
             calculateTotal();
         });
 
-        // Soumission finale
-        document.getElementById('reservation-form').addEventListener('submit', event => {
-            event.preventDefault(); // Empêche la soumission par défaut
+        document.getElementById('reservation-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-            // Collecte des données du formulaire
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
+       
 
-            // Envoie les données au backend
-            fetch('/create-reservation', {
+        const formData = {
+            ticket_type: document.getElementById('ticket-type').value,
+            quantity: document.getElementById('quantity').value,
+            vip_dinner: document.querySelector('input[name="vip_dinner"]')?.checked ? 'on' : null,
+            full_name: document.getElementById('full-name').value,
+            email: document.getElementById('email').value,
+            card_number: document.querySelector('input[name="card_number"]').value,
+            expiry_date: document.querySelector('input[name="expiry_date"]').value,
+            cvv: document.querySelector('input[name="cvv"]').value
+        };
+
+        //console.log(formData);
+
+        try {
+            const response = await fetch('/create-reservation', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    alert('Paiement confirmé ! Vous recevrez un e-mail de confirmation sous peu.');
-                    // Rediriger l'utilisateur vers la page de succès
-                    window.location.href = '/payment-success';
-                } else {
-                    alert('Une erreur s\'est produite. Veuillez réessayer.');
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                alert('Une erreur s\'est produite. Veuillez réessayer.');
+                body: JSON.stringify(formData)
             });
-        });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                // Rediriger vers la page de paiement Stripe
+                window.location.href = result.url;
+            } else {
+                alert('Erreur: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Une erreur s\'est produite. Veuillez réessayer.');
+        }
+    });
     });
     </script>
 </body>

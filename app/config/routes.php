@@ -12,10 +12,11 @@ $routes = [
     'GET' => [
         // Route existante pour afficher les réservations
         '/reservations' => [ReservationsController::class, 'reservations'],
+        '/generate-qr-code/{reservation_id}' => [ReservationsController::class, 'generateQrCode'],
 
     ],
     'POST' => [
-      
+      '/create-reservation'=> [ReservationsController::class, 'createReservation']
     ]
 ];
 

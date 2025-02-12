@@ -18,7 +18,7 @@ CREATE TABLE users (
 CREATE TABLE events (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    description TEXT,
+    artist_name VARCHAR(255) NOT NULL,
     category VARCHAR(50),
     tags TEXT[],
     date_start TIMESTAMP NOT NULL,
@@ -29,31 +29,29 @@ CREATE TABLE events (
     organizer_id INT REFERENCES users(id) ON DELETE CASCADE,
     status VARCHAR(20) NOT NULL CHECK (status IN ('FULL', 'EXPIRED', 'ACTIVE')),
     isActif BOOLEAN NOT NULL DEFAULT FALSE,
-    image_url VARCHAR(255)
+    CONSTRAINT chk_date_consistency CHECK (date_start < date_end)
 );
 
-ALTER TABLE events ADD CONSTRAINT chk_date_consistency CHECK (date_start < date_end);
 CREATE TABLE reservations (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     event_id INT REFERENCES events(id) ON DELETE CASCADE,
-    ticket_type VARCHAR(50) NOT NULL CHECK (ticket_type IN ('VIP', 'Premium', 'Standard')),
+    ticket_id INT REFERENCES tickets(id) ON DELETE SET NULL, 
     quantity INT CHECK (quantity > 0),
     total_price DECIMAL(10, 2) CHECK (total_price >= 0),
     reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     qr_code TEXT,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('reserved', 'canceled', 'failed','paid')),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('reserved', 'canceled', 'failed', 'paid')),
     full_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    vip_options JSONB NOT NULL DEFAULT '{}'::jsonb, 
-    UNIQUE(user_id, event_id)
+    vip_options JSONB NOT NULL DEFAULT '{}'::jsonb
 );
 
--- Payments table
 CREATE TABLE payments (
     id SERIAL PRIMARY KEY,
     reservation_id INT REFERENCES reservations(id) ON DELETE CASCADE,
-    payment_method VARCHAR(50) NOT NULL,
+    payment_method VARCHAR(50) NOT NULL, -- Méthode de paiement (ex: "stripe", "paypal")
+    payment_gateway VARCHAR(50), -- Optionnel : Gateway utilisée
     transaction_id VARCHAR(100),
     amount DECIMAL(10, 2) CHECK (amount >= 0),
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -64,12 +62,14 @@ CREATE TABLE tickets (
     id SERIAL PRIMARY KEY,
     event_id INT REFERENCES events(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
+    description TEXT, -- Description du billet
     price DECIMAL(10, 2) NOT NULL,
-    stock INT NOT NULL DEFAULT 0
+    stock INT NOT NULL DEFAULT 0,
+    type VARCHAR(50) NOT NULL CHECK (type IN ('VIP', 'Premium', 'Standard'))
 );
 
 CREATE TABLE vip_options (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY, -- Utiliser SERIAL au lieu de AUTO_INCREMENT
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL
 );
@@ -121,3 +121,5 @@ CREATE INDEX idx_reservations_user_event ON reservations(user_id, event_id);
 CREATE INDEX idx_payments_reservation_id ON payments(reservation_id);
 CREATE INDEX idx_comments_event_id ON comments(event_id);
 CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_events_status ON events(status);
+CREATE INDEX idx_reservations_status ON reservations(status);
