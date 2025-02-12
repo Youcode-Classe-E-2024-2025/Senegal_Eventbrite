@@ -20,10 +20,12 @@ class dashboardController extends Controller{
     $totalPages = ceil($totalUsers / $limit);
     $categorys = $categorymodel->getAllCategory();
     $events = $eventsModel->getAllEvent();
+    $totalRevenue = $eventsModel->totalRevenueGlobal();
 
     $this->view('back/dashboard', [
         'users' => $users,
         'events' => $events,
+        'totalRevenue' => $totalRevenue,
         'categorys' => $categorys,
         'totalPages' => $totalPages,
         'currentPage' => $page
