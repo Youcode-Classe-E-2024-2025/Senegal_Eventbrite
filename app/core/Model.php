@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use PDO;
+
 class Model {
     protected $db;
 
@@ -12,14 +14,14 @@ class Model {
     public function fetchAll($table) {
         $stmt = $this->db->prepare("SELECT * FROM $table");
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function fetchById($table, $id) {
         $stmt = $this->db->prepare("SELECT * FROM $table WHERE id = :id");
-        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function insert($table, $data) {
@@ -44,13 +46,13 @@ class Model {
         foreach ($data as $key => $value) {
             $stmt->bindValue(":$key", $value);
         }
-        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
     public function delete($table, $id) {
         $stmt = $this->db->prepare("DELETE FROM $table WHERE id = :id");
-        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
@@ -58,16 +60,16 @@ class Model {
     public function getPaginated($table, $limit, $offset) {
         $query = "SELECT * FROM $table LIMIT :limit OFFSET :offset";
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function count($table) {
         $query = "SELECT COUNT(*) as total FROM $table";
         $stmt = $this->db->query($query);
-        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'];
     }
 }

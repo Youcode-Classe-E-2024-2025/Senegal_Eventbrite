@@ -173,3 +173,13 @@ VALUES
 (4, 2, 4, 'Looking forward to the tech conference, will there be a live stream?'),
 (5, 2, 5, 'The food festival looks delicious, can’t wait to try the new dishes!');
 
+
+
+
+
+SELECT SUM(r.quantity * e.price) AS total_revenue_global
+FROM reservations r
+JOIN events e ON r.event_id = e.id
+WHERE r.status = 'reserved';
+
+
