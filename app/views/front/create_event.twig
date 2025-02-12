@@ -393,7 +393,10 @@
     document.getElementById('tags').addEventListener('input', function() {
       const tagsInput = this.value;
       if (tagsInput) {
-        const tags = tagsInput.split(',').map(tag => '#' + tag.trim()).join(' ');
+        const tags = tagsInput.split(/[, ]+/) // Split by comma or space
+        .filter(tag => tag.trim() !== '') // Remove empty entries
+        .map(tag => '#' + tag.trim()) // Add # to each tag
+        .join(' ');
         document.getElementById('ticket-tags').textContent = tags;
       } else {
         document.getElementById('ticket-tags').textContent = '#rock #role';
