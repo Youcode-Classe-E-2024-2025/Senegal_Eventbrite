@@ -21,6 +21,7 @@ $routes = [
         '/profileInfo' => [UserController::class, 'info'],
         '/admin' => [dashboardController::class, 'dashboard'],
         '/google-login' => [AuthController::class, 'googleLog'],
+        '/github-login' => [AuthController::class, 'githubLog'],
     ],
     'POST' => [
         '/createCtaegory' => [categoryController::class, 'createCategory'],
