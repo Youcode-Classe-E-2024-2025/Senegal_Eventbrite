@@ -204,8 +204,8 @@
     <aside class="fixed inset-y-0 left-0 w-64 bg-card shadow-sm border-r border-border">
       <div class="p-4 border-b border-border">
         <div class="flex items-center gap-2">
-          <img src="https://images.unsplash.com/photo-1517292987719-0369a794ec0f" alt="Logo" class="w-8 h-8 rounded-full">
-          <h1 class="text-xl font-bold text-foreground">EventHub</h1>
+          <img src="{{ session.user.avatar_url ?: '/assets/uploads/userAvatar/5856.jpg' }}" alt="Logo" class="w-8 h-8 rounded-full">
+          <h1 class="text-xl font-bold text-foreground">{{session.user.name}}</h1>
         </div>
       </div>
       <nav class="p-4 space-y-2">
