@@ -3,6 +3,7 @@
 namespace Controller_front;
 
 use Core\Controller;
+use Model\Category;
 use Model\Event;
 use Model\Promo;
 
@@ -23,7 +24,11 @@ class UserController extends Controller {
     }
 
     public function event(){
-        $this->view("front/create_event");
+        $categoryModel = new Category();
+        $categories = $categoryModel->getAllCategory();
+        $this->view("front/create_event", [
+            'categories' => $categories
+        ]);
     }
 
     public function info(){
