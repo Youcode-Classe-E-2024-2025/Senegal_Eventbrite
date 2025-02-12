@@ -7,6 +7,7 @@
 		<script src="https://cdn.tailwindcss.com"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 		<link rel="shortcut icon" href="../../../public/assets/Favicon/favicon-32x32.png" type="image/x-icon">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 		<style>
 			.juice {
 				background-image: url('https://i.ibb.co/SN2Sp4T/juice.png');
@@ -173,47 +174,121 @@
 								</svg>
 								<span class="truncate max-w-24">Special Prices</span>
 							</li>
-							<li class="px-2 lg:px-3 flex items-center">
-								<span>Fresh</span>
-								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
+							<li class="relative group px-2 lg:px-3 flex items-center cursor-pointer">
+								<span>Upcoming Events</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512">
 									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
 								</svg>
+								<ul class="absolute left-0 top-full mt-2 w-48 bg-black text-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800 text-white">
+										<i class="fas fa-music mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Concerts</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800 text-white">
+										<i class="fas fa-microphone mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Festivals</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800 text-white">
+										<i class="fas fa-users mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Conferences</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800 text-white">
+										<i class="fas fa-running mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Sports</span>
+									</li>
+								</ul>
 							</li>
-							<li class="px-2 lg:px-3 flex items-center">
-								<span>Frozen</span>
-								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
+
+							<li class="relative group px-2 lg:px-3 flex items-center cursor-pointer">
+								<span>Ticketing</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512">
 									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
 								</svg>
+								<ul class="absolute left-0 top-full mt-2 w-48 bg-black text-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-ticket-alt mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Buy Tickets</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-calendar-alt mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Season Passes</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-star mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>VIP Packages</span>
+									</li>
+								</ul>
 							</li>
-							<li class="px-2 lg:px-3 flex items-center">
-								<span>Demos</span>
-								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
+
+							<li class="relative group px-2 lg:px-3 flex items-center cursor-pointer">
+								<span>Discover</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512">
 									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
 								</svg>
+								<ul class="absolute left-0 top-full mt-2 w-48 bg-black text-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-fire mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Trending Events</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-microphone mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Artists</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-map-marker-alt mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Venues</span>
+									</li>
+								</ul>
 							</li>
-							<li class="px-2 lg:px-3 flex items-center">
-								<span>Shop</span>
-								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
-									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
+
+							<li class="relative group px-2 lg:px-3 flex items-center cursor-pointer">
+								<span>Resources</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512">
+									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7-4.7-4.7 12.3 0 17l209.4 209.4c4.7-4.7 4.7-12.3 0-17z"></path>
 								</svg>
+								<ul class="absolute left-0 top-full mt-2 w-48 bg-black text-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-question-circle mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Guides</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-life-ring mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Support</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-info-circle mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>FAQs</span>
+									</li>
+								</ul>
 							</li>
-							<li class="px-2 lg:px-3 flex items-center">
-								<span>Blog</span>
-								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
-									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
+
+							<li class="relative group px-2 lg:px-3 flex items-center cursor-pointer">
+								<span>Privacy</span>
+								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512">
+									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7-4.7 4.7-12.3 0-17z"></path>
 								</svg>
-							</li>
-							<li class="px-2 lg:px-3 flex items-center">
-								<span>Pages</span>
-								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
-									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
-								</svg>
-							</li>
-							<li class="px-2 lg:px-3 flex items-center">
-								<span>Shop</span>
-								<svg class="ml-1 h-7 lg:h-8 p-2 pr-0 text-gray-500" aria-hidden="true" focusable="false" data-prefix="far" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" class="svg-inline--fa fa-chevron-down fa-w-14 fa-9x">
-									<path fill="currentColor" d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"></path>
-								</svg>
+								<ul class="absolute left-0 top-full mt-2 w-48 bg-black text-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-file-alt mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Terms & Conditions</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-shield-alt mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Data Protection</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-cookie-bite mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Cookie Policy</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-universal-access mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Accessibility Statement</span>
+									</li>
+									<li class="flex items-center px-4 py-2 hover:bg-gray-800">
+										<i class="fas fa-sitemap mr-2 text-gray-300 group-hover:text-gray-100"></i>
+										<span>Sitemap</span>
+									</li>
+								</ul>
 							</li>
 						</ul>
 					</nav>
@@ -488,7 +563,7 @@
 			<div class="md:w-2/3 w-full px-4 text-white flex flex-col">
 				<div class="w-full text-7xl font-bold">
 					<h1 class="w-full md:w-2/3">How can we help you. get
-																							in touch</h1>
+																																			in touch</h1>
 				</div>
 				<div class="flex mt-8 flex-col md:flex-row md:justify-between">
 					<p class="w-full md:w-2/3 text-gray-400">If you need any help or have some questions, feel free to ask. We will be happy to assist you. You can also check our FAQs and Tutorials sections for more information on how to use our services.</p>
