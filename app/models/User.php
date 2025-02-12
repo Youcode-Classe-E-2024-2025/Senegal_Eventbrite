@@ -27,7 +27,7 @@ class User
                   VALUES (:role, :email, :password, :name, :avatar_url)';
 
         $stmt = $db->prepare($query);
-        
+
         $role = 'user';
         $name = $this->username;
         $avatar_url = 'assets/uploads/userAvatar/5856.jpg';
@@ -42,7 +42,8 @@ class User
         $stmt->execute();
     }
 
-    public static function findByEmail($email) {
+    public static function findByEmail($email)
+    {
         $db = Database::getInstance()->getConnection();
         $query = 'SELECT * FROM users WHERE email = :email LIMIT 1';
         $stmt = $db->prepare($query);
@@ -50,6 +51,40 @@ class User
         $stmt->execute();
         $result = $stmt->fetchObject(self::class);
         return $result;
+    }
+
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getConnection();
+    }
+
+    public function getUserByEmail($email)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        return $stmt->fetch();
+    }
+
+    public function getUserById($id)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    public function createUser(array $data)
+    {
+        $stmt = $this->db->prepare("INSERT INTO users (email, name, avatar_url, role, password) VALUES (:email, :name, :avatar_url, :role, :password)");
+        $stmt->execute([
+            ':email' => $data['email'],
+            ':name' => $data['name'],
+            ':avatar_url' => $data['avatar_url'],
+            ':role' => $data['role'],
+            ':password' => $data['password'],
+        ]);
+        return $this->db->lastInsertId();
     }
 
 }

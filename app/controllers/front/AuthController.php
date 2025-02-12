@@ -8,7 +8,9 @@ use Core\Auth;
 use Core\Validator;
 use Model\User;
 use Core\Session;
-use Exception; // Add this to handle exceptions
+use Exception;
+use Google_Client;
+use Google_Service_Oauth2;
 
 class AuthController extends Controller
 {
@@ -137,7 +139,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'avatar_url' => $user->avatar_url 
+                'avatar_url' => $user->avatar_url
             ]);
 
             header('Location: /');
@@ -153,5 +155,63 @@ class AuthController extends Controller
     {
         Session::destroy();
         header('Location: /');
+    }
+
+    public function googleLog()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $client = new Google_Client();
+
+        $client->setClientId($_ENV['GOOGLE_CLIENT_ID']);
+        $client->setClientSecret($_ENV['GOOGLE_CLIENT_SECRET']);
+        $client->setRedirectUri($_ENV['GOOGLE_REDIRECT_URI']);
+        $client->addScope("email");
+        $client->addScope("profile");
+
+        if (!isset($_GET['code'])) {
+            header("Location: " . $client->createAuthUrl());
+            exit();
+        }
+
+        $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+        if (isset($token['error'])) {
+            die("Google authentication failed: " . $token['error_description']);
+        }
+
+        $client->setAccessToken($token['access_token']);
+        $google_oauth = new Google_Service_Oauth2($client);
+        $google_account = $google_oauth->userinfo->get();
+
+        $email = $google_account->email;
+        $name = $google_account->name;
+        $avatar = $google_account->picture;
+
+        $userModel = new User();
+        $user = $userModel->getUserByEmail($email);
+
+        if (!$user) {
+            $userId = $userModel->createUser([
+                'email' => $email,
+                'name' => $name,
+                'avatar_url' => $avatar,
+                'role' => 'user',
+                'password' => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT)
+            ]);
+            $user = $userModel->getUserById($userId);
+        }
+
+        Session::start();
+        Session::set('user', [
+            'id' => $user->id,
+            'name' => $name,
+            'email' => $email,
+            'avatar_url' => $avatar
+        ]);
+
+        header("Location: /");
+        exit();
     }
 }
