@@ -1,11 +1,11 @@
 <?php
 namespace Config;
 
+use Core\Router;
 use Controller_front\HomeController;
 use Controller_front\UserController;
 use Controller_back\categoryController;
 use Controller_back\dashboardController;
-use Core\Router;
 use Controller_front\AuthController;
 use Controller_front\EventController;
 use Controller_front\PromoController;
@@ -33,6 +33,7 @@ $routes = [
         '/login' => [AuthController::class, 'loginPost'],
         '/promo' => [PromoController::class, 'store'],
         '/promo/delete' => [PromoController::class, 'delete'],
+        '/createEvent' => [EventController::class, 'store'],
     ]
 ];
 
