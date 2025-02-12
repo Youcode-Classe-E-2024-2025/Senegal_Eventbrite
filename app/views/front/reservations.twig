@@ -31,6 +31,7 @@
                     <div class="space-y-2">
                         <label class="block text-lg font-medium text-gray-700">Sélectionnez votre Pass</label>
                         <select id="ticket-type" name="ticket_type" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
+                            <option value="free">Gratuit</option>
                             <option value="vip">Pass VIP - Accès All Inclusive (599€)</option>
                             <option value="premium">Pass Premium - Accès Privilégié (299€)</option>
                             <option value="standard">Pass Standard - 3 jours (149€)</option>
@@ -68,7 +69,7 @@
                 <div class="border-t border-gray-200 pt-6">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div class="text-xl">
-                            Total: <span id="total-display" class="font-bold text-yellow-600">599€</span>
+                            Total: <span id="total-display" class="font-bold text-yellow-600">0€</span>
                         </div>
                         <button type="button" id="next-to-payment" class="px-8 py-3 bg-yellow-400 rounded-lg font-medium hover:opacity-90 transition-all transform hover:scale-105">
                             Continuer vers le paiement
@@ -113,9 +114,12 @@
         const quantityInput = document.getElementById('quantity');
         const totalDisplay = document.getElementById('total-display');
 
+        // Fonction pour calculer le total
         function calculateTotal() {
             let basePrice = 0;
             switch (passSelect.value) {
+                case 'free': basePrice = 0; break;
+                case 'early_bird': basePrice = 99; break;
                 case 'vip': basePrice = 599; break;
                 case 'premium': basePrice = 299; break;
                 case 'standard': basePrice = 149; break;
@@ -137,10 +141,12 @@
             totalDisplay.textContent = `${total}€`;
         }
 
+        // Écouteurs d'événements pour recalculer le total
         passSelect.addEventListener('change', calculateTotal);
         vipOptions.forEach(option => option.addEventListener('change', calculateTotal));
         quantityInput.addEventListener('input', calculateTotal);
 
+        // Calcul initial du total
         calculateTotal();
 
         // Passage à l'étape de paiement
@@ -154,6 +160,15 @@
                 return;
             }
 
+            // Validation des options VIP pour les billets VIP
+            if (data.ticket_type === 'vip') {
+                const vipSelected = Array.from(vipOptions).some(option => option.checked);
+                if (!vipSelected) {
+                    alert('Veuillez sélectionner au moins une option VIP pour le Pass VIP.');
+                    return;
+                }
+            }
+
             // Afficher l'étape de paiement
             document.getElementById('reservation-step').classList.add('hidden');
             document.getElementById('payment-step').classList.remove('hidden');
@@ -163,6 +178,14 @@
         document.getElementById('back-to-reservation').addEventListener('click', () => {
             document.getElementById('reservation-step').classList.remove('hidden');
             document.getElementById('payment-step').classList.add('hidden');
+
+            // Réinitialiser les options VIP
+            vipOptions.forEach(option => {
+                option.checked = false;
+            });
+
+            // Recalculer le total
+            calculateTotal();
         });
 
         // Soumission finale
@@ -173,10 +196,28 @@
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
 
-            // Affichage des données envoyées (simule une requête API)
-            console.log(data);
-
-            alert('Paiement confirmé ! Vous recevrez un e-mail de confirmation sous peu.');
+            // Envoie les données au backend
+            fetch('/create-reservation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Paiement confirmé ! Vous recevrez un e-mail de confirmation sous peu.');
+                    // Rediriger l'utilisateur vers la page de succès
+                    window.location.href = '/payment-success';
+                } else {
+                    alert('Une erreur s\'est produite. Veuillez réessayer.');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur s\'est produite. Veuillez réessayer.');
+            });
         });
     });
     </script>
