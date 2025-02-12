@@ -3,40 +3,48 @@ namespace Controller_back;
 use Core\Controller;
 use Model\Admin;
 use Model\Category;
+use Model\Event;
 
 class dashboardController extends Controller{
     public function dashboard() {
     $usermodel = new Admin();
     $categorymodel = new Category();
+    $eventsModel = new Event();
 
-    // Nombre d'utilisateurs par page
     $limit = 3;
-    
-    // Page actuelle (si non définie, par défaut 1)
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-
-    // Calcul de l'offset pour la requête SQL
     $offset = ($page - 1) * $limit;
-
-    // Récupérer les utilisateurs avec pagination
     $users = $usermodel->getUsersPaginated($limit, $offset);
-
-    // Récupérer le nombre total d'utilisateurs
     $totalUsers = $usermodel->countUsers();
-
-    // Calcul du nombre total de pages
     $totalPages = ceil($totalUsers / $limit);
-
-    // Récupérer les catégories (inchangé)
     $categorys = $categorymodel->getAllCategory();
+    $events = $eventsModel->getAll();
+    $totalRevenue = $eventsModel->totalRevenueGlobal();
 
-    // Passer les données à la vue
     $this->view('back/dashboard', [
         'users' => $users,
+        'events' => $events,
+        'totalRevenue' => $totalRevenue,
         'categorys' => $categorys,
         'totalPages' => $totalPages,
         'currentPage' => $page
     ]);
 }
+    public function deleteEvent()
+    {
+        $id = $_POST['id'] ?? null ;
+
+        if (!$id) {
+            echo "ID non valide.";
+            return;
+        }
+
+        $categoryModel= new Event();
+        $categoryModel->deleteEvent($id);
+
+        header("Location: /admin");
+        exit();
+    }
+
 
 }

@@ -138,6 +138,7 @@ class AuthController extends Controller
             Session::set('user', [
                 'id' => $user->id,
                 'name' => $user->name,
+                'role' => $user->role,
                 'email' => $user->email,
                 'avatar_url' => $user->avatar_url
             ]);
@@ -210,6 +211,8 @@ class AuthController extends Controller
             'email' => $email,
             'avatar_url' => $avatar
         ]);
+
+        
 
         header("Location: /");
         exit();
