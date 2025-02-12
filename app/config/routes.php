@@ -20,6 +20,7 @@ $routes = [
         '/createEvent' => [UserController::class, 'event'],
         '/profileInfo' => [UserController::class, 'info'],
         '/admin' => [dashboardController::class, 'dashboard'],
+        '/google-login' => [AuthController::class, 'googleLog'],
     ],
     'POST' => [
         '/createCtaegory' => [categoryController::class, 'createCategory'],
