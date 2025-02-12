@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create New Event</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet" />
+  <style>
+    /* Global dark theme overrides */
+    body {
+      background-color: #333;
+    }
+    .bg-card {
+      background-color: #444;
+    }
+    .border-border {
+      border-color: #555;
+    }
+    .text-foreground {
+      color: #eee;
+    }
+    .text-accent {
+      color: #f39c12;
+    }
+    .bg-primary {
+      background-color: #e74c3c;
+    }
+    .text-primary-foreground {
+      color: #fff;
+    }
+    .bg-secondary {
+      background-color: #3498db;
+    }
+    .text-secondary-foreground {
+      color: #fff;
+    }
+    .bg-muted {
+      background-color: #555;
+    }
+    /* Ticket CSS (same as in index.html) */
+    .ticket {
+      margin: auto;
+      display: flex;
+      background: white;
+      box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,
+                  rgba(0, 0, 0, 0.22) 0px 15px 12px;
+    }
+    .left {
+      display: flex;
+    }
+    /* Added id="ticket-image" for dynamic updates */
+    .image {
+      height: 295px;
+      width: 250px;
+      background-image: url("https://media.pitchfork.com/photos/60db53e71dfc7ddc9f5086f9/1:1/w_1656,h_1656,c_limit/Olivia-Rodrigo-Sour-Prom.jpg");
+      background-size: cover;
+      opacity: 0.85;
+      position: relative;
+    }
+    .admit-one {
+      position: absolute;
+      color: darkgray;
+      height: 290px;
+      font-size: 0.75rem;
+      padding: 0 10px;
+      letter-spacing: 0.15em;
+      display: flex;
+      text-align: center;
+      justify-content: space-around;
+      writing-mode: vertical-rl;
+      transform: rotate(-180deg);
+    }
+    .admit-one span:nth-child(2) {
+      color: white;
+      font-weight: 700;
+    }
+    .left .ticket-number {
+      height: 290px;
+      width: 250px;
+      display: flex;
+      color: white;
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding: 5px;
+    }
+    .ticket-info {
+      padding: 10px 30px;
+      display: flex;
+      font-size: 0.7rem;
+      flex-direction: column;
+      text-align: center;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .date {
+      border-top: 1px solid gray;
+      border-bottom: 1px solid gray;
+      padding: 5px 0;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+    }
+    .date span {
+      width: 100px;
+    }
+    .date span:first-child {
+      text-align: left;
+    }
+    .date span:last-child {
+      text-align: right;
+    }
+    .date .june-29 {
+      color: #d83565;
+    }
+    .show-name {
+      font-size: 1.5rem;
+      font-family: "Nanum Pen Script", cursive;
+      color: #d83565;
+    }
+    /* Both event title headings use the same class for live updates */
+    .show-name h1.ticket-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #4a437e;
+    }
+    /* New element for Artist Name – color now set to #d83565 */
+    .show-name h2 {
+      font-size: 1.5rem;
+      font-weight: normal;
+      color: #d83565;
+    }
+    /* Note: The <p> with id="ticket-time" (in both containers) will be updated */
+    .time {
+      padding: 10px 0;
+      color: #4a437e;
+      text-align: center;
+      display: flex;
+      font-size: 0.65rem;
+      flex-direction: column;
+      gap: 10px;
+      font-weight: 700;
+    }
+    .time span {
+      font-weight: 400;
+      color: gray;
+    }
+    .left .time {
+      font-size: 16px;
+    }
+    .location {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+      padding-top: 8px;
+      border-top: 1px solid gray;
+    }
+    .location .separator {
+      font-size: 20px;
+    }
+    .right {
+      width: 180px;
+      border-left: 1px dashed #404040;
+    }
+    .right .admit-one {
+      color: darkgray;
+    }
+    .right .admit-one span:nth-child(2) {
+      color: gray;
+    }
+    .right .right-info-container {
+      height: 290px;
+      padding: 10px 10px 10px 35px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .right .show-name h1 {
+      font-size: 18px;
+    }
+    .barcode {
+      height: 100px;
+    }
+    .barcode img {
+      height: 100%;
+    }
+    .right .ticket-number {
+      color: gray;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="flex">
+    <!-- Sidebar Navigation -->
+    <aside class="fixed inset-y-0 left-0 w-64 bg-card shadow-sm border-r border-border">
+      <div class="p-4 border-b border-border">
+        <div class="flex items-center gap-2">
+          <img src="https://images.unsplash.com/photo-1517292987719-0369a794ec0f" alt="Logo" class="w-8 h-8 rounded-full">
+          <h1 class="text-xl font-bold text-foreground">EventHub</h1>
+        </div>
+      </div>
+      <nav class="p-4 space-y-2">
+        <a href="/userDash" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
+          <span>Dashboard</span>
+        </a>
+        <a href="/profileInfo" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
+          <span>Profile Info</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-64 p-8 w-full space-y-8">
+      <!-- Live Ticket Preview Card -->
+      <div class="bg-card p-6 rounded-sm shadow-sm border border-border w-full">
+        <h2 class="text-2xl font-bold text-foreground mb-6">Live Ticket Preview</h2>
+        <div class="flex justify-center">
+          <div class="ticket created-by-anniedotexe">
+            <div class="left">
+              <!-- Add id="ticket-image" to update background image -->
+              <div class="image" id="ticket-image">
+                <p class="admit-one">
+                  <span>ADMIT ONE</span>
+                  <span>ADMIT ONE</span>
+                  <span>ADMIT ONE</span>
+                </p>
+                <div class="ticket-number">
+                  <p class="ticket-number-text">#20030220</p>
+                </div>
+              </div>
+              <div class="ticket-info">
+                <p class="date">
+                  <span id="ticket-day">TUESDAY</span>
+                  <span id="ticket-month" class="june-29">JUNE 29TH</span>
+                  <span id="ticket-year">2021</span>
+                </p>
+                <div class="show-name">
+                  <!-- Both left and right event titles now share the class "ticket-title" -->
+                  <h1 id="ticket-title" class="ticket-title">SOUR Prom</h1>
+                  <h2 id="ticket-artist" class="june-29">Olivia Rodrigo</h2>
+                </div>
+                <div class="time">
+                  <!-- Both containers share the same time update -->
+                  <p id="ticket-time">8:00 PM <span>TO</span> 11:00 PM</p>
+                  <p id="ticket-doors">DOORS <span>@</span> 7:00 PM</p>
+                  <p id="ticket-tags">#rock <span>@</span> #role</p>
+                </div>
+                <p class="location">
+                  <span id="ticket-location">East High School</span>
+                  <span class="separator"><i class="far fa-smile"></i></span>
+                  <span>Salt Lake City, Utah</span>
+                </p>
+              </div>
+            </div>
+            <div class="right">
+              <p class="admit-one">
+                <span>ADMIT ONE</span>
+                <span>ADMIT ONE</span>
+                <span>ADMIT ONE</span>
+              </p>
+              <div class="right-info-container">
+                <div class="show-name">
+                  <!-- Right container event title now also uses class "ticket-title" -->
+                  <h1 class="ticket-title">SOUR Prom</h1>
+                </div>
+                <div class="time">
+                  <p id="ticket-time">8:00 PM <span>TO</span> 11:00 PM</p>
+                  <p id="ticket-doors">DOORS <span>@</span> 7:00 PM</p>
+                  <p id="ticket-gate">Gate <span>N</span> 7</p>
+                </div>
+                <div class="barcode">
+                  <img src="https://external-preview.redd.it/cg8k976AV52mDvDb5jDVJABPrSZ3tpi1aXhPjgcDTbw.png?auto=webp&s=1c205ba303c1fa0370b813ea83b9e1bddb7215eb" alt="QR code">
+                </div>
+                <p class="ticket-number">
+                  <span class="ticket-number-text">#20030220</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create New Event Form -->
+      <div class="bg-card p-6 rounded-sm shadow-sm border border-border w-full">
+        <h2 class="text-2xl font-bold text-foreground mb-6">Create New Event</h2>
+        <form id="form" class="space-y-6" method="POST" enctype="multipart/form-data">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Event Title -->
+            <div>
+              <label for="title" class="block text-sm font-medium text-accent mb-2">Event Title</label>
+              <input type="text" id="title" name="title" maxlength="16" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+            <!-- Artist Name -->
+            <div>
+              <label for="artist" class="block text-sm font-medium text-accent mb-2">Artist Name</label>
+              <input type="text" id="artist" name="artist" maxlength="16" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+            <!-- Category -->
+            <div>
+              <label for="category" class="block text-sm font-medium text-accent mb-2">Category</label>
+              <select id="category" name="category" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+                <option value="">Select Category</option>
+                <option value="Conference">Conference</option>
+                <option value="Concert">Concert</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Networking">Networking</option>
+              </select>
+            </div>
+            <!-- Capacity -->
+            <div>
+              <label for="capacity" class="block text-sm font-medium text-accent mb-2">Capacity</label>
+              <input type="number" id="capacity" name="capacity" min="1" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+            <!-- Tags -->
+            <div class="md:col-span-2">
+              <label for="tags" class="block text-sm font-medium text-accent mb-2">Tags (comma or space-separated)</label>
+              <input type="text" id="tags" name="tags" placeholder="e.g. song,heaven" class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+            <!-- Date Start -->
+            <div>
+              <label for="date_start" class="block text-sm font-medium text-accent mb-2">Date Start</label>
+              <input type="datetime-local" id="date_start" name="date_start" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+            <!-- Date End -->
+            <div>
+              <label for="date_end" class="block text-sm font-medium text-accent mb-2">Date End</label>
+              <input type="datetime-local" id="date_end" name="date_end" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+            <!-- Location -->
+            <div>
+              <label for="location" class="block text-sm font-medium text-accent mb-2">Location</label>
+              <input type="text" id="location" name="location" required maxlength="30" class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+            <!-- Price -->
+            <div>
+              <label for="price" class="block text-sm font-medium text-accent mb-2">Price ($)</label>
+              <input type="number" id="price" name="price" step="0.01" min="0" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
+            </div>
+          </div>
+          <!-- Action Buttons -->
+          <div class="flex justify-end gap-4">
+            <button id="reset" type="reset" class="px-4 py-2 border border-border rounded-sm hover:bg-muted transition-colors">Reset</button>
+            <button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-sm hover:bg-destructive transition-colors">Create Event</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- JavaScript for live updating the ticket preview -->
+  <script>
+    // Update the ticket title in both containers as the user types
+    document.getElementById('title').addEventListener('input', function() {
+      document.querySelectorAll('.ticket-title').forEach(el => {
+        el.textContent = this.value || 'SOUR Prom';
+      });
+    });
+    
+    // Update the artist name as the user types
+    document.getElementById('artist').addEventListener('input', function() {
+      document.getElementById('ticket-artist').textContent = this.value || 'Olivia Rodrigo';
+    });
+    
+    // Update the ticket image based on category selection
+    document.getElementById('category').addEventListener('input', function() {
+      const category = this.value;
+      const ticketImage = document.getElementById('ticket-image');
+      let imageUrl;
+      if (category === "Conference") {
+        imageUrl = "/assets/uploads/userEvents/basketball.jpg";
+      } else if (category === "Concert") {
+        imageUrl = "https://images.unsplash.com/photo-1508973376511-88398d6a1f27?auto=format&fit=crop&w=500&q=60";
+      } else if (category === "Workshop") {
+        imageUrl = "https://images.unsplash.com/photo-1584909444596-54e09e7555fb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+      } else if (category === "Networking") {
+        imageUrl = "https://images.unsplash.com/photo-1594623930572-300a3011d9ae?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+      } else {
+        imageUrl = "https://media.pitchfork.com/photos/60db53e71dfc7ddc9f5086f9/1:1/w_1656,h_1656,c_limit/Olivia-Rodrigo-Sour-Prom.jpg";
+      }
+      ticketImage.style.backgroundImage = 'url("' + imageUrl + '")';
+    });
+    
+    // Update the ticket tags by converting comma-separated text to hashtags
+    document.getElementById('tags').addEventListener('input', function() {
+      const tagsInput = this.value;
+      if (tagsInput) {
+        const tags = tagsInput.split(/[, ]+/) // Split by comma or space
+        .filter(tag => tag.trim() !== '') // Remove empty entries
+        .map(tag => '#' + tag.trim()) // Add # to each tag
+        .join(' ');
+        document.getElementById('ticket-tags').textContent = tags;
+      } else {
+        document.getElementById('ticket-tags').textContent = '#rock #role';
+      }
+    });
+    
+    // Update the ticket location as the user types
+    document.getElementById('location').addEventListener('input', function() {
+      document.getElementById('ticket-location').textContent = this.value || 'East High School';
+    });
+    
+    // Function to update the time in the ticket preview
+    function updateTicketTime() {
+      const startInput = document.getElementById('date_start').value;
+      const endInput = document.getElementById('date_end').value;
+      if (startInput && endInput) {
+        const startDate = new Date(startInput);
+        const endDate = new Date(endInput);
+        const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+        const startTime = startDate.toLocaleTimeString('en-US', options);
+        const endTime = endDate.toLocaleTimeString('en-US', options);
+        
+        // Update both ticket-time elements (left & right)
+        document.querySelectorAll('#ticket-time').forEach(el => {
+          el.innerHTML = `${startTime} <span>TO</span> ${endTime}`;
+        });
+        
+        // Update DOORS time (start time minus one hour) in both containers
+        const doorsDate = new Date(startDate.getTime() - 3600000);
+        const doorsTime = doorsDate.toLocaleTimeString('en-US', options);
+        document.querySelectorAll('#ticket-doors').forEach(el => {
+          el.innerHTML = `DOORS <span>@</span> ${doorsTime}`;
+        });
+      }
+    }
+    
+    // Update time when either date input changes
+    document.getElementById('date_start').addEventListener('input', updateTicketTime);
+    document.getElementById('date_end').addEventListener('input', updateTicketTime);
+    
+    // Update the ticket date (day, month, and year) using the date_start input
+    document.getElementById('date_start').addEventListener('input', function() {
+      const dateValue = this.value;
+      if (dateValue) {
+        const date = new Date(dateValue);
+        const weekdays = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+        const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+        const weekday = weekdays[date.getDay()];
+        const month = months[date.getMonth()];
+        const day = date.getDate();
+        const year = date.getFullYear();
+        document.getElementById('ticket-day').textContent = weekday;
+        document.getElementById('ticket-month').textContent = month + ' ' + day;
+        document.getElementById('ticket-year').textContent = year;
+      }
+    });
+    
+    // Update Gate with a random number from 1 to 10 (in both containers)
+    const gateNumber = Math.floor(Math.random() * 10) + 1;
+    document.querySelectorAll('#ticket-gate').forEach(el => {
+      el.innerHTML = `Gate <span>N</span> ${gateNumber}`;
+    });
+    
+    // Generate a random ticket number on page load and update both sides
+    const randomTicketNum = '#' + (Math.floor(Math.random() * 90000000) + 10000000);
+    document.querySelectorAll('.ticket-number-text').forEach(el => el.textContent = randomTicketNum);
+  </script>
+</body>
+</html>

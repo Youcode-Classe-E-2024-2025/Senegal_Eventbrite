@@ -21,6 +21,8 @@
         "stripe/stripe-php": "^16.5",
         "endroid/qr-code": "^6.0",
         "dompdf/dompdf": "^3.1",
-        "phpmailer/phpmailer": "^6.9"
+        "phpmailer/phpmailer": "^6.9",
+        "google/apiclient": "^2.18",
+        "guzzlehttp/guzzle": "^7.9"
     }
 }

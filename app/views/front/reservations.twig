@@ -31,9 +31,9 @@
                     <div class="space-y-2">
                         <label class="block text-lg font-medium text-gray-700">Sélectionnez votre Pass</label>
                         <select id="ticket-type" name="ticket_type" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
-                            <option value="vip">Pass VIP - Accès All Inclusive (599€)</option>
-                            <option value="premium">Pass Premium - Accès Privilégié (299€)</option>
-                            <option value="standard">Pass Standard - 3 jours (149€)</option>
+                            <option value="VIP">Pass VIP - Accès All Inclusive (599€)</option>
+                            <option value="PREMIUM">Pass Premium - Accès Privilégié (299€)</option>
+                            <option value="STANDARD">Pass Standard - 3 jours (149€)</option>
                         </select>
                     </div>
                     <div class="space-y-2">
@@ -42,45 +42,16 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        {# <label class="block text-lg font-medium text-gray-700">Options VIP</label>
-                        <div class="space-y-2">
-                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                                <input type="checkbox" name="vip_backstage" class="w-5 h-5 accent-yellow-400">
-                                <span>Accès backstage (+199€)</span>
-                            </label>
-                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                                <input type="checkbox" name="vip_dinner" class="w-5 h-5 accent-yellow-400">
-                                <span>Dîner avec les artistes (+299€)</span>
-                            </label>
-                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                                <input type="checkbox" name="vip_suite" class="w-5 h-5 accent-yellow-400">
-                                <span>Suite privée (+499€)</span>
-                            </label>
-                        </div> #}
-                        <label class="block text-lg font-medium text-gray-700">Options VIP</label>
-                        <div class="space-y-2">
-                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                                <input type="checkbox" name="vip_options[backstage]" value="199" class="w-5 h-5 accent-yellow-400">
-                                <span>Accès backstage (+199€)</span>
-                            </label>
-                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                                <input type="checkbox" name="vip_options[dinner]" value="299" class="w-5 h-5 accent-yellow-400">
-                                <span>Dîner avec les artistes (+299€)</span>
-                            </label>
-                            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                                <input type="checkbox" name="vip_options[suite]" value="499" class="w-5 h-5 accent-yellow-400">
-                                <span>Suite privée (+499€)</span>
-                            </label>
-                        </div>
-
-                                            </div>
-                    <div class="space-y-2">
-                        <label class="block text-lg font-medium text-gray-700">Informations personnelles</label>
-                        <input id="full-name" name="full_name" type="text" placeholder="Nom complet" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 mb-3 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
-                        <input id="email" name="email" type="email" placeholder="Email" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
-                    </div>
+                <div class="space-y-2">
+                    <label class="block text-lg font-medium text-gray-700">Nom complet</label>
+                    <input id="full-name" name="full_name" type="text" placeholder="Nom complet" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 mb-3 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
                 </div>
+                <div class="space-y-2">
+                    <label class="block text-lg font-medium text-gray-700">Email</label>
+                    <input id="email" name="email" type="email" placeholder="Email" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
+                </div>
+            </div>
+
                 <div class="border-t border-gray-200 pt-6">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div class="text-xl">
@@ -125,7 +96,6 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const passSelect = document.getElementById('ticket-type');
-        const vipOptions = document.querySelectorAll('input[type="checkbox"]');
         const quantityInput = document.getElementById('quantity');
         const totalDisplay = document.getElementById('total-display');
 
@@ -133,32 +103,19 @@
         function calculateTotal() {
             let basePrice = 0;
             switch (passSelect.value) {
-                case 'free': basePrice = 0; break;
                 case 'vip': basePrice = 599; break;
                 case 'premium': basePrice = 299; break;
                 case 'standard': basePrice = 149; break;
                 default: basePrice = 0; break;
             }
 
-            let vipExtras = 0;
-            vipOptions.forEach(option => {
-                if (option.checked) {
-                    switch (option.nextElementSibling.textContent.trim()) {
-                        case 'Accès backstage (+199€)': vipExtras += 199; break;
-                        case 'Dîner avec les artistes (+299€)': vipExtras += 299; break;
-                        case 'Suite privée (+499€)': vipExtras += 499; break;
-                    }
-                }
-            });
-
             const quantity = parseInt(quantityInput.value) || 1;
-            const total = (basePrice + vipExtras) * quantity;
+            const total = basePrice * quantity;
             totalDisplay.textContent = `${total}€`;
         }
 
         // Écouteurs d'événements pour recalculer le total
         passSelect.addEventListener('change', calculateTotal);
-        vipOptions.forEach(option => option.addEventListener('change', calculateTotal));
         quantityInput.addEventListener('input', calculateTotal);
 
         // Calcul initial du total
@@ -175,15 +132,6 @@
                 return;
             }
 
-            // Validation des options VIP pour les billets VIP
-            if (data.ticket_type === 'vip') {
-                const vipSelected = Array.from(vipOptions).some(option => option.checked);
-                if (!vipSelected) {
-                    alert('Veuillez sélectionner au moins une option VIP pour le Pass VIP.');
-                    return;
-                }
-            }
-
             // Afficher l'étape de paiement
             document.getElementById('reservation-step').classList.add('hidden');
             document.getElementById('payment-step').classList.remove('hidden');
@@ -193,56 +141,45 @@
         document.getElementById('back-to-reservation').addEventListener('click', () => {
             document.getElementById('reservation-step').classList.remove('hidden');
             document.getElementById('payment-step').classList.add('hidden');
-
-            // Réinitialiser les options VIP
-            vipOptions.forEach(option => {
-                option.checked = false;
-            });
-
-            // Recalculer le total
             calculateTotal();
         });
 
         document.getElementById('reservation-form').addEventListener('submit', async (event) => {
-        event.preventDefault();
+            event.preventDefault();
 
-       
+            const formData = {
+                ticket_type: document.getElementById('ticket-type').value,
+                quantity: document.getElementById('quantity').value,
+                full_name: document.getElementById('full-name').value,
+                email: document.getElementById('email').value,
+                card_number: document.querySelector('input[name="card_number"]').value,
+                expiry_date: document.querySelector('input[name="expiry_date"]').value,
+                cvv: document.querySelector('input[name="cvv"]').value
+            };
 
-        const formData = {
-            ticket_type: document.getElementById('ticket-type').value,
-            quantity: document.getElementById('quantity').value,
-            vip_dinner: document.querySelector('input[name="vip_dinner"]')?.checked ? 'on' : null,
-            full_name: document.getElementById('full-name').value,
-            email: document.getElementById('email').value,
-            card_number: document.querySelector('input[name="card_number"]').value,
-            expiry_date: document.querySelector('input[name="expiry_date"]').value,
-            cvv: document.querySelector('input[name="cvv"]').value
-        };
+            //console.log(formData) ;
 
-        //console.log(formData);
+            try {
+                const response = await fetch('/create-reservation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
 
-        try {
-            const response = await fetch('/create-reservation', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+                const result = await response.json();
 
-            const result = await response.json();
-
-            if (result.status === 'success') {
-                // Rediriger vers la page de paiement Stripe
-                window.location.href = result.url;
-            } else {
-                alert('Erreur: ' + result.message);
+                if (result.status === 'success') {
+                    window.location.href = result.url;
+                } else {
+                    alert('Erreur: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Une erreur s\'est produite. Veuillez réessayer.');
             }
-        } catch (error) {
-            console.error('Erreur:', error);
-            alert('Une erreur s\'est produite. Veuillez réessayer.');
-        }
-    });
+        });
     });
     </script>
 </body>

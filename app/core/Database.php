@@ -16,7 +16,7 @@ class Database {
             $user = Config::get('DB_USER');
             $pass = Config::get('DB_PASS');
             $port = Config::get('DB_PORT');
-            
+
             if (!$host || !$dbname || !$user) {
                 throw new PDOException("Database configuration is missing. Please check your .env file.");
             }

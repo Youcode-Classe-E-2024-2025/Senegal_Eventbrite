@@ -53,4 +53,9 @@ class Validator {
     public function clearErrors() {
         $this->errors = [];
     }
+
+    public function fails() {
+        return $this->hasErrors();
+    }
+    
 }
