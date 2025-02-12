@@ -214,4 +214,136 @@ class AuthController extends Controller
         header("Location: /");
         exit();
     }
+
+    public function githubLog()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $githubOAuthURL = 'https://github.com/login/oauth/authorize';
+        $githubTokenURL = 'https://github.com/login/oauth/access_token';
+
+        if (!isset($_GET['code'])) {
+            $authURL = $githubOAuthURL . '?client_id=' . $_ENV['GITHUB_CLIENT_ID'] . '&redirect_uri=' . urlencode($_ENV['GITHUB_REDIRECT_URI']) . '&scope=user:email';
+            header("Location: " . $authURL);
+            exit();
+        }
+
+        $code = $_GET['code'];
+        $tokenData = $this->getGitHubAccessToken($code);
+
+        if (!$tokenData) {
+            die("GitHub authentication failed.");
+        }
+
+        $user = $this->getGitHubUser($tokenData['access_token']);
+
+        if (!$user) {
+            die("Unable to fetch GitHub user data.");
+        }
+
+        if (empty($user['email'])) {
+            die("Email not found in GitHub data.");
+        }
+
+        $userModel = new User();
+        $existingUser = $userModel->getUserByEmail($user['email']);
+
+        if (!$existingUser) {
+            $userId = $userModel->createUser([
+                'email' => $user['email'],
+                'name' => $user['name'],
+                'avatar_url' => $user['avatar_url'],
+                'role' => 'user',
+                'password' => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT) // Generate password
+            ]);
+            $existingUser = $userModel->getUserById($userId);
+        }
+
+        Session::start();
+        Session::set('user', [
+            'id' => $existingUser->id,
+            'name' => $user['name'],
+            'email' => $user['email'],
+            'avatar_url' => $user['avatar_url']
+        ]);
+
+        header("Location: /");
+        exit();
+    }
+
+
+
+
+    private function getGitHubAccessToken($code)
+    {
+        $url = 'https://github.com/login/oauth/access_token';
+        $data = [
+            'client_id' => $_ENV['GITHUB_CLIENT_ID'],
+            'client_secret' => $_ENV['GITHUB_CLIENT_SECRET'],
+            'code' => $code,
+            'redirect_uri' => $_ENV['GITHUB_REDIRECT_URI'],
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json']);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $responseData = json_decode($response, true);
+
+        return isset($responseData['access_token']) ? $responseData : null;
+    }
+
+    private function getGitHubUser($accessToken)
+{
+    $url = 'https://api.github.com/user';
+    $headers = [
+        'Authorization: token ' . $accessToken,
+        'User-Agent: Zhoo'
+    ];
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $userData = json_decode($response, true);
+
+    if (!isset($userData['id'])) {
+        return null;
+    }
+
+    $emailsUrl = 'https://api.github.com/user/emails';
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $emailsUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $emailsResponse = curl_exec($ch);
+    curl_close($ch);
+
+    $emailsData = json_decode($emailsResponse, true);
+
+    $primaryEmail = '';
+    foreach ($emailsData as $email) {
+        if ($email['primary'] && $email['verified']) {
+            $primaryEmail = $email['email'];
+            break;
+        }
+    }
+
+    return [
+        'email' => $primaryEmail,
+        'name' => $userData['name'],
+        'avatar_url' => $userData['avatar_url']
+    ];
+}
+
 }
