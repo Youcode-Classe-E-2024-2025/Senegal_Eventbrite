@@ -24,15 +24,24 @@ class Model {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function insert($table, $data) {
+    public function insert($table, $data, $returnId = false) {
         $columns = implode(', ', array_keys($data));
         $placeholders = ':' . implode(', :', array_keys($data));
         
-        $stmt = $this->db->prepare("INSERT INTO $table ($columns) VALUES ($placeholders)");
+        $query = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+        if ($returnId) {
+            $query .= " RETURNING id";
+        }
+        
+        $stmt = $this->db->prepare($query);
         foreach ($data as $key => $value) {
             $stmt->bindValue(":$key", $value);
         }
-        return $stmt->execute();
+        
+        if ($stmt->execute()) {
+            return $returnId ? $stmt->fetchColumn() : true;
+        }
+        return false;
     }
 
     public function update($table, $data, $id) {
