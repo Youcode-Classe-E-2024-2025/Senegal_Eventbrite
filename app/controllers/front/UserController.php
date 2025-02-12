@@ -56,7 +56,7 @@ class UserController extends Controller {
                 }
     
                 // Configure paths
-                $publicRelativePath = '/assets/uploads/userAvatar/';
+                $publicRelativePath = '/public/assets/uploads/userAvatar/';
                 $serverAbsolutePath = $_SERVER['DOCUMENT_ROOT'] . $publicRelativePath;
     
                 // Create directory if needed
