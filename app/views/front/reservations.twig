@@ -6,9 +6,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary: #ffffff; /* Blanc */
-            --secondary: #000000; /* Noir */
-            --accent: #fdbc4b; /* Jaune */
+            --primary: #ffffff;
+            --secondary: #000000;
+            --accent: #fdbc4b;
         }
         .hidden { display: none; }
     </style>
@@ -22,18 +22,17 @@
             <p class="text-gray-600">Une expérience musicale unique au cœur de Paris</p>
         </div>
 
-        <!-- Formulaire global -->
         <form id="reservation-form" class="space-y-8">
             <!-- Étape 1 : Réservation -->
             <div id="reservation-step" class="space-y-8">
                 <h2 class="text-2xl font-bold">Étape 1 : Détails de la réservation</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
-                        <label class="block text-lg font-medium text-gray-700">Sélectionnez votre Pass</label>
+                        <label class="block text-lg font-medium text-gray-700">Type de billet</label>
                         <select id="ticket-type" name="ticket_type" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
                             <option value="VIP">Pass VIP - Accès All Inclusive (599€)</option>
                             <option value="PREMIUM">Pass Premium - Accès Privilégié (299€)</option>
-                            <option value="STANDARD">Pass Standard - 3 jours (149€)</option>
+                            <option value="STANDART">Pass Standard - 3 jours (149€)</option>
                         </select>
                     </div>
                     <div class="space-y-2">
@@ -41,21 +40,12 @@
                         <input id="quantity" name="quantity" type="number" min="1" max="10" value="1" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <label class="block text-lg font-medium text-gray-700">Nom complet</label>
-                    <input id="full-name" name="full_name" type="text" placeholder="Nom complet" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 mb-3 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
-                </div>
-                <div class="space-y-2">
-                    <label class="block text-lg font-medium text-gray-700">Email</label>
-                    <input id="email" name="email" type="email" placeholder="Email" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg p-4 text-gray-700 focus:ring-2 focus:ring-yellow-400 focus:border-transparent" required>
-                </div>
-            </div>
 
                 <div class="border-t border-gray-200 pt-6">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div class="text-xl">
                             Total: <span id="total-display" class="font-bold text-yellow-600">0€</span>
+                            <input type="hidden" id="total-price" name="total_price" value="0">
                         </div>
                         <button type="button" id="next-to-payment" class="px-8 py-3 bg-yellow-400 rounded-lg font-medium hover:opacity-90 transition-all transform hover:scale-105">
                             Continuer vers le paiement
@@ -98,46 +88,40 @@
         const passSelect = document.getElementById('ticket-type');
         const quantityInput = document.getElementById('quantity');
         const totalDisplay = document.getElementById('total-display');
+        const totalPriceInput = document.getElementById('total-price');
 
-        // Fonction pour calculer le total
+        // Prix par type de billet
+        const prices = {
+            'VIP': 599,
+            'PREMIUM': 299,
+            'STANDART': 149
+        };
+
         function calculateTotal() {
-            let basePrice = 0;
-            switch (passSelect.value) {
-                case 'vip': basePrice = 599; break;
-                case 'premium': basePrice = 299; break;
-                case 'standard': basePrice = 149; break;
-                default: basePrice = 0; break;
-            }
-
+            const basePrice = prices[passSelect.value] || 0;
             const quantity = parseInt(quantityInput.value) || 1;
             const total = basePrice * quantity;
             totalDisplay.textContent = `${total}€`;
+            totalPriceInput.value = total;
         }
 
-        // Écouteurs d'événements pour recalculer le total
         passSelect.addEventListener('change', calculateTotal);
         quantityInput.addEventListener('input', calculateTotal);
-
-        // Calcul initial du total
         calculateTotal();
 
-        // Passage à l'étape de paiement
         document.getElementById('next-to-payment').addEventListener('click', () => {
             const formData = new FormData(document.getElementById('reservation-form'));
             const data = Object.fromEntries(formData.entries());
 
-            // Validation des champs obligatoires
-            if (!data.full_name || !data.email || !data.ticket_type || !data.quantity) {
+            if (!data.ticket_type || !data.quantity) {
                 alert('Veuillez remplir tous les champs obligatoires.');
                 return;
             }
 
-            // Afficher l'étape de paiement
             document.getElementById('reservation-step').classList.add('hidden');
             document.getElementById('payment-step').classList.remove('hidden');
         });
 
-        // Retour à l'étape de réservation
         document.getElementById('back-to-reservation').addEventListener('click', () => {
             document.getElementById('reservation-step').classList.remove('hidden');
             document.getElementById('payment-step').classList.add('hidden');
@@ -147,20 +131,21 @@
         document.getElementById('reservation-form').addEventListener('submit', async (event) => {
             event.preventDefault();
 
+            // Données adaptées à votre structure de base de données
             const formData = {
+                user_id: 1, // À remplacer par l'ID de l'utilisateur connecté
+                event_id: 2, // À remplacer par l'ID de l'événement
                 ticket_type: document.getElementById('ticket-type').value,
-                quantity: document.getElementById('quantity').value,
-                full_name: document.getElementById('full-name').value,
-                email: document.getElementById('email').value,
+                quantity: parseInt(document.getElementById('quantity').value),
+                total_price: parseFloat(document.getElementById('total-price').value),
+                payment_method: 'card', // Pour la table payments
                 card_number: document.querySelector('input[name="card_number"]').value,
                 expiry_date: document.querySelector('input[name="expiry_date"]').value,
                 cvv: document.querySelector('input[name="cvv"]').value
             };
 
-            //console.log(formData) ;
-
             try {
-                const response = await fetch('/create-reservation', {
+                const response = await fetch('/api/reservations', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -170,8 +155,9 @@
 
                 const result = await response.json();
 
-                if (result.status === 'success') {
-                    window.location.href = result.url;
+                if (result.success) {
+                    // Redirection vers la page de confirmation
+                    window.location.href = `/confirmation/${result.reservation_id}`;
                 } else {
                     alert('Erreur: ' + result.message);
                 }

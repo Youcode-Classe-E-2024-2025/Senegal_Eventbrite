@@ -78,7 +78,7 @@ CREATE TABLE categorys(
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     image VARCHAR(255)
-)
+);
 
 -- Notifications table
 CREATE TABLE notifications (
@@ -127,11 +127,11 @@ VALUES
 (4, 'ART25', 25.00, 3, 30, '2025-07-09 23:59:59'),
 (5, 'VIPDISCOUNT', 15.00, 2, 50, '2025-06-14 23:59:59');
 
-INSERT INTO reservations (id, user_id, event_id, ticket_type, quantity, total_price, status)
+INSERT INTO reservations (id, user_id, event_id, ticket_type, quantity, total_price)
 VALUES
-(2, 1, 2, 'early_bird', 3, 120.00, 'reserved'),
-(3, 3, 3, 'paid', 1, 20.00, 'reserved'),
-(5, 2, 5, 'VIP', 1, 50.00, 'reserved');
+(2, 1, 2, 'early_bird', 3, 120.00),
+(3, 3, 3, 'paid', 1, 20.00),
+(5, 2, 5, 'VIP', 1, 50.00);
 
 INSERT INTO payments (id, reservation_id, payment_method, transaction_id, amount, status)
 VALUES
@@ -200,5 +200,5 @@ VALUES
 SELECT SUM(r.quantity * e.price) AS total_revenue_global
 FROM reservations r
 JOIN events e ON r.event_id = e.id
-WHERE r.status = 'reserved';
+WHERE r.status 'reserved';
 

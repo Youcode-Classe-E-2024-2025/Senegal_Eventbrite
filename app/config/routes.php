@@ -47,7 +47,7 @@ $router = new Router();
         'GET' => [
              // Route existante pour afficher les réservations
         '/reservations' => [ReservationsController::class, 'reservations'],
-        '/generate-qr-code/{reservation_id}' => [ReservationsController::class, 'generateQrCode'],
+        // '/generate-qr-code/{reservation_id}' => [ReservationsController::class, 'generateQrCode'],
             '/' => [HomeController::class, 'index'],
             '/signup' => [AuthController::class, 'signup'],
             '/login' => [AuthController::class, 'login'],
@@ -61,6 +61,8 @@ $router = new Router();
         ],
         'POST' => [
       '/create-reservation'=> [ReservationsController::class, 'createReservation'],
+      '/api/reservations'=> [ReservationsController::class, 'createReservation'],
+
             '/createCtaegory' => [categoryController::class, 'createCategory'],
             '/deleteCategory' => [categoryController::class, 'deleteCategory'],
             '/deleteEvent' => [dashboardController::class, 'deleteEvent'],

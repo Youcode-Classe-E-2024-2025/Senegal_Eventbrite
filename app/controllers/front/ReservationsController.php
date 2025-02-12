@@ -235,7 +235,9 @@ class ReservationsController {
             $data = json_decode(file_get_contents('php://input'), true);
     
             // Vérifier que les données nécessaires sont présentes
-            if (!isset($data['ticket_type']) || !isset($data['quantity']) || !isset($data['full_name']) || !isset($data['email'])) {
+            if (!isset($data['ticket_type']) || !isset($data['quantity'])) {
+            // if (!isset($data['ticket_type']) || !isset($data['quantity']) || !isset($data['full_name']) || !isset($data['email'])) {
+
                 throw new \Exception('Données manquantes');
             }
     
@@ -267,23 +269,23 @@ class ReservationsController {
                 ]
             ]);
     
-            // Créer les options VIP
-            $vipOptions = [
-                'backstage' => isset($data['vip_backstage']) ? true : false,
-                'dinner' => isset($data['vip_dinner']) ? true : false,
-                'suite' => isset($data['vip_suite']) ? true : false
-            ];
+            // // Créer les options VIP
+            // $vipOptions = [
+            //     'backstage' => isset($data['vip_backstage']) ? true : false,
+            //     'dinner' => isset($data['vip_dinner']) ? true : false,
+            //     'suite' => isset($data['vip_suite']) ? true : false
+            // ];
     
             // Créer la réservation en statut "pending"
             $reservationId = $this->reservationsModel->addReservation(
-                null, // user_id (ajustez selon votre logique)
+                1, // user_id (ajustez selon votre logique)
                 1,   // event_id (à adapter)
                 $data['ticket_type'],
                 $data['quantity'],
                 $totalPrice,
-                $data['full_name'],
-                $data['email'],
-                $vipOptions // Passez ici les options VIP
+                // $data['full_name'],
+                // $data['email'],
+                //$vipOptions // Passez ici les options VIP
             );
     
             // Retourner l'ID de session Stripe et l'ID de réservation

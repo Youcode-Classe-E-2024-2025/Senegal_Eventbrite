@@ -9,105 +9,114 @@ class Reservations {
         $this->db = $db;
     }
 
-    public function addReservation($userId, $eventId, $ticketType, $quantity, $totalPrice, $fullName, $email, $vipOptions = []) {
+    /**
+     * Ajoute une nouvelle réservation
+     */
+    public function addReservation($userId, $eventId, $ticketType, $quantity, $totalPrice) {
         try {
-            // Récupérer l'ID du ticket depuis son type
-            $ticketId = $this->getTicketIdByType($ticketType);
-    
-            // Vérifier si le ticket existe
-            if (!$ticketId) {
+            // Vérifier si le type de ticket est valide
+            if (!in_array($ticketType, ['VIP', 'PREMIUM', 'STANDART'])) {
                 throw new \Exception("Type de ticket invalide : " . $ticketType);
             }
-    
+
             // Log des données avant l'insertion
             error_log("Ajout de réservation avec les paramètres : " . print_r([
                 'user_id' => $userId,
                 'event_id' => $eventId,
-                'ticket_id' => $ticketId, // Maintenant c'est un entier
+                'ticket_type' => $ticketType,
                 'quantity' => $quantity,
-                'total_price' => $totalPrice,
-                'full_name' => $fullName,
-                'email' => $email,
-                'vip_options' => $vipOptions
+                'total_price' => $totalPrice
             ], true));
-            error_log("Exécution de la requête : " . $sql);
-            $stmt->execute([
-                ':user_id' => $userId,
-                ':event_id' => $eventId,
-                ':ticket_id' => $ticketId,
-                ':quantity' => $quantity,
-                ':total_price' => $totalPrice,
-                ':status' => 'reserved',
-                ':full_name' => $fullName,
-                ':email' => $email,
-                ':vip_options' => json_encode($vipOptions)
-            ]);
 
-            $sql = "INSERT INTO reservations (user_id, event_id, ticket_id, quantity, total_price, status, full_name, email, vip_options) 
-                    VALUES (:user_id, :event_id, :ticket_id, :quantity, :total_price, :status, :full_name, :email, :vip_options)";
-            error_log("Exécution de la requête : " . $sql);
-            $stmt->execute([
-                ':user_id' => $userId,
-                ':event_id' => $eventId,
-                ':ticket_id' => $ticketId,
-                ':quantity' => $quantity,
-                ':total_price' => $totalPrice,
-                ':status' => 'reserved',
-                ':full_name' => $fullName,
-                ':email' => $email,
-                ':vip_options' => json_encode($vipOptions)
-            ]);
+            $sql = "INSERT INTO reservations (user_id, event_id, ticket_type, quantity, total_price, reservation_date) 
+                    VALUES (:user_id, :event_id, :ticket_type, :quantity, :total_price, CURRENT_TIMESTAMP)";
             
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 ':user_id' => $userId,
                 ':event_id' => $eventId,
-                ':ticket_id' => $ticketId, // Maintenant c'est un entier !
+                ':ticket_type' => $ticketType,
                 ':quantity' => $quantity,
-                ':total_price' => $totalPrice,
-                ':status' => 'reserved',
-                ':full_name' => $fullName,
-                ':email' => $email,
-                ':vip_options' => json_encode($vipOptions)
+                ':total_price' => $totalPrice
             ]);
-    
-            // Retourner l'ID de la dernière insertion
-            return $this->db->lastInsertId();
+
+            $reservationId = $this->db->lastInsertId();
+
+            // Mettre à jour les statistiques de l'événement
+            $this->updateEventStatistics($eventId, $quantity);
+
+            return $reservationId;
         } catch (\PDOException $e) {
             error_log('Erreur lors de l\'ajout de la réservation: ' . $e->getMessage());
             throw new \Exception("Erreur lors de l'ajout de la réservation: " . $e->getMessage());
         }
     }
-    
 
-    public function updateReservationStatus($reservationId, $status, $qrCode = null) {
+    /**
+     * Met à jour les statistiques de l'événement après une réservation
+     */
+    private function updateEventStatistics($eventId, $quantity) {
         try {
-            $sql = "UPDATE reservations 
-                    SET status = :status" . 
-                    ($qrCode ? ", qr_code = :qr_code" : "") . 
-                    " WHERE id = :id";
+            $sql = "INSERT INTO event_statistics (event_id, tickets_sold, participants_count) 
+                    VALUES (:event_id, :quantity, :quantity)
+                    ON CONFLICT (event_id) 
+                    DO UPDATE SET 
+                        tickets_sold = event_statistics.tickets_sold + :quantity,
+                        participants_count = event_statistics.participants_count + :quantity";
             
-            $params = [':status' => $status, ':id' => $reservationId];
-            if ($qrCode) {
-                $params[':qr_code'] = $qrCode;
-            }
-
             $stmt = $this->db->prepare($sql);
-            return $stmt->execute($params);
+            $stmt->execute([
+                ':event_id' => $eventId,
+                ':quantity' => $quantity
+            ]);
         } catch (\PDOException $e) {
-            throw new \Exception("Erreur lors de la mise à jour de la réservation: " . $e->getMessage());
+            error_log('Erreur lors de la mise à jour des statistiques: ' . $e->getMessage());
+            // On ne throw pas l'erreur ici pour ne pas bloquer la réservation
         }
     }
 
-   
-    private function getTicketIdByType($ticketType) {
-        $query = "SELECT id FROM tickets WHERE type = :ticketType";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':ticketType', $ticketType);
-        $stmt->execute();
-        return $stmt->fetchColumn();
+    /**
+     * Récupère toutes les réservations d'un utilisateur
+     */
+    public function getUserReservations($userId) {
+        try {
+            $sql = "SELECT r.*, e.title as event_title, e.date_start, e.location 
+                    FROM reservations r 
+                    JOIN events e ON r.event_id = e.id 
+                    WHERE r.user_id = :user_id 
+                    ORDER BY r.reservation_date DESC";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':user_id' => $userId]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            throw new \Exception("Erreur lors de la récupération des réservations: " . $e->getMessage());
+        }
     }
-    
-    
-    
+
+    /**
+     * Vérifie la disponibilité des places pour un événement
+     */
+    public function checkEventAvailability($eventId, $quantity) {
+        try {
+            $sql = "SELECT e.capacity, COALESCE(SUM(r.quantity), 0) as reserved
+                    FROM events e
+                    LEFT JOIN reservations r ON e.id = r.event_id
+                    WHERE e.id = :event_id
+                    GROUP BY e.capacity";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':event_id' => $eventId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$result) {
+                throw new \Exception("Événement non trouvé");
+            }
+            
+            return ($result['capacity'] - $result['reserved']) >= $quantity;
+        } catch (\PDOException $e) {
+            throw new \Exception("Erreur lors de la vérification de la disponibilité: " . $e->getMessage());
+        }
+    }
 }
