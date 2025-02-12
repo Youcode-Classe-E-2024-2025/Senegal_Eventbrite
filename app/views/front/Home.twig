@@ -128,7 +128,7 @@
 					<nav class="contents">
 						<ul class="ml-4 xl:w-48 flex items-center justify-end">
 							{% if session.user %}
-								<a class="ml-2 lg:ml-4 pt-4 relative inline-block hover:bg-gray-800 rounded-md flex flex-col items-center cursor-pointer" href='/profile'>
+								<a class="ml-2 lg:ml-4 pt-4 relative inline-block hover:bg-gray-800 rounded-md flex flex-col items-center cursor-pointer" href='/userDash'>
 									<img class="h-8 w-8 rounded-full" src="{{ session.user.avatar_url ?: '/path/to/default/avatar.png' }}" alt="Profile Image"/>
 									<span class="px-4 py-2 text-white duration-200 hover:text-white" href="/profile">
 										{{session.user.name}}
