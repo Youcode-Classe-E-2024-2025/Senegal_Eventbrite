@@ -12,14 +12,13 @@ class dashboardController extends Controller{
     $eventsModel = new Event();
 
     $limit = 3;
-    
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $offset = ($page - 1) * $limit;
     $users = $usermodel->getUsersPaginated($limit, $offset);
     $totalUsers = $usermodel->countUsers();
     $totalPages = ceil($totalUsers / $limit);
     $categorys = $categorymodel->getAllCategory();
-    $events = $eventsModel->getAllEvent();
+    $events = $eventsModel->getAll();
     $totalRevenue = $eventsModel->totalRevenueGlobal();
 
     $this->view('back/dashboard', [
