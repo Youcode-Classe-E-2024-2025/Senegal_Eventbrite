@@ -14,7 +14,7 @@ class UserController extends Controller {
         $userId = $_SESSION['user']["id"] ?? null;
         
         $events = $eventModel->getAllEvent($userId);
-        $promos = $promoModel->getAllPromosWithEvents($userId); // Get all promos with event details
+        $promos = $promoModel->getAllPromosWithEvents($userId);
         
         $this->view("front/userDash", [
             'events' => $events,
