@@ -7,6 +7,7 @@ use Controller_back\categoryController;
 use Controller_back\dashboardController;
 use Core\Router;
 use Controller_front\AuthController;
+use Controller_front\EventController;
 use Controller_front\PromoController;
 
 $router = new Router();
@@ -18,7 +19,7 @@ $routes = [
         '/login' => [AuthController::class, 'login'],
         '/logout'=> [AuthController::class, 'logout'],
         '/userDash' => [UserController::class, 'index'],
-        '/createEvent' => [UserController::class, 'event'],
+        '/createEvent' => [EventController::class, 'event'],
         '/profileInfo' => [UserController::class, 'info'],
         '/admin' => [dashboardController::class, 'dashboard'],
         '/google-login' => [AuthController::class, 'googleLog'],
