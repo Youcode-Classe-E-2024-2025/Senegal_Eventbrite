@@ -7,6 +7,7 @@ use Controller_back\categoryController;
 use Controller_back\dashboardController;
 use Core\Router;
 use Controller_front\AuthController;
+use Controller_front\PromoController;
 
 $router = new Router();
 
@@ -29,6 +30,8 @@ $routes = [
         '/deleteEvent' => [dashboardController::class, 'deleteEvent'],
         '/signup' => [AuthController::class, 'signupPost'],
         '/login' => [AuthController::class, 'loginPost'],
+        '/promo' => [PromoController::class, 'store'],
+        '/promo/delete' => [PromoController::class, 'delete'],
     ]
 ];
 
