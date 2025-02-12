@@ -29,9 +29,9 @@ CREATE TABLE events (
     organizer_id INT REFERENCES users(id) ON DELETE CASCADE,
     status VARCHAR(20) NOT NULL CHECK (status IN ('FULL', 'EXPIRED', 'ACTIVE')),
     isActif BOOLEAN NOT NULL DEFAULT FALSE,
+    thumbnail VARCHAR(255),
     CONSTRAINT chk_date_consistency CHECK (date_start < date_end)
 );
-
 
 CREATE TABLE promo (
     id SERIAL PRIMARY KEY,
