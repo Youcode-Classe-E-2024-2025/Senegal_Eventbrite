@@ -34,6 +34,8 @@ $routes = [
         '/promo' => [PromoController::class, 'store'],
         '/promo/delete' => [PromoController::class, 'delete'],
         '/createEvent' => [EventController::class, 'store'],
+        '/updateProfileImage' => [UserController::class, 'updateProfileImage'],
+        '/updatePassword' => [UserController::class, 'updatePassword'],
     ]
 ];
 
