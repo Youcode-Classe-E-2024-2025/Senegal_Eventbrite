@@ -36,6 +36,7 @@ $routes = [
         '/createEvent' => [EventController::class, 'store'],
         '/updateProfileImage' => [UserController::class, 'updateProfileImage'],
         '/updatePassword' => [UserController::class, 'updatePassword'],
+        '/update-status' => [dashboardController::class, 'updateStatus'],
     ]
 ];
 

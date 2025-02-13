@@ -58,5 +58,31 @@ class dashboardController extends Controller{
         exit();
     }
 
+    public function updateStatus()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if (isset($data['id'], $data['is_active'])) {
+            $userId = intval($data['id']);
+            $isActive = filter_var($data['is_active'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+
+            $usermodel = new Admin();
+            $result = $usermodel->updateUserStatus($userId, $isActive);
+
+            if ($result) {
+                echo json_encode(["success" => true]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Aucune modification effectuée."]);
+            }
+        } else {
+            echo json_encode(["success" => false, "message" => "Données invalides."]);
+        }
+    } else {
+        echo json_encode(["success" => false, "message" => "Méthode non autorisée."]);
+    }
+}
+
+
 
 }
