@@ -117,7 +117,15 @@ class AuthController extends Controller
             ]);
         }
 
-        Auth::login($user);
+        Session::start();
+        Session::set('user', [
+            'id' => $user->id,
+            'name' => $user->name,
+            'role' => $user->role,
+            'email' => $user->email,
+            'avatar_url' => $user->avatar_url
+        ]);
+
         return $this->redirect('/');
     }
 
@@ -133,7 +141,6 @@ class AuthController extends Controller
 
         $user = User::findByEmail($data['email']);
         if ($user && password_verify($data['password'], $user->password)) {
-            // Start session
             Session::start();
             Session::set('user', [
                 'id' => $user->id,
@@ -212,7 +219,7 @@ class AuthController extends Controller
             'avatar_url' => $avatar
         ]);
 
-        
+
 
         header("Location: /");
         exit();
@@ -304,49 +311,49 @@ class AuthController extends Controller
     }
 
     private function getGitHubUser($accessToken)
-{
-    $url = 'https://api.github.com/user';
-    $headers = [
-        'Authorization: token ' . $accessToken,
-        'User-Agent: Zhoo'
-    ];
+    {
+        $url = 'https://api.github.com/user';
+        $headers = [
+            'Authorization: token ' . $accessToken,
+            'User-Agent: Zhoo'
+        ];
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    $response = curl_exec($ch);
-    curl_close($ch);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $response = curl_exec($ch);
+        curl_close($ch);
 
-    $userData = json_decode($response, true);
+        $userData = json_decode($response, true);
 
-    if (!isset($userData['id'])) {
-        return null;
-    }
-
-    $emailsUrl = 'https://api.github.com/user/emails';
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $emailsUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    $emailsResponse = curl_exec($ch);
-    curl_close($ch);
-
-    $emailsData = json_decode($emailsResponse, true);
-
-    $primaryEmail = '';
-    foreach ($emailsData as $email) {
-        if ($email['primary'] && $email['verified']) {
-            $primaryEmail = $email['email'];
-            break;
+        if (!isset($userData['id'])) {
+            return null;
         }
-    }
 
-    return [
-        'email' => $primaryEmail,
-        'name' => $userData['name'],
-        'avatar_url' => $userData['avatar_url']
-    ];
-}
+        $emailsUrl = 'https://api.github.com/user/emails';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $emailsUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $emailsResponse = curl_exec($ch);
+        curl_close($ch);
+
+        $emailsData = json_decode($emailsResponse, true);
+
+        $primaryEmail = '';
+        foreach ($emailsData as $email) {
+            if ($email['primary'] && $email['verified']) {
+                $primaryEmail = $email['email'];
+                break;
+            }
+        }
+
+        return [
+            'email' => $primaryEmail,
+            'name' => $userData['name'],
+            'avatar_url' => $userData['avatar_url']
+        ];
+    }
 
 }
