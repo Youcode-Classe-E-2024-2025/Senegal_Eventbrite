@@ -127,7 +127,7 @@
 					</div>
 					<!-- buttons -->
 					<nav class="contents">
-						<ul class="ml-4 xl:w-48 flex items-center justify-end">
+						<ul class="ml-4 flex items-center justify-end">
 							{% if session.user %}
 								<a class="ml-2 lg:ml-4 pt-4 relative inline-block hover:bg-gray-800 rounded-md flex flex-col items-center cursor-pointer" href='{{session.user.role == "admin" ? "/admin" : "/userDash"}}'>
 									<img class="h-8 w-8 rounded-full" src="{{ session.user.avatar_url ?: '/assets/uploads/userAvatar/5856.jpg' }}" alt="Profile Image"/>
@@ -136,8 +136,8 @@
 									</span>
 								</a>
 								<li class="ml-2 lg:ml-4 relative inline-block">
-									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/logout">
-										Logout
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center" href="/logout">
+										<i class="fas fa-sign-out-alt mr-2"></i> Logout
 									</a>
 								</li>
 							{% else %}
