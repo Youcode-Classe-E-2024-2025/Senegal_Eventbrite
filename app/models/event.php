@@ -14,7 +14,7 @@ class Event extends Model{
         $query = "SELECT * FROM events WHERE organizer_id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$userId]);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getEventById($id)
@@ -22,7 +22,7 @@ class Event extends Model{
         $query = "SELECT * FROM events WHERE id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$id]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function deleteEvent($id)
@@ -39,5 +39,14 @@ class Event extends Model{
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC)['total_revenue_global'] ?? 0;
     }
-    
+
+    public function getSalesByUser($userId) {
+        $query = "SELECT e.title, e.capacity, es.tickets_sold, es.revenue, e.status 
+                  FROM events e 
+                  JOIN event_statistics es ON e.id = es.event_id 
+                  WHERE e.organizer_id = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

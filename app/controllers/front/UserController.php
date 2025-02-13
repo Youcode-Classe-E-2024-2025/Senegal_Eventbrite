@@ -16,10 +16,12 @@ class UserController extends Controller {
         
         $events = $eventModel->getAllEvent($userId);
         $promos = $promoModel->getAllPromosWithEvents($userId);
+        $sales = $eventModel->getSalesByUser($userId);
         
         $this->view("front/userDash", [
             'events' => $events,
-            'promos' => $promos
+            'promos' => $promos,
+            'sales' => $sales,
         ]);
     }
 

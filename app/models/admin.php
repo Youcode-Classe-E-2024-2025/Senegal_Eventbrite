@@ -8,10 +8,6 @@ use PDO;
 
 class Admin extends Model {
 
-    public function getRoles($id){
-        
-    }
-
     public function getAllUsers()
     {
        return $this->fetchAll("users");

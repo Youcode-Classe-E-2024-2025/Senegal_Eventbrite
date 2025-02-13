@@ -10,12 +10,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
-      /* Global dark theme overrides */
       body {
         background-color: #333;
         color: #eee;
       }
-      /* These classes override Tailwind’s defaults to fit our dark theme */
       .bg-card {
         background-color: #444;
       }
@@ -63,7 +61,7 @@
           </div>
         </div>
         <nav class="p-4 space-y-2">
-          <a href="/" class="flex items-center gap-2 p-2 rounded-sm text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
+          <a href="/" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
             <span>Home</span>
           </a>
           <a href="/createEvent" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
@@ -71,12 +69,6 @@
           </a>
           <a href="/profileInfo" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
             <span>Profile Info</span>
-          </a>
-          <a href="#sales" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
-            <span>Sales & Registration</span>
-          </a>
-          <a href="#promo" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
-            <span>Promotional Tools</span>
           </a>
         </nav>
       </aside>
@@ -86,38 +78,68 @@
         
         <!-- Sales Section -->
         <section id="sales" class="mb-8">
-          <div class="bg-card p-6 rounded-sm shadow-sm border border-border">
-            <div class="flex justify-between items-center mb-6">
-              <h2 class="text-2xl font-bold text-foreground">Sales Overview</h2>
-              <div class="flex gap-4">
-                <button class="px-4 py-2 bg-secondary text-secondary-foreground rounded-sm hover:bg-muted transition-colors">Export CSV</button>
-                <button class="px-4 py-2 bg-secondary text-secondary-foreground rounded-sm hover:bg-muted transition-colors">Export PDF</button>
-              </div>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead class="bg-muted">
-                  <tr>
-                    <th class="p-4 text-left text-sm font-medium text-accent">Event Name</th>
-                    <th class="p-4 text-left text-sm font-medium text-accent">Tickets Sold</th>
-                    <th class="p-4 text-left text-sm font-medium text-accent">Revenue</th>
-                    <th class="p-4 text-left text-sm font-medium text-accent">Status</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-border">
-                  <tr>
-                    <td class="p-4 text-foreground">Tech Conference 2024</td>
-                    <td class="p-4 text-foreground">45/100</td>
-                    <td class="p-4 text-foreground">$4,500</td>
-                    <td class="p-4">
-                      <span class="px-2 py-1 bg-chart-2 text-primary-foreground rounded-sm text-sm">Active</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
+  <div class="bg-card p-6 rounded-md shadow-md border border-border">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-foreground">📊 Sales Overview</h2>
+      <div class="flex gap-4">
+        <button 
+          class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-muted transition-colors flex items-center gap-2">
+          📄 Export Excel
+        </button>
+
+        <button 
+          class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-muted transition-colors flex items-center gap-2">
+          🖨️ Export PDF
+        </button>
+
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="bg-muted text-primary text-left text-sm uppercase tracking-wide">
+            <th class="p-4">Event</th>
+            <th class="p-4">Tickets Sold</th>
+            <th class="p-4">Revenue</th>
+            <th class="p-4">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          {% for event in sales %}
+            <tr class="hover:bg-muted/50 transition-colors">
+              <td class="p-4 text-foreground font-medium flex items-center gap-2">
+                🎤 {{ event.title }}
+              </td>
+              <td class="p-4 text-foreground">
+                🎟️ {{ event.tickets_sold }} / <span class="text-gray-400">{{ event.capacity }}</span>
+              </td>
+              <td class="p-4 text-foreground">
+                💰 ${{ event.revenue|number_format(2, '.', ',') }}
+              </td>
+              <td class="p-4">
+                {% if event.status == 'ACTIVE' %}
+                  <span class="px-2 py-1 bg-chart-2 text-primary-foreground rounded-md text-sm">🟢 Active</span>
+                {% elseif event.status == 'FULL' %}
+                  <span class="px-2 py-1 bg-warning text-primary-foreground rounded-md text-sm">🔴 Full</span>
+                {% elseif event.status == 'EXPIRED' %}
+                  <span class="px-2 py-1 bg-muted text-primary-foreground rounded-md text-sm">⚪ Expired</span>
+                {% else %}
+                  <span class="px-2 py-1 bg-gray-500 text-primary-foreground rounded-md text-sm">❓ {{ event.status }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="4" class="p-6 text-center text-foreground text-lg">No sales data available</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 
         <!-- Promotional Tools Section -->
   <!-- Promotional Tools Section -->
