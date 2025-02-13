@@ -172,7 +172,6 @@ class AuthController extends Controller
         }
 
         $client = new Google_Client();
-
         $client->setClientId($_ENV['GOOGLE_CLIENT_ID']);
         $client->setClientSecret($_ENV['GOOGLE_CLIENT_SECRET']);
         $client->setRedirectUri($_ENV['GOOGLE_REDIRECT_URI']);
@@ -201,29 +200,32 @@ class AuthController extends Controller
         $user = $userModel->getUserByEmail($email);
 
         if (!$user) {
+            $randomPassword = bin2hex(random_bytes(8));
+
             $userId = $userModel->createUser([
                 'email' => $email,
                 'name' => $name,
                 'avatar_url' => $avatar,
                 'role' => 'user',
-                'password' => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT)
+                'password' => password_hash($randomPassword, PASSWORD_DEFAULT)
             ]);
+
             $user = $userModel->getUserById($userId);
         }
 
-        Session::start();
-        Session::set('user', [
-            'id' => $user->id,
-            'name' => $name,
-            'email' => $email,
-            'avatar_url' => $avatar
-        ]);
-
-
+        if ($user && is_array($user)) {
+            $_SESSION['user'] = [
+                'id' => $user['id'],
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'avatar_url' => $user['avatar_url']
+            ];
+        }
 
         header("Location: /");
         exit();
     }
+
 
     public function githubLog()
     {
@@ -263,21 +265,23 @@ class AuthController extends Controller
         if (!$existingUser) {
             $userId = $userModel->createUser([
                 'email' => $user['email'],
-                'name' => $user['name'],
-                'avatar_url' => $user['avatar_url'],
+                'name' => $user['name'] ?? 'GitHub User',
+                'avatar_url' => $user['avatar_url'] ?? 'default_avatar.png',
                 'role' => 'user',
-                'password' => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT) // Generate password
+                'password' => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT)
             ]);
+
             $existingUser = $userModel->getUserById($userId);
         }
 
-        Session::start();
-        Session::set('user', [
-            'id' => $existingUser->id,
-            'name' => $user['name'],
-            'email' => $user['email'],
-            'avatar_url' => $user['avatar_url']
-        ]);
+        if ($existingUser && is_array($existingUser)) {
+            $_SESSION['user'] = [
+                'id' => $existingUser['id'],
+                'name' => $existingUser['name'],
+                'email' => $existingUser['email'],
+                'avatar_url' => $existingUser['avatar_url']
+            ];
+        }
 
         header("Location: /");
         exit();
@@ -285,7 +289,7 @@ class AuthController extends Controller
 
 
 
-
+    
     private function getGitHubAccessToken($code)
     {
         $url = 'https://github.com/login/oauth/access_token';
