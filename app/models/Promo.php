@@ -3,6 +3,7 @@
 namespace Model;
 
 use Core\Model;
+use PDO;
 
 class Promo extends Model {
     public function insertPromo($data){
@@ -18,7 +19,7 @@ class Promo extends Model {
               ORDER BY p.id DESC";
     $stmt = $this->db->prepare($query);
     $stmt->execute([$userId]);
-    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
     
     public function deletePromo($id) {
