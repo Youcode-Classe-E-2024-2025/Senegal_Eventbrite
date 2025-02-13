@@ -1,0 +1,15 @@
+{# payment_success.twig #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation réussie</title>
+</head>
+<body>
+    <h1>Votre paiement a été confirmé avec succès !</h1>
+    <h2>Voici votre QR Code :</h2>
+    <!-- Afficher l'image du QR Code -->
+    <img src="data:image/png;base64,{{ qrCode }}" alt="QR Code">
+</body>
+</html>

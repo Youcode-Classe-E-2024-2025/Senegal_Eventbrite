@@ -58,6 +58,7 @@ $router = new Router();
             '/admin' => [dashboardController::class, 'dashboard'],
             '/google-login' => [AuthController::class, 'googleLog'],
             '/github-login' => [AuthController::class, 'githubLog'],
+            '/payment_success' => [PaymentController::class, 'handlePaymentSuccess']
         ],
         'POST' => [
       '/create-reservation'=> [ReservationsController::class, 'createReservation'],

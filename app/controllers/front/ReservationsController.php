@@ -1,45 +1,46 @@
 <?php
 
-
 namespace App\Controllers;
 
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
+use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
+use Endroid\QrCode\Writer\PngWriter;
 use Models\Reservations;
-use Models\Payments;
+// use Models\Payments;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use App\Core\View;
 use Core\Router;
 use Core\Database;
-use Config; 
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
-use Dompdf\Dompdf;
-use Stripe\Refund;
-use Endroid\QrCode\ErrorCorrectionLevel;
-use Endroid\QrCode\Builder\Builder;
-use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
-use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
-use Endroid\QrCode\Label\LabelInterface;
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-
-
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Core\Payments ;
+use Ramsey\Uuid\Guid\Guid;
 
 class ReservationsController {
     private $view;
     private $router;
     private $reservationsModel;
     private $paymentsModel;
+    private $stripeKey;
 
     public function __construct() {
-        // Initialiser Stripe avec votre clé secrète
-        Stripe::setApiKey('sk_test_51QrHbDRLKEtyBUgCsX4OcjBHKqUQdNi50eA3WLVpE2sqq5ISgiXzHBthI6fb1IhIOaIiO8TAUqnQu5G1IrBhVVg800d3z9CIim');
+        // Charger la clé API depuis les variables d'environnement
+        // $this->stripeKey = getenv('STRIPE_SECRET_KEY');
+        $this->stripeKey = $_ENV['STRIPE_SECRET_KEY'] ?? $_SERVER['STRIPE_SECRET_KEY'] ?? null;
+        if (!$this->stripeKey) {
+            throw new \Exception('La clé API Stripe n\'est pas configurée');
+        }
+        
+        Stripe::setApiKey($this->stripeKey);
+        
         $db = Database::getInstance()->getConnection();
         $this->reservationsModel = new Reservations($db);
+        $this->paymentsModel = new Payments($db);
         $this->view = new View($db);
-
     }
 
     public function reservations() {
@@ -61,311 +62,384 @@ class ReservationsController {
     public function setRouter(Router $router) {
         $this->router = $router;
     }
-    // public function createReservation() {
-    //     try {
-    //         // Récupération des données du formulaire
-    //         $data = json_decode(file_get_contents('php://input'), true);
-            
-    //         // Validation des données
-    //         if (!isset($data['ticket_type']) || !isset($data['quantity'])) {
-    //             throw new \Exception('Données manquantes');
-    //         }
-    
-    //         // Calcul du prix total
-    //         $totalPrice = $this->calculateTotalPrice(
-    //             $data['ticket_type'],
-    //             $data['quantity'],
-    //             [
-    //                 'vip_backstage' => $data['vip_backstage'] ?? false,
-    //                 'vip_dinner' => $data['vip_dinner'] ?? false,
-    //                 'vip_suite' => $data['vip_suite'] ?? false
-    //             ]
-    //         );
-    
-    //         // Création de la session Stripe
-    //         Stripe::setApiKey('votre_cle_stripe_secrete');
-    //         $session = Session::create([
-    //             'payment_method_types' => ['card'],
-    //             'line_items' => [[
-    //                 'price_data' => [
-    //                     'currency' => 'eur',
-    //                     'unit_amount' => $totalPrice * 100, // Stripe utilise les centimes
-    //                     'product_data' => [
-    //                         'name' => 'Billet Festival - ' . ucfirst($data['ticket_type']),
-    //                     ],
-    //                 ],
-    //                 'quantity' => 1,
-    //             ]],
-    //             'mode' => 'payment',
-    //             'success_url' => 'https://votre-site.com/payment-success?session_id={CHECKOUT_SESSION_ID}',
-    //             'cancel_url' => 'https://votre-site.com/payment-cancel',
-    //         ]);
-    
-    //         // Création de la réservation en statut "pending"
-    //         $reservationId = $this->reservationsModel->addReservation(
-    //             $data['user_id'],
-    //             1, // event_id (à adapter selon votre logique)
-    //             $data['ticket_type'],
-    //             $data['quantity'],
-    //             $totalPrice,
-    //             $data['full_name'],
-    //             $data['email'],
-    //             [
-    //                 'backstage' => $data['vip_backstage'] ?? false,
-    //                 'dinner' => $data['vip_dinner'] ?? false,
-    //                 'suite' => $data['vip_suite'] ?? false
-    //             ]
-    //         );
-    
-    //         // Retourner l'ID de session Stripe
-    //         echo json_encode([
-    //             'success' => true,
-    //             'sessionId' => $session->id,
-    //             'reservationId' => $reservationId
-    //         ]);
-    
-    //     } catch (\Exception $e) {
-    //         http_response_code(500);
-    //         echo json_encode(['error' => $e->getMessage()]);
-    //     }
-    // }
-    // public function createReservation() {
-    //     try {
-    //         // Log les données reçues
-    //         $rawData = file_get_contents('php://input');
-    //         error_log('Données reçues: ' . $rawData);
-            
-    //         // Décoder les données JSON
-    //         $data = json_decode($rawData, true);
-    //         error_log('Données décodées: ' . print_r($data, true));
-            
-    //         // Vérifier si les données obligatoires sont présentes
-    //         if (!isset($data['ticket_type']) || !isset($data['quantity'])) {
-    //             throw new \Exception('Données manquantes: ticket_type ou quantity');
-    //         }
-            
-    //         // Log des variables importantes
-    //         error_log('Type de billet: ' . $data['ticket_type']);
-    //         error_log('Quantité: ' . $data['quantity']);
-            
-    //         // Réponse simple pour tester
-    //         echo json_encode([
-    //             'status' => 'success',
-    //             'message' => 'Données reçues avec succès',
-    //             'data' => $data
-    //         ]);
-            
-    //     } catch (\Exception $e) {
-    //         error_log('Erreur dans createReservation: ' . $e->getMessage());
-    //         http_response_code(500);
-    //         echo json_encode([
-    //             'status' => 'error',
-    //             'message' => $e->getMessage()
-    //         ]);
-    //     }
-    // }
-    // public function createReservation() {
-    //     try {
-    //         // Récupérer et décoder les données
-    //         $data = json_decode(file_get_contents('php://input'), true);
-
-    //         // Calculer le prix total
-    //         $totalPrice = $this->calculateTotalPrice($data);
-
-    //         // Créer la session Stripe
-    //         $session = Session::create([
-    //             'payment_method_types' => ['card'],
-    //             'line_items' => [[
-    //                 'price_data' => [
-    //                     'currency' => 'eur',
-    //                     'unit_amount' => $totalPrice * 100, // Stripe utilise les centimes
-    //                     'product_data' => [
-    //                         'name' => 'Festival Pass - ' . strtoupper($data['ticket_type']),
-    //                         'description' => 'Quantité: ' . $data['quantity']
-    //                     ],
-    //                 ],
-    //                 'quantity' => 1,
-    //             ]],
-    //             'mode' => 'payment',
-    //             'success_url' => 'http://votre-domaine.com/payment-success?session_id={CHECKOUT_SESSION_ID}',
-    //             'cancel_url' => 'http://votre-domaine.com/payment-cancel',
-    //             'metadata' => [
-    //                 'ticket_type' => $data['ticket_type'],
-    //                 'quantity' => $data['quantity'],
-    //                 'full_name' => $data['full_name'],
-    //                 'email' => $data['email']
-    //             ]
-    //         ]);
-
-    //         // Créer la réservation en status "pending"
-    //         $reservationId = $this->reservationsModel->addReservation(
-    //             null, // user_id (si besoin)
-    //             1,   // event_id (à adapter selon votre événement)
-    //             $data['ticket_type'],
-    //             $data['quantity'],
-    //             $totalPrice,
-    //             $data['full_name'],
-    //             $data['email'],
-    //             [
-    //                 'vip_dinner' => isset($data['vip_dinner']) ? true : false
-    //             ]
-    //         );
-
-    //         // Retourner l'ID de session Stripe et l'ID de réservation
-    //         echo json_encode([
-    //             'status' => 'success',
-    //             'sessionId' => $session->id,
-    //             'reservationId' => $reservationId,
-    //             'url' => $session->url // URL de redirection Stripe
-    //         ]);
-
-    //     } catch (\Exception $e) {
-    //         error_log('Erreur dans createReservation: ' . $e->getMessage());
-    //         http_response_code(500);
-    //         echo json_encode([
-    //             'status' => 'error',
-    //             'message' => $e->getMessage()
-    //         ]);
-    //     }
-    // }
 
     public function createReservation() {
         try {
-            // Récupérer et décoder les données
-            $data = json_decode(file_get_contents('php://input'), true);
-    
-            // Vérifier que les données nécessaires sont présentes
-            if (!isset($data['ticket_type']) || !isset($data['quantity'])) {
-            // if (!isset($data['ticket_type']) || !isset($data['quantity']) || !isset($data['full_name']) || !isset($data['email'])) {
-
-                throw new \Exception('Données manquantes');
-            }
-    
-            // Calculer le prix total
+            $data = $this->validateAndSanitizeInput();
             $totalPrice = $this->calculateTotalPrice($data);
-    
+            
             // Créer la session Stripe
-            $session = Session::create([
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'unit_amount' => $totalPrice * 100, // Stripe utilise les centimes
-                        'product_data' => [
-                            'name' => 'Festival Pass - ' . strtoupper($data['ticket_type']),
-                            'description' => 'Quantité: ' . $data['quantity']
-                        ],
-                    ],
-                    'quantity' => 1,
-                ]],
-                'mode' => 'payment',
-                'success_url' => 'http://votre-domaine.com/payment-success?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => 'http://votre-domaine.com/payment-cancel',
-                'metadata' => [
-                    'ticket_type' => $data['ticket_type'],
-                    'quantity' => $data['quantity'],
-                    'full_name' => $data['full_name'],
-                    'email' => $data['email']
-                ]
-            ]);
-    
-            // // Créer les options VIP
-            // $vipOptions = [
-            //     'backstage' => isset($data['vip_backstage']) ? true : false,
-            //     'dinner' => isset($data['vip_dinner']) ? true : false,
-            //     'suite' => isset($data['vip_suite']) ? true : false
-            // ];
-    
-            // Créer la réservation en statut "pending"
+            $session = $this->createStripeSession($data, $totalPrice);
+            
+            // Générer un identifiant unique pour la réservation
+            $uniqueId = $this->generateUniqueId();
+            
+            // Créer la réservation avec statut "pending"
             $reservationId = $this->reservationsModel->addReservation(
-                1, // user_id (ajustez selon votre logique)
-                1,   // event_id (à adapter)
+                $data['user_id'] ?? 1,
+                1, // event_id
                 $data['ticket_type'],
                 $data['quantity'],
                 $totalPrice,
-                // $data['full_name'],
-                // $data['email'],
-                //$vipOptions // Passez ici les options VIP
+                $data['full_name'] ?? '',
+                $data['email'] ?? '',
+                $uniqueId ,
+                'pending'
             );
-    
-            // Retourner l'ID de session Stripe et l'ID de réservation
+
+            // Enregistrer les détails du paiement
+            $this->paymentsModel->createPaymentRecord([
+                'reservation_id' => $reservationId,
+                'stripe_session_id' => $session->id,
+                'amount' => $totalPrice,
+                'status' => 'pending',
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+
             echo json_encode([
                 'status' => 'success',
                 'sessionId' => $session->id,
                 'reservationId' => $reservationId,
-                'url' => $session->url // URL de redirection Stripe
+                'url' => $session->url
             ]);
-    
+
         } catch (\Exception $e) {
-            error_log('Erreur dans createReservation: ' . $e->getMessage());
-            http_response_code(500);
-            echo json_encode([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
+            $this->handleError($e);
         }
     }
-    
-    private function calculateTotalPrice($data) {
-        $basePrice = 0;
-        switch ($data['ticket_type']) {
-            case 'vip':
-                $basePrice = 599;
-                break;
-            case 'premium':
-                $basePrice = 299;
-                break;
-            case 'standard':
-                $basePrice = 149;
-                break;
+
+    private function validateAndSanitizeInput() {
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        if (!$data) {
+            throw new \Exception('Données JSON invalides');
         }
 
-        // Ajouter le prix des options VIP
-        if (isset($data['vip_dinner'])) {
-            $basePrice += 299; // Prix du dîner VIP
+        $requiredFields = ['ticket_type', 'quantity', 'full_name', 'email'];
+        foreach ($requiredFields as $field) {
+            if (!isset($data[$field]) || empty($data[$field])) {
+                throw new \Exception("Le champ {$field} est requis");
+            }
         }
 
-        return $basePrice * intval($data['quantity']);
+        // Valider le type de billet
+        if (!in_array($data['ticket_type'], ['VIP', 'PREMIUM', 'STANDART'])) {
+            throw new \Exception('Type de billet invalide');
+        }
+
+        // Valider la quantité
+        if (!filter_var($data['quantity'], FILTER_VALIDATE_INT, ["options" => ["min_range" => 1, "max_range" => 10]])) {
+            throw new \Exception('Quantité invalide (1-10 billets maximum)');
+        }
+
+        // Valider l'email
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            throw new \Exception('Email invalide');
+        }
+
+        return $data;
+    }
+
+    private function createStripeSession($data, $totalPrice) {
+        return Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'eur',
+                    'unit_amount' => $totalPrice * 100,
+                    'product_data' => [
+                        'name' => 'Festival Pass - ' . strtoupper($data['ticket_type']),
+                        'description' => "Quantité: {$data['quantity']}"
+                    ],
+                ],
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => $_ENV['APP_URL'] . '/payment-success?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => $_ENV['APP_URL'] . '/payment-cancel',
+            'metadata' => [
+                'reservation_id' => $data['reservation_id'] ?? null,
+                'ticket_type' => $data['ticket_type'],
+                'quantity' => $data['quantity'],
+                'email' => $data['email']
+            ]
+        ]);
     }
 
     public function handlePaymentSuccess() {
         try {
-            $session_id = $_GET['session_id'];
-            $reservation_id = $_GET['reservation_id'];
-    
-            // Vérifier le paiement avec Stripe
-            Stripe::setApiKey('sk_test_51QrHbDRLKEtyBUgCsX4OcjBHKqUQdNi50eA3WLVpE2sqq5ISgiXzHBthI6fb1IhIOaIiO8TAUqnQu5G1IrBhVVg800d3z9CIim');
-            $session = Session::retrieve($session_id);
-    
-            if ($session->payment_status === 'paid') {
-                // Générer le QR Code
-                $qrCode = Builder::create()
-                    ->data("reservation_id=$reservation_id")
-                    ->encoding(new Encoding('UTF-8'))
-                    ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
-                    ->size(300)
-                    ->margin(10)
-                    ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
-                    ->build();
-    
-                // Convertir le QR code en base64
-                $writer = new PngWriter();
-                $result = $writer->write($qrCode);
-                $qrCodeBase64 = base64_encode($result->getString());
-    
-                // Mettre à jour la réservation
-                $this->reservationsModel->updateReservationStatus($reservation_id, 'paid', $qrCodeBase64);
-    
-                // Envoyer l'email de confirmation
-                $this->sendConfirmationEmail($reservation_id);
-    
-                // Redirection vers la page de succès
-                header('Location: /reservation-success');
+            if (!isset($_GET['session_id'])) {
+                throw new \Exception('Session ID manquant');
             }
+
+            $session = Session::retrieve($_GET['session_id']);
+            $payment = $this->paymentsModel->getPaymentByStripeSessionId($session->id);
+            
+            if (!$payment) {
+                throw new \Exception('Paiement non trouvé');
+            }
+
+            if ($session->payment_status === 'paid') {
+                // Mettre à jour le statut du paiement
+                $this->paymentsModel->updatePaymentStatus(
+                    $payment['id'],
+                    'completed',
+                    json_encode([
+                        'stripe_payment_intent' => $session->payment_intent,
+                        'payment_method' => $session->payment_method_types[0],
+                        'completed_at' => date('Y-m-d H:i:s')
+                    ])
+                );
+
+                // Générer et sauvegarder le QR code
+                $qrCodeData = $this->generateQrCode($payment['reservation_id']);
+                
+                // Mettre à jour la réservation
+                $this->reservationsModel->updateReservation(
+                    $payment['reservation_id'],
+                    [
+                        'status' => 'confirmed',
+                        'qr_code' => $qrCodeData,
+                        'payment_confirmed_at' => date('Y-m-d H:i:s')
+                    ]
+                );
+
+                // Envoyer l'email de confirmation avec le QR code
+                $this->sendConfirmationEmail($payment['reservation_id']);
+
+                header('Location: /reservation-success');
+                exit;
+            }
+
         } catch (\Exception $e) {
-            // Gérer l'erreur
-            error_log($e->getMessage());
-            header('Location: /error-page');
+            $this->handleError($e);
         }
     }
+
+    private function generateTicketPDF($reservationId, $qrCodeData) {
+        try {
+            $reservation = $this->reservationsModel->getReservationById($reservationId);
+            
+            // Configurer DomPDF
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isPhpEnabled', true);
+            $options->set('isRemoteEnabled', true);
+            
+            $dompdf = new Dompdf($options);
+            
+            // Générer le HTML du ticket
+            $html = $this->generateTicketHTML($reservation, $qrCodeData);
+            
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            // Créer le dossier de stockage des PDF s'il n'existe pas
+            $pdfDir = $_SERVER['DOCUMENT_ROOT'] . '/storage/tickets/';
+            if (!is_dir($pdfDir)) {
+                mkdir($pdfDir, 0755, true);
+            }
+
+            // Générer un nom de fichier unique
+            $filename = 'ticket_' . $reservation['unique_id'] . '.pdf';
+            $pdfPath = $pdfDir . $filename;
+
+            // Sauvegarder le PDF
+            file_put_contents($pdfPath, $dompdf->output());
+
+            return '/storage/tickets/' . $filename; // Retourner le chemin relatif
+        } catch (\Exception $e) {
+            error_log("Erreur lors de la génération du PDF: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    private function generateTicketHTML($reservation, $qrCodeData) {
+        // Convertir les dates en format lisible
+        $eventDate = date('d/m/Y', strtotime($reservation['event_date']));
+        $purchaseDate = date('d/m/Y H:i', strtotime($reservation['payment_confirmed_at']));
+
+        return '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Ticket Festival</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                }
+                .ticket {
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    border: 2px solid #000;
+                    border-radius: 10px;
+                }
+                .header {
+                    text-align: center;
+                    border-bottom: 2px solid #000;
+                    padding-bottom: 20px;
+                    margin-bottom: 20px;
+                }
+                .qr-code {
+                    text-align: center;
+                    margin: 20px 0;
+                }
+                .qr-code img {
+                    max-width: 200px;
+                }
+                .details {
+                    margin: 20px 0;
+                }
+                .footer {
+                    text-align: center;
+                    font-size: 12px;
+                    margin-top: 20px;
+                    padding-top: 20px;
+                    border-top: 1px solid #ccc;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="ticket">
+                <div class="header">
+                    <h1>Festival 2024</h1>
+                    <h2>Billet ' . htmlspecialchars($reservation['ticket_type']) . '</h2>
+                </div>
+                
+                <div class="details">
+                    <p><strong>Numéro de réservation:</strong> ' . htmlspecialchars($reservation['unique_id']) . '</p>
+                    <p><strong>Type de billet:</strong> ' . htmlspecialchars($reservation['ticket_type']) . '</p>
+                    <p><strong>Quantité:</strong> ' . htmlspecialchars($reservation['quantity']) . '</p>
+                    <p><strong>Date de l\'événement:</strong> ' . htmlspecialchars($eventDate) . '</p>
+                    <p><strong>Date d\'achat:</strong> ' . htmlspecialchars($purchaseDate) . '</p>
+                </div>
+
+                <div class="qr-code">
+                    <img src="data:image/png;base64,' . $qrCodeData . '" alt="QR Code">
+                </div>
+
+                <div class="footer">
+                    <p>Ce billet est unique et ne peut être utilisé qu\'une seule fois.</p>
+                    <p>Conservez-le précieusement et présentez-le à l\'entrée du festival.</p>
+                </div>
+            </div>
+        </body>
+        </html>';
+    }
+
+    private function sendConfirmationEmail($reservationId, $pdfPath) {
+        try {
+            $reservation = $this->reservationsModel->getReservationById($reservationId);
+            
+            $mail = new PHPMailer(true);
+            $mail->isHTML(true);
+            $mail->setFrom($_ENV['MAIL_FROM'], 'Festival');
+            $mail->addAddress($reservation['email']);
+            $mail->Subject = 'Confirmation de votre réservation';
+            
+            // Ajouter le PDF en pièce jointe
+            $pdfFullPath = $_SERVER['DOCUMENT_ROOT'] . $pdfPath;
+            if (file_exists($pdfFullPath)) {
+                $mail->addAttachment($pdfFullPath, 'votre_billet.pdf');
+            }
+            
+            // Créer le contenu HTML de l'email
+            $emailContent = $this->view->render('emails/reservation-confirmation', [
+                'reservation' => $reservation,
+                'qrCode' => $reservation['qr_code']
+            ], true);
+            
+            $mail->Body = $emailContent;
+            $mail->send();
+            
+        } catch (\Exception $e) {
+            error_log("Erreur d'envoi d'email: " . $e->getMessage());
+            // Ne pas propager l'erreur pour ne pas bloquer le processus
+        }
+    }
+
+
+    private function generateQrCode($reservationId) {
+        $reservation = $this->reservationsModel->getReservationById($reservationId);
+        
+        // Données à encoder dans le QR code
+        $qrData = [
+            'id' => $reservation['unique_id'],
+            'type' => $reservation['ticket_type'],
+            'quantity' => $reservation['quantity'],
+            'timestamp' => time(),
+            'hash' => hash('sha256', $reservation['unique_id'] . $_ENV['QR_SALT'])
+        ];
+
+        // Créer le QR code
+        $result = Builder::create()
+            ->data(json_encode($qrData))
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
+            ->size(300)
+            ->margin(10)
+            ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
+            ->writer(new PngWriter())
+            ->build();
+
+        // Retourner le QR code en base64
+        return base64_encode($result->getString());
+    }
+
+    private function generateUniqueId() {
+        return uniqid('RSV-', true) . '-' . bin2hex(random_bytes(4));
+    }
+
+    private function handleError(\Exception $e) {
+        error_log($e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ]);
+    }
+
+    private function calculateTotalPrice($data) {
+        $prices = [
+            'VIP' => 599,
+            'PREMIUM' => 299,
+            'STANDART' => 149
+        ];
+
+        if (!isset($prices[$data['ticket_type']])) {
+            throw new \Exception('Type de billet invalide');
+        }
+
+        return $prices[$data['ticket_type']] * intval($data['quantity']);
+    }
+
+    // private function sendConfirmationEmail($reservationId) {
+    //     try {
+    //         $reservation = $this->reservationsModel->getReservationById($reservationId);
+            
+    //         $mail = new PHPMailer(true);
+    //         $mail->isHTML(true);
+    //         $mail->setFrom($_ENV['MAIL_FROM'], 'Festival');
+    //         $mail->addAddress($reservation['email']);
+    //         $mail->Subject = 'Confirmation de votre réservation';
+            
+    //         // Créer le contenu HTML de l'email avec le QR code
+    //         $emailContent = $this->view->render('emails/reservation-confirmation', [
+    //             'reservation' => $reservation,
+    //             'qrCode' => $reservation['qr_code']
+    //         ], true);
+            
+    //         $mail->Body = $emailContent;
+    //         $mail->send();
+            
+    //     } catch (\Exception $e) {
+    //         error_log("Erreur d'envoi d'email: " . $e->getMessage());
+    //         // Ne pas propager l'erreur pour ne pas bloquer le processus
+    //     }
+    // }
 }

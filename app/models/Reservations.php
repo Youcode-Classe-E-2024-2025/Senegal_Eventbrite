@@ -12,45 +12,59 @@ class Reservations {
     /**
      * Ajoute une nouvelle réservation
      */
-    public function addReservation($userId, $eventId, $ticketType, $quantity, $totalPrice) {
+    public function addReservation($userId, $eventId, $ticketType, $quantity, $totalPrice, $fullName, $email, $uniqueId) {
         try {
             // Vérifier si le type de ticket est valide
             if (!in_array($ticketType, ['VIP', 'PREMIUM', 'STANDART'])) {
                 throw new \Exception("Type de ticket invalide : " . $ticketType);
             }
-
+    
             // Log des données avant l'insertion
             error_log("Ajout de réservation avec les paramètres : " . print_r([
                 'user_id' => $userId,
                 'event_id' => $eventId,
                 'ticket_type' => $ticketType,
                 'quantity' => $quantity,
-                'total_price' => $totalPrice
+                'total_price' => $totalPrice,
+                'full_name' => $fullName,
+                'email' => $email,
+                'unique_id' => $uniqueId
             ], true));
-
-            $sql = "INSERT INTO reservations (user_id, event_id, ticket_type, quantity, total_price, reservation_date) 
-                    VALUES (:user_id, :event_id, :ticket_type, :quantity, :total_price, CURRENT_TIMESTAMP)";
+    
+            // Préparer la requête d'insertion avec les nouveaux champs
+            $sql = "INSERT INTO reservations (user_id, event_id, ticket_type, quantity, total_price, status, unique_id, full_name, email, reservation_date, created_at, updated_at) 
+                    VALUES (:user_id, :event_id, :ticket_type, :quantity, :total_price, :status, :unique_id, :full_name, :email, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
             
+            // Préparer la déclaration SQL
             $stmt = $this->db->prepare($sql);
+    
+            // Exécuter la requête avec les paramètres appropriés
             $stmt->execute([
                 ':user_id' => $userId,
                 ':event_id' => $eventId,
                 ':ticket_type' => $ticketType,
                 ':quantity' => $quantity,
-                ':total_price' => $totalPrice
+                ':total_price' => $totalPrice,
+                ':status' => 'pending', 
+                ':unique_id' => $uniqueId,
+                ':full_name' => $fullName,
+                ':email' => $email
             ]);
-
+    
+            // Récupérer l'ID de la réservation nouvellement insérée
             $reservationId = $this->db->lastInsertId();
-
+    
             // Mettre à jour les statistiques de l'événement
             $this->updateEventStatistics($eventId, $quantity);
-
+    
             return $reservationId;
+    
         } catch (\PDOException $e) {
             error_log('Erreur lors de l\'ajout de la réservation: ' . $e->getMessage());
             throw new \Exception("Erreur lors de l'ajout de la réservation: " . $e->getMessage());
         }
     }
+    
 
     /**
      * Met à jour les statistiques de l'événement après une réservation

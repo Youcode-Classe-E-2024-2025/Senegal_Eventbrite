@@ -42,27 +42,63 @@ CREATE TABLE promo (
     expiration_date TIMESTAMP NOT NULL
 );
 
--- Reservations table
+-- -- Reservations table
+-- CREATE TABLE reservations (
+--     id SERIAL PRIMARY KEY,
+--     user_id INT REFERENCES users(id) ON DELETE CASCADE,
+--     event_id INT REFERENCES events(id) ON DELETE CASCADE,
+--     ticket_type VARCHAR(50) NOT NULL CHECK (ticket_type IN ('VIP', 'PREMIUM', 'STANDART')),
+--     quantity INT CHECK (quantity > 0),
+--     total_price DECIMAL(10, 2) CHECK (total_price >= 0),
+--     reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- -- Payments table
+-- CREATE TABLE payments (
+--     id INT PRIMARY KEY AUTO_INCREMENT,
+--     reservation_id INT NOT NULL,
+--     stripe_session_id VARCHAR(255) NOT NULL,
+--     amount DECIMAL(10,2) NOT NULL,
+--     status VARCHAR(50) NOT NULL,
+--     metadata JSON,
+--     created_at DATETIME NOT NULL,
+--     updated_at DATETIME NOT NULL,
+--     FOREIGN KEY (reservation_id) REFERENCES reservations(id)
+-- );
+
+
+-- Table réservations
 CREATE TABLE reservations (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    event_id INT REFERENCES events(id) ON DELETE CASCADE,
+    unique_id VARCHAR(50) NOT NULL UNIQUE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    event_id INTEGER REFERENCES events(id) ON DELETE CASCADE,
     ticket_type VARCHAR(50) NOT NULL CHECK (ticket_type IN ('VIP', 'PREMIUM', 'STANDART')),
-    quantity INT CHECK (quantity > 0),
+    quantity INTEGER CHECK (quantity > 0 AND quantity <= 10),
     total_price DECIMAL(10, 2) CHECK (total_price >= 0),
-    reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled')),
+    qr_code TEXT,
+    pdf_path VARCHAR(255),
+    reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    payment_confirmed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Payments table
+-- Table paiements
 CREATE TABLE payments (
     id SERIAL PRIMARY KEY,
-    reservation_id INT REFERENCES reservations(id) ON DELETE CASCADE,
-    payment_method VARCHAR(50) NOT NULL,
-    transaction_id VARCHAR(100),
-    amount DECIMAL(10, 2) CHECK (amount >= 0),
-    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('success', 'pending', 'failed'))
+    reservation_id INTEGER NOT NULL REFERENCES reservations(id) ON DELETE CASCADE,
+    stripe_session_id VARCHAR(255) NOT NULL UNIQUE,
+    amount DECIMAL(10,2) NOT NULL CHECK (amount >= 0),
+    status VARCHAR(50) NOT NULL CHECK (status IN ('pending', 'completed', 'failed', 'refunded')),
+    metadata JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- Event statistics table
 CREATE TABLE event_statistics (
@@ -104,6 +140,11 @@ CREATE INDEX idx_reservations_user_event ON reservations(user_id, event_id);
 CREATE INDEX idx_payments_reservation_id ON payments(reservation_id);
 CREATE INDEX idx_comments_event_id ON comments(event_id);
 CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_reservations_unique_id ON reservations(unique_id);
+CREATE INDEX idx_reservations_email ON reservations(email);
+CREATE INDEX idx_reservations_status ON reservations(status);
+CREATE INDEX idx_payments_stripe_session_id ON payments(stripe_session_id);
+CREATE INDEX idx_payments_status ON payments(status);
 
 -- Ajouter des utilisateurs
 INSERT INTO users (role, email, password, name, avatar_url) VALUES

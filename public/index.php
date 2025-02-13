@@ -6,7 +6,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 \Config\Config::init();
 
-
 session_start();
 
 require_once __DIR__ . '/../app/models/Reservations.php';
