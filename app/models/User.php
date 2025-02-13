@@ -3,13 +3,18 @@
 namespace Model;
 
 use Core\Database;
+use Exception;
 use PDO;
 
 class User
 {
+    public $id;
     public $username;
     public $email;
     public $password;
+    public $name;
+    public $role;
+    public $avatar_url;
     private $db;
 
     public function __construct()
@@ -28,11 +33,11 @@ class User
         $stmt->execute();
 
         if ($stmt->rowCount() > 0) {
-            return false;
+            throw new Exception("Email already exists");
         }
 
         $query = 'INSERT INTO users (role, email, password, name, avatar_url) 
-                  VALUES (:role, :email, :password, :name, :avatar_url)';
+              VALUES (:role, :email, :password, :name, :avatar_url)';
 
         $stmt = $db->prepare($query);
 
@@ -47,7 +52,13 @@ class User
         $stmt->bindParam(':avatar_url', $avatar_url);
 
         $stmt->execute();
+
+        $this->id = $db->lastInsertId();
+        $this->role = $role;
+        $this->name = $name;
+        $this->avatar_url = $avatar_url;
     }
+
 
     public static function findByEmail($email)
     {
