@@ -204,8 +204,8 @@
     <aside class="fixed inset-y-0 left-0 w-64 bg-card shadow-sm border-r border-border">
       <div class="p-4 border-b border-border">
         <div class="flex items-center gap-2">
-          <img src="https://images.unsplash.com/photo-1517292987719-0369a794ec0f" alt="Logo" class="w-8 h-8 rounded-full">
-          <h1 class="text-xl font-bold text-foreground">EventHub</h1>
+          <img src="{{ session.user.avatar_url ?: '/assets/uploads/userAvatar/5856.jpg' }}" alt="Logo" class="w-8 h-8 rounded-full">
+          <h1 class="text-xl font-bold text-foreground">{{session.user.name}}</h1>
         </div>
       </div>
       <nav class="p-4 space-y-2">
@@ -292,7 +292,7 @@
       <!-- Create New Event Form -->
       <div class="bg-card p-6 rounded-sm shadow-sm border border-border w-full">
         <h2 class="text-2xl font-bold text-foreground mb-6">Create New Event</h2>
-        <form id="form" class="space-y-6" method="POST" enctype="multipart/form-data">
+        <form id="form" action="/createEvent" class="space-y-6" method="POST" enctype="multipart/form-data">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Event Title -->
             <div>
@@ -309,10 +309,11 @@
               <label for="category" class="block text-sm font-medium text-accent mb-2">Category</label>
               <select id="category" name="category" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
                 <option value="">Select Category</option>
-                <option value="Conference">Conference</option>
-                <option value="Concert">Concert</option>
-                <option value="Workshop">Workshop</option>
-                <option value="Networking">Networking</option>
+                {% if categories is defined and categories|length %}
+                  {% for category in categories %}
+                    <option value="{{ category.title }}" data-image="{{ category.image }}">{{ category.title }}</option>
+                  {% endfor %}
+                {% endif %}
               </select>
             </div>
             <!-- Capacity -->
@@ -345,6 +346,14 @@
               <label for="price" class="block text-sm font-medium text-accent mb-2">Price ($)</label>
               <input type="number" id="price" name="price" step="0.01" min="0" required class="w-full p-2 border border-input rounded-sm focus:ring-2 focus:ring-ring focus:outline-none bg-gray-800 text-white">
             </div>
+            <!-- Thumbnail Upload -->
+            <div class="md:col-span-2">
+              <label for="thumbnail" class="block text-sm font-medium text-accent mb-2">Poster</label>
+              <div id="thumbnail-dropzone" class="border border-dashed border-input rounded-sm p-4 text-center cursor-pointer bg-gray-800 text-white">
+                <p>Click or drag file to upload Poster</p>
+              </div>
+              <input type="file" id="thumbnail" name="thumbnail" accept="image/*" class="hidden">
+            </div>
           </div>
           <!-- Action Buttons -->
           <div class="flex justify-end gap-4">
@@ -356,7 +365,7 @@
     </main>
   </div>
 
-  <!-- JavaScript for live updating the ticket preview -->
+  <!-- JavaScript for live updating the ticket preview and handling thumbnail upload -->
   <script>
     // Update the ticket title in both containers as the user types
     document.getElementById('title').addEventListener('input', function() {
@@ -370,33 +379,25 @@
       document.getElementById('ticket-artist').textContent = this.value || 'Olivia Rodrigo';
     });
     
-    // Update the ticket image based on category selection
-    document.getElementById('category').addEventListener('input', function() {
-      const category = this.value;
-      const ticketImage = document.getElementById('ticket-image');
-      let imageUrl;
-      if (category === "Conference") {
-        imageUrl = "/assets/uploads/userEvents/basketball.jpg";
-      } else if (category === "Concert") {
-        imageUrl = "https://images.unsplash.com/photo-1508973376511-88398d6a1f27?auto=format&fit=crop&w=500&q=60";
-      } else if (category === "Workshop") {
-        imageUrl = "https://images.unsplash.com/photo-1584909444596-54e09e7555fb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-      } else if (category === "Networking") {
-        imageUrl = "https://images.unsplash.com/photo-1594623930572-300a3011d9ae?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-      } else {
-        imageUrl = "https://media.pitchfork.com/photos/60db53e71dfc7ddc9f5086f9/1:1/w_1656,h_1656,c_limit/Olivia-Rodrigo-Sour-Prom.jpg";
+    // Update the ticket image based on the selected category's database image
+    document.getElementById('category').addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      let imageUrl = selectedOption.getAttribute('data-image');
+      // Fallback if no image is provided
+      if (!imageUrl) {
+        imageUrl = "/assets/uploads/userEvents/Olivia-Rodrigo-Sour-Prom.jpg";
       }
-      ticketImage.style.backgroundImage = 'url("' + imageUrl + '")';
+      document.getElementById('ticket-image').style.backgroundImage = 'url("' + imageUrl + '")';
     });
     
     // Update the ticket tags by converting comma-separated text to hashtags
     document.getElementById('tags').addEventListener('input', function() {
       const tagsInput = this.value;
       if (tagsInput) {
-        const tags = tagsInput.split(/[, ]+/) // Split by comma or space
-        .filter(tag => tag.trim() !== '') // Remove empty entries
-        .map(tag => '#' + tag.trim()) // Add # to each tag
-        .join(' ');
+        const tags = tagsInput.split(/[, ]+/)
+          .filter(tag => tag.trim() !== '')
+          .map(tag => '#' + tag.trim())
+          .join(' ');
         document.getElementById('ticket-tags').textContent = tags;
       } else {
         document.getElementById('ticket-tags').textContent = '#rock #role';
@@ -463,6 +464,57 @@
     // Generate a random ticket number on page load and update both sides
     const randomTicketNum = '#' + (Math.floor(Math.random() * 90000000) + 10000000);
     document.querySelectorAll('.ticket-number-text').forEach(el => el.textContent = randomTicketNum);
+
+    // --- Thumbnail Upload (Click & Drag/Drop) ---
+    const dropzone = document.getElementById('thumbnail-dropzone');
+    const thumbnailInput = document.getElementById('thumbnail');
+
+    // Clicking the dropzone triggers the file input click
+    dropzone.addEventListener('click', function() {
+      thumbnailInput.click();
+    });
+
+    // Handle file selection via the file input
+    thumbnailInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const file = this.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          dropzone.innerHTML = '<img src="' + e.target.result + '" alt="Thumbnail Preview" class="mx-auto max-h-48">';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Handle drag over for visual feedback
+    dropzone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      dropzone.classList.add('bg-gray-700');
+    });
+
+    dropzone.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      dropzone.classList.remove('bg-gray-700');
+    });
+
+    // Handle file drop
+    dropzone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropzone.classList.remove('bg-gray-700');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        // Create a DataTransfer to assign the dropped file to the file input
+        const dt = new DataTransfer();
+        dt.items.add(files[0]);
+        thumbnailInput.files = dt.files;
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          dropzone.innerHTML = '<img src="' + e.target.result + '" alt="Thumbnail Preview" class="mx-auto max-h-48">';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
   </script>
 </body>
 </html>

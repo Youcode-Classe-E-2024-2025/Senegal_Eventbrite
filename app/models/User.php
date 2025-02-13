@@ -4,6 +4,7 @@ namespace Model;
 
 use Core\Database;
 use Exception;
+use PDO;
 
 class User
 {
@@ -14,11 +15,18 @@ class User
     public $name;
     public $role;
     public $avatar_url;
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getConnection();
+    }
 
     public function save()
     {
         $db = Database::getInstance()->getConnection();
 
+        // Check if the email already exists
         $query = 'SELECT * FROM users WHERE email = :email LIMIT 1';
         $stmt = $db->prepare($query);
         $stmt->bindParam(':email', $this->email);
@@ -63,13 +71,6 @@ class User
         return $result;
     }
 
-    private $db;
-
-    public function __construct()
-    {
-        $this->db = Database::getInstance()->getConnection();
-    }
-
     public function getUserByEmail($email)
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
@@ -81,20 +82,42 @@ class User
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$id]);
-        return $stmt->fetch();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Minimal update method for the users table.
+    public function update($data, $id)
+    {
+        $set = '';
+        foreach ($data as $column => $value) {
+            $set .= "$column = :$column, ";
+        }
+        $set = rtrim($set, ', ');
+        
+        $stmt = $this->db->prepare("UPDATE users SET $set WHERE id = :id");
+        foreach ($data as $key => $value) {
+            $stmt->bindValue(":$key", $value);
+        }
+        $stmt->bindValue(":id", $id, \PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    // Minimal find method to retrieve a user by id.
+    public function find($id)
+    {
+        return $this->getUserById($id);
     }
 
     public function createUser(array $data)
     {
         $stmt = $this->db->prepare("INSERT INTO users (email, name, avatar_url, role, password) VALUES (:email, :name, :avatar_url, :role, :password)");
         $stmt->execute([
-            ':email' => $data['email'],
-            ':name' => $data['name'],
+            ':email'      => $data['email'],
+            ':name'       => $data['name'],
             ':avatar_url' => $data['avatar_url'],
-            ':role' => $data['role'],
-            ':password' => $data['password'],
+            ':role'       => $data['role'],
+            ':password'   => $data['password'],
         ]);
         return $this->db->lastInsertId();
     }
-
 }
