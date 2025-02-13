@@ -36,8 +36,8 @@ class CategoryController extends Controller {
 
             $imagePath = $imageDir . uniqid() . '.' . $extension;
 
-            if ($_FILES['image']['size'] > 2 * 1024 * 1024) {
-                echo "L'image est trop grande (max 2MB).";
+            if ($_FILES['image']['size'] > 10 * 1024 * 1024) {
+                echo "L'image est trop grande (max 10MB).";
                 return;
             }
 
