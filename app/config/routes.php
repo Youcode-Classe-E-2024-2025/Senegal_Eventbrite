@@ -9,6 +9,7 @@ use Controller_back\dashboardController;
 use Controller_front\AuthController;
 use Controller_front\EventController;
 use Controller_front\PromoController;
+use Controller_front\ReservationController;
 
 $router = new Router();
 
@@ -26,6 +27,7 @@ $routes = [
         '/github-login' => [AuthController::class, 'githubLog'],
         '/events/search-suggestions' => [EventController::class, 'searchSuggestions'],
         '/events' => [EventController::class, 'eventPage'],
+        '/reservations/qr/{id}', [ReservationController::class, 'generateQr'],
     ],
     'POST' => [
         '/createCtaegory' => [categoryController::class, 'createCategory'],
@@ -41,6 +43,7 @@ $routes = [
         '/events/(\d+)/participate' => [EventController::class, 'participate'],
         '/events/filter' => [EventController::class, 'filter'],
         '/update-status' => [dashboardController::class, 'updateStatus'],
+        '/reservations/cancel', [ReservationController::class, 'cancel'],
     ]
 ];
 
