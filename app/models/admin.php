@@ -22,6 +22,13 @@ class Admin extends Model {
         return $this->count("users");
     }
 
+    public function updateUserStatus($userId, $isActive)
+{
+    $stmt = $this->db->prepare("UPDATE users SET is_active = :is_active WHERE id = :id");
+    return $stmt->execute(['is_active' => $isActive, 'id' => $userId]);
+}
+
+
 
 }
     

@@ -40,6 +40,7 @@ $routes = [
         '/updatePassword' => [UserController::class, 'updatePassword'],
         '/events/(\d+)/participate' => [EventController::class, 'participate'],
         '/events/filter' => [EventController::class, 'filter'],
+        '/update-status' => [dashboardController::class, 'updateStatus'],
     ]
 ];
 
