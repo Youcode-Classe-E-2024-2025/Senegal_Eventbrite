@@ -24,6 +24,8 @@ $routes = [
         '/admin' => [dashboardController::class, 'dashboard'],
         '/google-login' => [AuthController::class, 'googleLog'],
         '/github-login' => [AuthController::class, 'githubLog'],
+        '/events/search-suggestions' => [EventController::class, 'searchSuggestions'],
+        '/events' => [EventController::class, 'eventPage'],
     ],
     'POST' => [
         '/createCtaegory' => [categoryController::class, 'createCategory'],
@@ -36,6 +38,8 @@ $routes = [
         '/createEvent' => [EventController::class, 'store'],
         '/updateProfileImage' => [UserController::class, 'updateProfileImage'],
         '/updatePassword' => [UserController::class, 'updatePassword'],
+        '/events/(\d+)/participate' => [EventController::class, 'participate'],
+        '/events/filter' => [EventController::class, 'filter'],
         '/update-status' => [dashboardController::class, 'updateStatus'],
     ]
 ];

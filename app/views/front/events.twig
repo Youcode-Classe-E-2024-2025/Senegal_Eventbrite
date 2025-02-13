@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZHOO - Event Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="shortcut icon" href="../../../public/assets/Favicon/favicon-32x32.png" type="image/x-icon" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #121212; }
+        ::-webkit-scrollbar-thumb {
+            background-color: #d4d4c6;
+            border-radius: 10px;
+            border: 2px solid #fff;
+        }
+        .event-card.expired { background-color: rgba(239, 68, 68, 0.1); }
+        .event-card.full { background-color: rgba(245, 158, 11, 0.1); }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    {% block content %}
+    <header class="  z-50 bg-[#] shadow-sm text-white">
+				<div
+					class="container mx-auto px-4 flex items-center">
+					<!-- logo -->
+					<div class="mr-auto md:w-48 flex-shrink-0">
+						<a href="/"><img class="h-16 md:h-20 ml-4" src="../../../public/assets/Logo/banner.png" alt=""/></a>
+					</div>
+					<!-- buttons -->
+					<nav class="contents">
+						<ul class="ml-4 flex items-center justify-end">
+							{% if session.user %}
+								<a class="ml-2 lg:ml-4 pt-4 relative inline-block hover:bg-gray-800 rounded-md flex flex-col items-center cursor-pointer" href='{{session.user.role == "admin" ? "/admin" : "/userDash"}}'>
+									<img class="h-8 w-8 rounded-full" src="{{ session.user.avatar_url ?: '/assets/uploads/userAvatar/5856.jpg' }}" alt="Profile Image"/>
+									<span class="px-4 py-2 text-white duration-200 hover:text-white">
+										{{session.user.name}}
+									</span>
+								</a>
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center" href="/logout">
+										<i class="fas fa-sign-out-alt mr-2"></i> Logout
+									</a>
+								</li>
+							{% else %}
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/login">
+										Login
+									</a>
+								</li>
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/signup">
+										Register
+									</a>
+								</li>
+							{% endif %}
+						</ul>
+					</nav>
+				</div>
+				<hr/>
+				
+			</header>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header with animated count -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold mb-2">Upcoming Events</h1>
+            <p class="text-xl text-gray-400" id="eventCount">
+                Showing {{ events|length }} amazing events
+            </p>
+        </div>
+
+        <!-- Enhanced Search and Filters Section -->
+        <div class="max-w-4xl mx-auto mb-12">
+            <div class="relative mb-8">
+                <input type="text" id="searchInput"
+                    class="w-full p-4 pl-12 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
+                    placeholder="Search events by name, artist, or tags..." />
+                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <div id="autocompleteResults" class="hidden absolute top-full left-0 w-full mt-1 bg-gray-800 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <select id="categoryFilter" class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-yellow-400 focus:outline-none">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.title }}</option>
+                    {% endfor %}
+                </select>
+
+                <select id="priceFilter" class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-yellow-400 focus:outline-none">
+                    <option value="">Any Price</option>
+                    <option value="free">Free</option>
+                    <option value="paid">Paid</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner"></div>
+
+        <!-- Events Container -->
+        <div id="eventsContainer" class="grid gap-6">
+            {% for event in events %}
+            <div class="event-card {{ event.status == 'EXPIRED' ? 'expired' : '' }} {{ (event.capacity - event.participants_count) <= 0 ? 'full' : '' }} bg-gray-800 rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300">
+                <div class="flex flex-col md:flex-row">
+                    <!-- Image container with no padding -->
+                    <div class="md:w-64 h-48 md:h-auto flex-shrink-0">
+                        <img src="{{ event.thumbnail }}" alt="{{ event.title }}" 
+                             class="w-full h-full object-cover" />
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="flex-grow p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-2">{{ event.title }}</h3>
+                                <p class="text-yellow-400 mb-2">{{ event.artist_name }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-2xl font-bold {{ event.price > 0 ? 'text-green-400' : 'text-blue-400' }}">
+                                    {{ event.price > 0 ? '$' ~ event.price|number_format(2, '.', ',') : 'Free' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-4 text-gray-400 text-sm mb-4">
+                            <span><i class="far fa-calendar-alt mr-2"></i>{{ event.date_start|date('M d, Y h:i A') }}</span>
+                            <span><i class="fas fa-map-marker-alt mr-2"></i>{{ event.location }}</span>
+                            <span><i class="fas fa-users mr-2"></i>{{ event.capacity - event.participants_count }} places left</span>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            {% for tag in event.tags %}
+                            <span class="px-3 py-1 bg-gray-700 rounded-full text-xs text-white">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Action Button -->
+                        <div class="flex justify-end">
+                            {% if event.organizer_id != session.user.id %}
+                                {% if event.status == 'EXPIRED' %}
+                                    <button disabled class="px-6 py-2 bg-gray-600 text-white rounded-lg opacity-50 cursor-not-allowed">
+                                        Event Expired
+                                    </button>
+                                {% elseif (event.capacity - event.participants_count) <= 0 %}
+                                    <button disabled class="px-6 py-2 bg-red-600 text-white rounded-lg opacity-50 cursor-not-allowed">
+                                        Sold Out
+                                    </button>
+                                {% else %}
+                                    <button onclick="handleParticipation({{ event.id }})"
+                                            class="px-6 py-2 bg-yellow-400 text-gray-900 rounded-lg hover:bg-yellow-300 transition-colors">
+                                        {{ event.price > 0 ? 'Buy Ticket' : 'Participate' }}
+                                    </button>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-gray-400 text-sm">Your Event</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+  <script>
+  // Debounce helper to limit function calls
+  function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  }
+
+  // Show or hide the loading spinner
+  function toggleLoading(show) {
+    const spinner = document.getElementById("loadingSpinner");
+    spinner.style.display = show ? "block" : "none";
+  }
+
+  // Update event count without GSAP transitions
+  function updateEventCount(count) {
+    const countElement = document.getElementById("eventCount");
+    countElement.textContent = `Showing ${count} amazing event${count !== 1 ? "s" : ""}`;
+  }
+
+  // Helper to render tags whether they come as a string or an array.
+  function renderTags(tags) {
+    let tagsArray = [];
+    if (!tags) return "";
+    if (Array.isArray(tags)) {
+      tagsArray = tags;
+    } else if (typeof tags === "string") {
+      // Remove curly braces if present and split by comma
+      tagsArray = tags.replace(/^\{|\}$/g, "").split(",");
+    }
+    return tagsArray
+      .map(
+        (tag) =>
+          `<span class="px-3 py-1 bg-gray-700 rounded-full text-xs text-white">${tag.trim()}</span>`
+      )
+      .join("");
+  }
+
+  // --- Search with Autocomplete ---
+  const searchInput = document.getElementById("searchInput");
+  const autocompleteResults = document.getElementById("autocompleteResults");
+
+  searchInput.addEventListener(
+    "input",
+    debounce(async (e) => {
+      const query = e.target.value.trim();
+      if (query.length < 2) {
+        autocompleteResults.classList.add("hidden");
+        return;
+      }
+      try {
+        const response = await fetch(
+          `/events/search-suggestions?query=${encodeURIComponent(query)}`
+        );
+        const results = await response.json();
+        if (results.length === 0) {
+          autocompleteResults.classList.add("hidden");
+          return;
+        }
+        autocompleteResults.innerHTML = results
+          .map(
+            (result) => `
+              <div class="p-3 hover:bg-gray-700 cursor-pointer suggestion-item" data-title="${result.title}">
+                ${result.title}
+              </div>
+            `
+          )
+          .join("");
+        autocompleteResults.classList.remove("hidden");
+
+        document.querySelectorAll(".suggestion-item").forEach((item) => {
+          item.addEventListener("click", () => {
+            searchInput.value = item.getAttribute("data-title");
+            autocompleteResults.classList.add("hidden");
+            updateEvents();
+          });
+        });
+      } catch (error) {
+        console.error("Error fetching search suggestions:", error);
+      }
+    }, 300)
+  );
+
+  // Close autocomplete when clicking outside
+  document.addEventListener("click", (e) => {
+    if (
+      !searchInput.contains(e.target) &&
+      !autocompleteResults.contains(e.target)
+    ) {
+      autocompleteResults.classList.add("hidden");
+    }
+  });
+
+  // --- Filter Changes ---
+  const filters = document.querySelectorAll("select");
+  filters.forEach((filter) => {
+    filter.addEventListener("change", debounce(updateEvents, 300));
+  });
+
+  // --- Update Events List ---
+  async function updateEvents() {
+    toggleLoading(true);
+
+    const params = {
+      category: document.getElementById("categoryFilter").value,
+      price: document.getElementById("priceFilter").value,
+      search: searchInput.value.trim(),
+    };
+
+    try {
+      const response = await fetch("/events/filter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      });
+      const events = await response.json();
+
+      if (!Array.isArray(events) || events.length === 0) {
+        document.getElementById("eventsContainer").innerHTML = `
+          <div class="text-center py-12">
+            <i class="fas fa-search text-4xl text-gray-600 mb-4"></i>
+            <p class="text-xl text-gray-400">No events found matching your criteria.</p>
+          </div>
+        `;
+        updateEventCount(0);
+        return;
+      }
+
+      updateEventCount(events.length);
+
+      const eventsHTML = events
+        .map((event) => {
+          // Use fallbacks so that capacity and participants_count are numbers
+          const capacity = event.capacity ? Number(event.capacity) : 0;
+          const participants = event.participants_count ? Number(event.participants_count) : 0;
+          const remaining = capacity - participants;
+          const isExpired = event.status === "EXPIRED";
+          const isFull = remaining <= 0;
+
+          // Use our helper to render tags properly.
+          const tagsHTML = renderTags(event.tags);
+
+          return `
+            <div class="event-card ${isExpired ? "expired" : ""} ${isFull ? "full" : ""} bg-gray-800 rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300">
+              <div class="flex flex-col md:flex-row">
+                <div class="md:w-48 h-48 md:h-auto flex-shrink-0">
+                  <img src="${event.thumbnail}" alt="${event.title}" class="w-full h-full object-cover" />
+                </div>
+                <div class="flex-grow p-6">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="text-2xl font-bold text-white mb-2">${event.title}</h3>
+                      <p class="text-yellow-400 mb-2">${event.artist_name}</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-2xl font-bold ${
+                        event.price > 0 ? "text-green-400" : "text-blue-400"
+                      }">
+                        ${event.price > 0 ? "$" + parseFloat(event.price).toFixed(2) : "Free"}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-4 text-gray-400 text-sm mb-4">
+                    <span><i class="far fa-calendar-alt mr-2"></i>${new Date(
+                      event.date_start
+                    ).toLocaleString()}</span>
+                    <span><i class="fas fa-map-marker-alt mr-2"></i>${
+                      event.location
+                    }</span>
+                    <span><i class="fas fa-users mr-2"></i>${remaining} places left</span>
+                  </div>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    ${tagsHTML}
+                  </div>
+                  <div class="flex justify-end">
+                    ${
+                      event.organizer_id != {{ session.user.id|default("null") }}
+                        ? isExpired
+                          ? `<button disabled class="px-6 py-2 bg-gray-600 text-white rounded-lg opacity-50 cursor-not-allowed">
+                               Event Expired
+                             </button>`
+                          : isFull
+                          ? `<button disabled class="px-6 py-2 bg-red-600 text-white rounded-lg opacity-50 cursor-not-allowed">
+                               Sold Out
+                             </button>`
+                          : `<button onclick="handleParticipation(${event.id})"
+                                    class="px-6 py-2 bg-yellow-400 text-gray-900 rounded-lg hover:bg-yellow-300 transition-colors">
+                               ${event.price > 0 ? "Buy Ticket" : "Participate"}
+                             </button>`
+                        : `<span class="text-gray-400 text-sm">Your Event</span>`
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+
+      document.getElementById("eventsContainer").innerHTML = eventsHTML;
+    } catch (error) {
+      console.error("Error fetching filtered events:", error);
+      document.getElementById("eventsContainer").innerHTML = `
+        <div class="text-center py-12">
+          <i class="fas fa-exclamation-circle text-4xl text-red-500 mb-4"></i>
+          <p class="text-xl text-gray-400">An error occurred while loading events. Please try again.</p>
+        </div>
+      `;
+    } finally {
+      toggleLoading(false);
+    }
+  }
+
+  // --- Handle Participation ---
+  async function handleParticipation(eventId) {
+    {% if not session.user %}
+      window.location.href = "/login";
+      return;
+    {% endif %}
+    try {
+      const response = await fetch(`/events/${eventId}/participate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": "{{ csrf_token }}",
+        },
+      });
+      if (response.ok) {
+        const notification = document.createElement("div");
+        notification.className =
+          "fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg";
+        notification.innerHTML = `
+          <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span>Successfully registered for the event!</span>
+          </div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+        updateEvents();
+      } else {
+        throw new Error("Failed to register");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      const notification = document.createElement("div");
+      notification.className =
+        "fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg";
+      notification.innerHTML = `
+        <div class="flex items-center">
+          <i class="fas fa-exclamation-circle mr-2"></i>
+          <span>Failed to register for the event. Please try again.</span>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 3000);
+    }
+  }
+</script>
+
+
+
+    {% endblock %}
+</body>
+</html>
