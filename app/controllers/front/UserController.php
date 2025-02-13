@@ -3,25 +3,30 @@
 namespace Controller_front;
 
 use Core\Controller;
+use finfo;
 use Model\Event;
 use Model\Promo;
+use Model\Reservation;
 use Model\User;
 
 class UserController extends Controller {
     public function index() {
         $eventModel = new Event();
         $promoModel = new Promo();
+        $reservationModel = new Reservation();
 
         $userId = $_SESSION['user']["id"] ?? null;
-        
+
         $events = $eventModel->getAllEvent($userId);
         $promos = $promoModel->getAllPromosWithEvents($userId);
         $sales = $eventModel->getSalesByUser($userId);
-        
+        $reservations = $reservationModel->getReservationsByUserId($userId);
+
         $this->view("front/userDash", [
             'events' => $events,
             'promos' => $promos,
             'sales' => $sales,
+            'reservations' => $reservations
         ]);
     }
 
@@ -38,11 +43,6 @@ class UserController extends Controller {
                 }
                 $userId = $_SESSION['user']['id'];
     
-                // Verify file upload exists and has no errors
-                // if (!isset($_FILES['profile_image']) {
-                //     throw new \Exception("No file uploaded.");
-                // }
-    
                 $file = $_FILES['profile_image'];
                 
                 // Validate upload error code
@@ -51,7 +51,7 @@ class UserController extends Controller {
                 }
     
                 // Validate file is an actual image
-                $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
                 $mime = $finfo->file($file['tmp_name']);
                 if (!str_starts_with($mime, 'image/')) {
                     throw new \Exception("Invalid file type. Only images are allowed.");
@@ -100,9 +100,6 @@ class UserController extends Controller {
         }
     }
 
-    /**
-     * Update the user's password.
-     */
     public function updatePassword() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
