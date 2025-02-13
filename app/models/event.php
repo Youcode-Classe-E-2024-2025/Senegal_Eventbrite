@@ -56,8 +56,7 @@ class Event extends Model{
                    (SELECT COUNT(*) FROM reservations 
                     WHERE event_id = events.id) as participants_count
             FROM events 
-            WHERE status = 'ACTIVE' 
-            AND isActif = TRUE
+            WHERE isActif = TRUE
             ORDER BY date_start ASC
         ");
         $stmt->execute();
@@ -98,8 +97,7 @@ class Event extends Model{
 
     public function getSearchSuggestions($query)
     {
-        $stmt = $this->db->prepare("
-            SELECT title FROM events 
+        $stmt = $this->db->prepare("SELECT title FROM events 
             WHERE title ILIKE :query 
             AND status = 'ACTIVE'
             LIMIT 5
