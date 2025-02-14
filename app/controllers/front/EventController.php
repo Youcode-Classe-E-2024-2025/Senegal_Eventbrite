@@ -202,5 +202,52 @@ class EventController extends Controller
         } catch (Exception $e) {
             error_log("Event creation email could not be sent. Mailer Error: {$mail->ErrorInfo}");
         }
+}
+    public function eventPage()
+    {
+        $eventModel = new Event();
+        $events = $eventModel->getActiveEvents();
+        $categories = (new Category())->fetchAll('categorys');
+        
+        $this->view('front/events', [
+            'events' => $events,
+            'categories' => $categories
+        ]);
+    }
+
+    public function filter()
+    {
+        header('Content-Type: application/json');
+        header("Access-Control-Allow-Origin: *");
+
+        // Decode the JSON body; if it's null, fallback to an empty array.
+        $data = json_decode(file_get_contents("php://input"), true) ?? [];
+
+        $eventModel = new Event();
+
+        $filteredEvents = $eventModel->getFilteredEvents(
+            $data['category'] ?? null,
+            $data['date'] ?? null,
+            $data['price'] ?? null,
+            $data['search'] ?? null
+        );
+        
+        echo json_encode($filteredEvents);
+    }
+
+
+    public function searchSuggestions()
+    {
+        $query = $this->router->getQueryParams()['query'] ?? '';
+        $eventModel = new Event();
+        $suggestions = $eventModel->getSearchSuggestions($query);
+        
+        header('Content-Type: application/json');
+        echo json_encode($suggestions);
+    }
+
+    public function participate($eventId)
+    {
+        // Handle participation logic
     }
 }
