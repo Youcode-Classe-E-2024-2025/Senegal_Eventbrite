@@ -54,28 +54,57 @@
     }
   </style>
 </head>
-<body class="min-h-screen">
-  <div class="flex">
-    <!-- Sidebar Navigation -->
-    <aside class="fixed inset-y-0 left-0 sidebar bg-card shadow-sm border-r border-border p-4">
-      <div class="mb-8">
-        <div class="flex items-center gap-2">
-          <img src="{{ session.user.avatar_url ?: '/assets/uploads/userAvatar/5856.jpg' }}" alt="Logo" class="w-8 h-8 rounded-full">
-          <h1 class="text-xl font-bold text-foreground">{{session.user.name}}</h1>
-        </div>
-      </div>
-      <nav class="space-y-2">
-        <a href="/" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">Home</a>
-        <a href="/userDash" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">Dashboard</a>
-        <a href="/createEvent" class="block p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">Create Event</a>
-      </nav>
-    </aside>
-
+<body class="bg-gray-900 min-h-screen">
+<header class="  z-50  shadow-sm text-white">
+				<div
+					class="container mx-auto px-4 flex items-center">
+					<!-- logo -->
+					<div class="mr-auto md:w-48 flex-shrink-0">
+						<a href="/"><img class="h-16 md:h-20 ml-4" src="../../../public/assets/Logo/banner.png" alt=""/></a>
+					</div>
+					<!-- buttons -->
+					<nav class="contents">
+						<ul class="ml-4 flex items-center justify-end">
+							{% if session.user %}
+                <a href="/" class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center ">
+                  <span>Home</span>
+                </a>
+                <a href="/userDash" class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center">
+                  <span>Dashboard</span>
+                </a>
+                <a href="/createEvent" class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center">Create Event</a>
+								<a class="ml-2 lg:ml-4 pt-4 relative inline-block hover:bg-gray-800 rounded-md flex flex-col items-center cursor-pointer" href='{{session.user.role == "admin" ? "/admin" : "/userDash"}}'>
+									<img class="h-8 w-8 rounded-full" src="{{ session.user.avatar_url ?: '/assets/uploads/userAvatar/5856.jpg' }}" alt="Profile Image"/>
+									<span class="px-4 py-2 text-white duration-200 hover:text-white">
+										{{session.user.name}}
+									</span>
+								</a>
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center" href="/logout">
+										<i class="fas fa-sign-out-alt mr-2"></i> Logout
+									</a>
+								</li>
+							{% else %}
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/login">
+										Login
+									</a>
+								</li>
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/signup">
+										Register
+									</a>
+								</li>
+							{% endif %}
+						</ul>
+					</nav>
+				</div>
+				<hr/>
+				
+			</header>
     <!-- Main Content -->
-    <main class="ml-64 p-8 w-full space-y-8">
+    <main class="px-64 py-8 w-full space-y-8">
       <section id="profile" class="bg-card p-6 rounded-sm shadow-sm border border-border">
-        <h2 class="text-2xl font-bold text-foreground mb-6">User Profile</h2>
-        
         <!-- Profile Image Update Section -->
         <div class="mb-8">
           <h3 class="text-xl font-semibold text-foreground mb-4">Update Profile Image</h3>
@@ -123,7 +152,6 @@
         </div>
       </section>
     </main>
-  </div>
 
   <!-- JavaScript for profile image preview -->
   <script>

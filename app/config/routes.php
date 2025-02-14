@@ -27,7 +27,7 @@ $routes = [
         '/github-login' => [AuthController::class, 'githubLog'],
         '/events/search-suggestions' => [EventController::class, 'searchSuggestions'],
         '/events' => [EventController::class, 'eventPage'],
-        '/reservations/qr/{id}', [ReservationController::class, 'generateQr'],
+        '/reservations/qr/{id}'=> [ReservationController::class, 'generateQr'],
     ],
     'POST' => [
         '/createCtaegory' => [categoryController::class, 'createCategory'],
@@ -40,10 +40,10 @@ $routes = [
         '/createEvent' => [EventController::class, 'store'],
         '/updateProfileImage' => [UserController::class, 'updateProfileImage'],
         '/updatePassword' => [UserController::class, 'updatePassword'],
-        '/events/(\d+)/participate' => [EventController::class, 'participate'],
+        '/events/{id}/participate' => [EventController::class, 'participate'],
         '/events/filter' => [EventController::class, 'filter'],
         '/update-status' => [dashboardController::class, 'updateStatus'],
-        '/reservations/cancel', [ReservationController::class, 'cancel'],
+        '/reservation/cancel/{id}'=> [ReservationController::class, 'cancel'],
     ]
 ];
 

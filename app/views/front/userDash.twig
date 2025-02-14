@@ -50,31 +50,59 @@
 
   </style>
 </head>
-<body class="min-h-screen">
-  <div class="flex">
-    <!-- Sidebar Navigation -->
-    <aside class="fixed inset-y-0 left-0 w-64 bg-card shadow-sm border-r border-border">
-      <div class="p-4 border-b border-border">
-        <div class="flex items-center gap-2">
-          <img src="{{ session.user.avatar_url ?: '/assets/uploads/userAvatar/5856.jpg' }}" alt="Logo" class="w-8 h-8 rounded-full">
-          <h1 class="text-xl font-bold text-foreground">{{session.user.name}}</h1>
-        </div>
-      </div>
-      <nav class="p-4 space-y-2">
-        <a href="/" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
-          <span>Home</span>
-        </a>
-        <a href="/createEvent" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
-          <span>Create Event</span>
-        </a>
-        <a href="/profileInfo" class="flex items-center gap-2 p-2 rounded-sm text-accent hover:bg-primary hover:text-primary-foreground transition-colors">
-          <span>Profile Info</span>
-        </a>
-      </nav>
-    </aside>
-
+<body class="bg-gray-900 min-h-screen">
+    
+<header class="  z-50  shadow-sm text-white">
+				<div
+					class="container mx-auto px-4 flex items-center">
+					<!-- logo -->
+					<div class="mr-auto md:w-48 flex-shrink-0">
+						<a href="/"><img class="h-16 md:h-20 ml-4" src="../../../public/assets/Logo/banner.png" alt=""/></a>
+					</div>
+					<!-- buttons -->
+					<nav class="contents">
+						<ul class="ml-4 flex items-center justify-end">
+							{% if session.user %}
+                <a href="/" class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center ">
+                  <span>Home</span>
+                </a>
+                <a href="/createEvent" class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center  ">
+                  <span>Create Event</span>
+                </a>
+                <a href="/profileInfo" class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center">
+                  <span>Profile Info</span>
+                </a>
+								<a class="ml-2 lg:ml-4 pt-4 relative inline-block hover:bg-gray-800 rounded-md flex flex-col items-center cursor-pointer" href='{{session.user.role == "admin" ? "/admin" : "/userDash"}}'>
+									<img class="h-8 w-8 rounded-full" src="{{ session.user.avatar_url ?: '/assets/uploads/userAvatar/5856.jpg' }}" alt="Profile Image"/>
+									<span class="px-4 py-2 text-white duration-200 hover:text-white">
+										{{session.user.name}}
+									</span>
+								</a>
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center" href="/logout">
+										<i class="fas fa-sign-out-alt mr-2"></i> Logout
+									</a>
+								</li>
+							{% else %}
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/login">
+										Login
+									</a>
+								</li>
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/signup">
+										Register
+									</a>
+								</li>
+							{% endif %}
+						</ul>
+					</nav>
+				</div>
+				<hr/>
+				
+			</header>
     <!-- Main Content -->
-    <main class="ml-64 p-8 w-full space-y-8">
+    <main class="py-8 px-24 w-full space-y-8">
       
       <!-- Sales Section -->
       <section id="sales" class="mb-8">
@@ -118,15 +146,15 @@
                       💰 ${{ event.revenue|number_format(2, '.', ',') }}
                     </td>
                     <td class="p-4">
-                      {% if event.status == 'ACTIVE' %}
-                        <span class="px-2 py-1 bg-chart-2 text-primary-foreground rounded-md text-sm">🟢 Active</span>
-                      {% elseif event.status == 'FULL' %}
-                        <span class="px-2 py-1 bg-warning text-primary-foreground rounded-md text-sm">🔴 Full</span>
-                      {% elseif event.status == 'EXPIRED' %}
-                        <span class="px-2 py-1 bg-muted text-primary-foreground rounded-md text-sm">⚪ Expired</span>
-                      {% else %}
-                        <span class="px-2 py-1 bg-gray-500 text-primary-foreground rounded-md text-sm">❓ {{ event.status }}</span>
-                      {% endif %}
+                        {% if event.status == 'ACTIVE' %}
+                          <span class="px-2 py-1 bg-chart-2 text-primary-foreground rounded-md text-sm">🟢 Active</span>
+                        {% elseif event.status == 'FULL' %}
+                          <span class="px-2 py-1 bg-warning text-primary-foreground rounded-md text-sm">🔴 Full</span>
+                        {% elseif event.status == 'EXPIRED' %}
+                          <span class="px-2 py-1  text-primary-foreground rounded-md text-sm">⚪ Expired</span>
+                        {% else %}
+                          <span class="px-2 py-1 bg-gray-500 text-primary-foreground rounded-md text-sm">❓ {{ event.status }}</span>
+                        {% endif %}
                     </td>
                   </tr>
                 {% else %}
@@ -162,7 +190,7 @@
               <td class="p-4 text-foreground">{{ reservation.date }}</td>
               <td class="p-4 text-foreground">${{ reservation.price }}</td>
               <td class="p-4 flex gap-2">
-                <button class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-red-600 transition-colors">
+                <button onclick="cancelReservation({{ reservation.id }})" class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-red-600 transition-colors">
                   ❌ Cancel
                 </button>
                 <button class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-blue-600 transition-colors">
@@ -229,8 +257,52 @@
 
 
     </main>
-  </div>
 <script>
+function cancelReservation(reservationId) {
+    if (confirm("Are you sure you want to cancel this reservation?")) {
+        console.log("Attempting to cancel reservation:", reservationId);
+        
+        fetch(`/reservation/cancel/${reservationId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then(response => {
+            console.log("Raw response:", response);
+            
+            // Handle both JSON and text responses
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                return response.json().then(data => ({ status: response.status, body: data }));
+            } else {
+                return response.text().then(text => ({ 
+                    status: response.status, 
+                    body: { message: text } 
+                }));
+            }
+        }).then(result => {
+            console.log("Processed response:", result);
+            
+            if (result.status === 200) {
+              // Remove the canceled reservation from the DOM without reloading
+              const reservationElem = document.getElementById(`reservation-${reservationId}`);
+              if (reservationElem) {
+                  reservationElem.remove();
+              } else {
+                  console.warn('Reservation element not found in the DOM.');
+              }
+          } else {
+              alert("Failed to cancel reservation: " + (result.body.message || "Unknown error"));
+          }
+
+        }).catch(error => {
+            console.error("Error:", error);
+            alert("Network error occurred.");
+        });
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const events = {{ events|json_encode|raw }};
   const initialPromos = {{ promos|json_encode|raw }};

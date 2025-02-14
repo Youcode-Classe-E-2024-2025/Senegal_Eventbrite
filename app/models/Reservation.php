@@ -12,10 +12,6 @@ class Reservation extends Model {
         return $this->fetchAll($this->table);
     }
 
-    public function getReservationById($id) {
-        return $this->fetchById($this->table, $id);
-    }
-
     public function createReservation($data) {
         return $this->insert($this->table, $data, true);
     }
@@ -32,7 +28,7 @@ class Reservation extends Model {
         $stmt = $this->db->prepare("SELECT r.*, e.title, e.artist_name AS artist, e.date_start AS date, e.price
                                     FROM {$this->table} r
                                     JOIN events e ON r.event_id = e.id
-                                    WHERE r.user_id = :user_id
+                                    WHERE r.user_id = :user_id AND r.status != 'canceled'
         ");
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
         $stmt->execute();
@@ -41,7 +37,7 @@ class Reservation extends Model {
     
 
     public function cancelReservation($id) {
-        return $this->update($this->table, ['status' => 'cancelled'], $id);
+        return $this->update($this->table, ['status' => 'canceled'], $id);
     }
 
     public function getQrCodeByReservationId($id) {
@@ -50,5 +46,18 @@ class Reservation extends Model {
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['qr_code'] ?? null;
+    }
+
+    public function getReservationsCountForEvent($eventId) {
+        $stmt = $this->db->prepare("SELECT SUM(quantity) AS total FROM reservations WHERE event_id = ? AND status != 'canceled'");
+        $stmt->execute([$eventId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
+    
+    public function getUserReservationForEvent($userId, $eventId) {
+        $stmt = $this->db->prepare("SELECT * FROM reservations WHERE user_id = ? AND event_id = ? AND status != 'canceled'");
+        $stmt->execute([$userId, $eventId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

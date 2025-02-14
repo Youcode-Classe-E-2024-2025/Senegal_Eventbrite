@@ -27,7 +27,7 @@ class PromoController extends Controller {
         // Check event ownership
         $eventModel = new Event();
         $event = $eventModel->getEventById($eventId);
-        if (!$event || $event['user_id'] != $userId) {
+        if (!$event || $event['organizer_id'] != $userId) {
             echo json_encode(['status' => 'error', 'message' => 'Invalid event selected.']);
             return;
         }
