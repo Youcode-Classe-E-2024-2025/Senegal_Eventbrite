@@ -8,7 +8,6 @@ use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
 use Endroid\QrCode\Writer\PngWriter;
 use Models\Reservations;
-// use Models\Payments;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use App\Core\View;
@@ -19,6 +18,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Core\Payments ;
 use Ramsey\Uuid\Guid\Guid;
+use PHPMailer\PHPMailer\Exception;
 
 class ReservationsController {
     private $view;
@@ -155,7 +155,7 @@ class ReservationsController {
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => $_ENV['APP_URL'] . '/payment-success?session_id={CHECKOUT_SESSION_ID}',
+            'success_url' => $_ENV['APP_URL'] . '/reservations',
             'cancel_url' => $_ENV['APP_URL'] . '/payment-cancel',
             'metadata' => [
                 'reservation_id' => $data['reservation_id'] ?? null,
@@ -166,19 +166,20 @@ class ReservationsController {
         ]);
     }
 
+    
     public function handlePaymentSuccess() {
         try {
             if (!isset($_GET['session_id'])) {
                 throw new \Exception('Session ID manquant');
             }
-
+    
             $session = Session::retrieve($_GET['session_id']);
             $payment = $this->paymentsModel->getPaymentByStripeSessionId($session->id);
             
             if (!$payment) {
                 throw new \Exception('Paiement non trouvé');
             }
-
+    
             if ($session->payment_status === 'paid') {
                 // Mettre à jour le statut du paiement
                 $this->paymentsModel->updatePaymentStatus(
@@ -190,11 +191,11 @@ class ReservationsController {
                         'completed_at' => date('Y-m-d H:i:s')
                     ])
                 );
-
-                // Générer et sauvegarder le QR code
+    
+                // Générer le QR code
                 $qrCodeData = $this->generateQrCode($payment['reservation_id']);
                 
-                // Mettre à jour la réservation
+                // Mettre à jour la réservation avec le QR code
                 $this->reservationsModel->updateReservation(
                     $payment['reservation_id'],
                     [
@@ -203,182 +204,72 @@ class ReservationsController {
                         'payment_confirmed_at' => date('Y-m-d H:i:s')
                     ]
                 );
-
+    
                 // Envoyer l'email de confirmation avec le QR code
-                $this->sendConfirmationEmail($payment['reservation_id']);
-
-                header('Location: /reservation-success');
+                $this->sendConfirmationEmail($payment['reservation_id'], $qrCodeData);
+    
+                header('Location: /reservations');
                 exit;
             }
-
+    
         } catch (\Exception $e) {
             $this->handleError($e);
         }
     }
 
-    private function generateTicketPDF($reservationId, $qrCodeData) {
+    private function sendConfirmationEmail($reservationId, $qrCodePath) {
         try {
-            $reservation = $this->reservationsModel->getReservationById($reservationId);
-            
-            // Configurer DomPDF
-            $options = new Options();
-            $options->set('isHtml5ParserEnabled', true);
-            $options->set('isPhpEnabled', true);
-            $options->set('isRemoteEnabled', true);
-            
-            $dompdf = new Dompdf($options);
-            
-            // Générer le HTML du ticket
-            $html = $this->generateTicketHTML($reservation, $qrCodeData);
-            
-            $dompdf->loadHtml($html);
-            $dompdf->setPaper('A4', 'portrait');
-            $dompdf->render();
-
-            // Créer le dossier de stockage des PDF s'il n'existe pas
-            $pdfDir = $_SERVER['DOCUMENT_ROOT'] . '/storage/tickets/';
-            if (!is_dir($pdfDir)) {
-                mkdir($pdfDir, 0755, true);
-            }
-
-            // Générer un nom de fichier unique
-            $filename = 'ticket_' . $reservation['unique_id'] . '.pdf';
-            $pdfPath = $pdfDir . $filename;
-
-            // Sauvegarder le PDF
-            file_put_contents($pdfPath, $dompdf->output());
-
-            return '/storage/tickets/' . $filename; // Retourner le chemin relatif
-        } catch (\Exception $e) {
-            error_log("Erreur lors de la génération du PDF: " . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    private function generateTicketHTML($reservation, $qrCodeData) {
-        // Convertir les dates en format lisible
-        $eventDate = date('d/m/Y', strtotime($reservation['event_date']));
-        $purchaseDate = date('d/m/Y H:i', strtotime($reservation['payment_confirmed_at']));
-
-        return '
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Ticket Festival</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                    color: #333;
-                }
-                .ticket {
-                    max-width: 800px;
-                    margin: 0 auto;
-                    padding: 20px;
-                    border: 2px solid #000;
-                    border-radius: 10px;
-                }
-                .header {
-                    text-align: center;
-                    border-bottom: 2px solid #000;
-                    padding-bottom: 20px;
-                    margin-bottom: 20px;
-                }
-                .qr-code {
-                    text-align: center;
-                    margin: 20px 0;
-                }
-                .qr-code img {
-                    max-width: 200px;
-                }
-                .details {
-                    margin: 20px 0;
-                }
-                .footer {
-                    text-align: center;
-                    font-size: 12px;
-                    margin-top: 20px;
-                    padding-top: 20px;
-                    border-top: 1px solid #ccc;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="ticket">
-                <div class="header">
-                    <h1>Festival 2024</h1>
-                    <h2>Billet ' . htmlspecialchars($reservation['ticket_type']) . '</h2>
-                </div>
-                
-                <div class="details">
-                    <p><strong>Numéro de réservation:</strong> ' . htmlspecialchars($reservation['unique_id']) . '</p>
-                    <p><strong>Type de billet:</strong> ' . htmlspecialchars($reservation['ticket_type']) . '</p>
-                    <p><strong>Quantité:</strong> ' . htmlspecialchars($reservation['quantity']) . '</p>
-                    <p><strong>Date de l\'événement:</strong> ' . htmlspecialchars($eventDate) . '</p>
-                    <p><strong>Date d\'achat:</strong> ' . htmlspecialchars($purchaseDate) . '</p>
-                </div>
-
-                <div class="qr-code">
-                    <img src="data:image/png;base64,' . $qrCodeData . '" alt="QR Code">
-                </div>
-
-                <div class="footer">
-                    <p>Ce billet est unique et ne peut être utilisé qu\'une seule fois.</p>
-                    <p>Conservez-le précieusement et présentez-le à l\'entrée du festival.</p>
-                </div>
-            </div>
-        </body>
-        </html>';
-    }
-
-    private function sendConfirmationEmail($reservationId, $pdfPath) {
-        try {
-            $reservation = $this->reservationsModel->getReservationById($reservationId);
+            $reservation = $this->reservationsModel->getUserReservations($reservationId);
             
             $mail = new PHPMailer(true);
-            $mail->isHTML(true);
-            $mail->setFrom($_ENV['MAIL_FROM'], 'Festival');
+            $mail->isSMTP();
+            $mail->Host       = $_ENV['MAIL_HOST'];
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $_ENV['MAIL_USERNAME'];
+            $mail->Password   = $_ENV['MAIL_PASSWORD'];
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = $_ENV['MAIL_PORT'];
+            $mail->setFrom($_ENV['MAIL_FROM'], $_ENV['MAIL_FROM_NAME']);
             $mail->addAddress($reservation['email']);
+            $mail->isHTML(true);
             $mail->Subject = 'Confirmation de votre réservation';
-            
-            // Ajouter le PDF en pièce jointe
-            $pdfFullPath = $_SERVER['DOCUMENT_ROOT'] . $pdfPath;
-            if (file_exists($pdfFullPath)) {
-                $mail->addAttachment($pdfFullPath, 'votre_billet.pdf');
+    
+            if (file_exists($qrCodePath)) {
+                $mail->addAttachment($qrCodePath, 'qr_code.png');
+            } else {
+                error_log("Le fichier QR Code est introuvable : " . $qrCodePath);
             }
-            
-            // Créer le contenu HTML de l'email
-            $emailContent = $this->view->render('emails/reservation-confirmation', [
-                'reservation' => $reservation,
-                'qrCode' => $reservation['qr_code']
-            ], true);
-            
+    
+            $emailContent = '<p>Merci pour votre réservation ! Voici votre QR Code :</p>';
+            if (file_exists($qrCodePath)) {
+                $mail->addEmbeddedImage($qrCodePath, 'qr_code.png');
+                $emailContent .= '<p><img src="cid:qr_code.png" alt="QR Code"></p>';
+            } else {
+                $emailContent .= '<p>Erreur : Impossible d\'afficher le QR Code.</p>';
+            }
+    
             $mail->Body = $emailContent;
             $mail->send();
-            
-        } catch (\Exception $e) {
-            error_log("Erreur d'envoi d'email: " . $e->getMessage());
-            // Ne pas propager l'erreur pour ne pas bloquer le processus
+            error_log("Email envoyé avec succès à " . $reservation['email']);
+        } catch (Exception $e) {
+            error_log("Erreur d'envoi d'email: " . $mail->ErrorInfo);
         }
     }
-
+    
+    
 
     private function generateQrCode($reservationId) {
-        $reservation = $this->reservationsModel->getReservationById($reservationId);
-        
-        // Données à encoder dans le QR code
-        $qrData = [
+        $reservation = $this->reservationsModel->getUserReservations($reservationId);
+        $qrData = json_encode([
             'id' => $reservation['unique_id'],
             'type' => $reservation['ticket_type'],
             'quantity' => $reservation['quantity'],
             'timestamp' => time(),
             'hash' => hash('sha256', $reservation['unique_id'] . $_ENV['QR_SALT'])
-        ];
+        ]);
 
-        // Créer le QR code
         $result = Builder::create()
-            ->data(json_encode($qrData))
+            ->data($qrData)
             ->encoding(new Encoding('UTF-8'))
             ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
             ->size(300)
@@ -387,8 +278,9 @@ class ReservationsController {
             ->writer(new PngWriter())
             ->build();
 
-        // Retourner le QR code en base64
-        return base64_encode($result->getString());
+        $qrCodePath = __DIR__ . '/../../storage/qr_codes/' . $reservation['unique_id'] . '.png';
+        $result->saveToFile($qrCodePath);
+        return $qrCodePath;
     }
 
     private function generateUniqueId() {
@@ -417,29 +309,4 @@ class ReservationsController {
 
         return $prices[$data['ticket_type']] * intval($data['quantity']);
     }
-
-    // private function sendConfirmationEmail($reservationId) {
-    //     try {
-    //         $reservation = $this->reservationsModel->getReservationById($reservationId);
-            
-    //         $mail = new PHPMailer(true);
-    //         $mail->isHTML(true);
-    //         $mail->setFrom($_ENV['MAIL_FROM'], 'Festival');
-    //         $mail->addAddress($reservation['email']);
-    //         $mail->Subject = 'Confirmation de votre réservation';
-            
-    //         // Créer le contenu HTML de l'email avec le QR code
-    //         $emailContent = $this->view->render('emails/reservation-confirmation', [
-    //             'reservation' => $reservation,
-    //             'qrCode' => $reservation['qr_code']
-    //         ], true);
-            
-    //         $mail->Body = $emailContent;
-    //         $mail->send();
-            
-    //     } catch (\Exception $e) {
-    //         error_log("Erreur d'envoi d'email: " . $e->getMessage());
-    //         // Ne pas propager l'erreur pour ne pas bloquer le processus
-    //     }
-    // }
 }
