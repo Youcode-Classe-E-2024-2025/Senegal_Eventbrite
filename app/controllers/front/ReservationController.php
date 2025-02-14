@@ -14,14 +14,28 @@ class ReservationController extends Controller
     }
 
     public function cancel($id) {
-        $this->reservationModel->cancelReservation($id);
-        $this->redirect('/reservations');
+        if (!is_numeric($id)) {
+            http_response_code(400);
+            echo json_encode(["message" => "Invalid reservation ID"]);
+            exit;
+        }
+        error_log("Attempting to cancel reservation: " . $id);
+        $result = $this->reservationModel->cancelReservation($id);
+    
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Reservation cancelled successfully"]);
+        } else {
+            http_response_code(500);
+            echo json_encode(["message" => "Failed to cancel reservation"]);
+        }
     }
+    
 
     public function showQrCode($id) {
         $qrCode = $this->reservationModel->getQrCodeByReservationId($id);
         if (!$qrCode) {
-            $this->redirect('/reservations');
+            $this->redirect('/userDash');
         }
 
         $this->view('reservations/qrcode', ['qrCode' => $qrCode]);
