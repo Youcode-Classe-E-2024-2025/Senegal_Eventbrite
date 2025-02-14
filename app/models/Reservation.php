@@ -47,4 +47,17 @@ class Reservation extends Model {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['qr_code'] ?? null;
     }
+
+    public function getReservationsCountForEvent($eventId) {
+        $stmt = $this->db->prepare("SELECT SUM(quantity) AS total FROM reservations WHERE event_id = ? AND status != 'canceled'");
+        $stmt->execute([$eventId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
+    
+    public function getUserReservationForEvent($userId, $eventId) {
+        $stmt = $this->db->prepare("SELECT * FROM reservations WHERE user_id = ? AND event_id = ? AND status != 'canceled'");
+        $stmt->execute([$userId, $eventId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
