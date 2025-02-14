@@ -115,7 +115,7 @@
         <div id="loadingSpinner" class="loading-spinner"></div>
 
         <!-- Events Container -->
-        <div id="eventsContainer" class="grid gap-6">
+        <div id="eventsContainer" class="grid gap-6 px-28">
             {% for event in events %}
             <div class="event-card {{ event.status == 'EXPIRED' ? 'expired' : '' }} {{ (event.capacity - event.participants_count) <= 0 ? 'full' : '' }} bg-gray-800 rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300">
                 <div class="flex flex-col md:flex-row">
