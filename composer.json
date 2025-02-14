@@ -20,6 +20,7 @@
         "vlucas/phpdotenv": "^5.6",
         "google/apiclient": "^2.18",
         "guzzlehttp/guzzle": "^7.9",
-        "phpmailer/phpmailer": "^6.9"
+        "phpmailer/phpmailer": "^6.9",
+        "mobiledetect/mobiledetectlib": "^4.8"
     }
 }

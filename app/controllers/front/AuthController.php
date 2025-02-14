@@ -12,6 +12,7 @@ use Exception;
 use Google_Client;
 use Google_Service_Oauth2;
 use PHPMailer\PHPMailer\PHPMailer;
+use Detection\MobileDetect;
 
 class AuthController extends Controller
 {
@@ -255,8 +256,123 @@ class AuthController extends Controller
                 'avatar_url' => $user->avatar_url
             ]);
 
-            header('Location: /');
-            exit();
+            $ipAddress = 'Unknown IP';
+
+            if (!empty($_SERVER['HTTP_CLIENT_IP']) && filter_var($_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP)) {
+                $ipAddress = $_SERVER['HTTP_CLIENT_IP'];
+            } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $forwardedIps = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                foreach ($forwardedIps as $ip) {
+                    $ip = trim($ip);
+                    if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                        $ipAddress = $ip;
+                        break;
+                    }
+                }
+            } elseif (!empty($_SERVER['REMOTE_ADDR']) && filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP)) {
+                $ipAddress = $_SERVER['REMOTE_ADDR'];
+            }
+
+            $detect = new MobileDetect();
+            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown Device';
+            $deviceType = $detect->isTablet() ? 'Tablet' : ($detect->isMobile() ? 'Mobile' : 'Desktop');
+
+            $loginTime = date("Y-m-d H:i:s", time() + 60 * 60);
+
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = $_ENV['SMTP_Host'];
+                $mail->SMTPAuth = $_ENV['SMTP_Auth'];
+                $mail->Username = $_ENV['SMTP_Username'];
+                $mail->Password = $_ENV['SMTP_Password'];
+                $mail->SMTPSecure = $_ENV['SMTP_Secure'];
+                $mail->Port = $_ENV['SMTP_Port'];
+
+                $mail->setFrom($_ENV['SMTP_Username'], 'ZHOO');
+                $mail->addAddress($user->email);
+                $mail->isHTML(true);
+                $mail->Subject = 'New Login Detected on Your Account';
+                $mail->Body = '
+            <html>
+            <head>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #121212;
+                        color: #e0e0e0;
+                        margin: 0;
+                        padding: 20px;
+                    }
+                    .container {
+                        background-color: #1e1e1e;
+                        padding: 20px;
+                        border-radius: 8px;
+                        width: 90%;
+                        max-width: 600px;
+                        margin: auto;
+                        border: 1px solid #333;
+                    }
+                    .header {
+                        text-align: center;
+                        font-size: 20px;
+                        font-weight: bold;
+                        color: #ffffff;
+                        padding-bottom: 10px;
+                        border-bottom: 1px solid #333;
+                    }
+                    .content {
+                        padding: 20px;
+                        font-size: 16px;
+                        line-height: 1.6;
+                    }
+                    .footer {
+                        text-align: center;
+                        font-size: 14px;
+                        color: #888;
+                        margin-top: 20px;
+                        border-top: 1px solid #333;
+                        padding-top: 10px;
+                    }
+                    .btn {
+                        display: inline-block;
+                        background-color: yellow;
+                        color: black;
+                        padding: 10px 15px;
+                        border-radius: 5px;
+                        text-decoration: none;
+                        font-weight: bold;
+                    }
+                    p {
+                        color: #d4d4d4;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <img src="https://lh3.googleusercontent.com/pw/AP1GczMv2wyQdFNW7zVUC0W4vUVSOTl7yWWPf718uoa3c3Wlw2gCwANtImpdZcKPYmOoZ2ruqMcr4FHtFKm6sUoEC_9oBMG7wqOPDjH6arfHLkHJQd7EP-QA2BB9JL7KKRBl1r1_Lv7PMdxhJVN2svmC41ob=w500-h210-s-no-gm?authuser=0" width="150" alt="ZHOO Logo">
+                    </div>
+                    <p><strong>Dear ' . htmlspecialchars($user->name) . ',</strong></p>
+                    <p>A new login to your account was detected.</p>
+                    <p><strong>Time:</strong> ' . $loginTime . '</p>
+                    <p><strong>IP Address:</strong> ' . htmlspecialchars($ipAddress) . '</p>
+                    <p><strong>Device:</strong> ' . htmlspecialchars($deviceType) . ' (' . htmlspecialchars($userAgent) . ')</p>
+                    <p>If this wasnt you, please reset your password immediately.</p>
+                    <a class="btn" href="http://localhost/reset-password">Reset Password</a>
+                    <div class="footer">
+                        &copy; ' . date("Y") . ' ZHOO. All rights reserved.
+                    </div>
+                </div>
+            </body>
+            </html>';
+
+                $mail->send();
+            } catch (Exception $e) {
+                error_log("Email notification failed: " . $mail->ErrorInfo);
+            }
+
+            return $this->redirect('/');
         } else {
             return $this->view('front/Login', [
                 'error' => 'Invalid credentials, please try again.'
