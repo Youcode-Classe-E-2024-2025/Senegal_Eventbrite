@@ -184,7 +184,7 @@
         </thead>
         <tbody class="divide-y divide-border">
           {% for reservation in reservations %}
-            <tr class="hover:bg-muted/50 transition-colors">
+            <tr id="reservation-{{ reservation.id }}" class="hover:bg-muted/50 transition-colors">
               <td class="p-4 text-foreground font-medium">{{ reservation.title }}</td>
               <td class="p-4 text-foreground">{{ reservation.artist }}</td>
               <td class="p-4 text-foreground">{{ reservation.date }}</td>
