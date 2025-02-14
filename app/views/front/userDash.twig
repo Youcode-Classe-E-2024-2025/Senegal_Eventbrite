@@ -102,7 +102,7 @@
 				
 			</header>
     <!-- Main Content -->
-    <main class="p-8 w-full space-y-8">
+    <main class="py-8 px-24 w-full space-y-8">
       
       <!-- Sales Section -->
       <section id="sales" class="mb-8">
@@ -146,24 +146,16 @@
                       💰 ${{ event.revenue|number_format(2, '.', ',') }}
                     </td>
                     <td class="p-4">
-  {# Debug output for event status and isActif #}
-                    <div class="block">
-                            <p>Raw isActif value: {{ event['isActif'] is same as(true) ? 'true' : 'false' }}</p>
-                        </div>
-                      {% if event['isActif'] is same as(true) %}
-                        <span class="px-2 py-1 bg-chart-2 text-primary-foreground rounded-md text-sm">🟢 Active</span>
-                      {% elseif event.status == 'ACTIVE' %}
-                        <span class="px-2 py-1 bg-gray-500 text-primary-foreground rounded-md text-sm">⚫ Not Approved</span>
-                      {% elseif event.status == 'FULL' %}
-                        <span class="px-2 py-1 bg-warning text-primary-foreground rounded-md text-sm">🔴 Full</span>
-                      {% elseif event.status == 'EXPIRED' %}
-                        <span class="px-2 py-1 bg-muted text-primary-foreground rounded-md text-sm">⚪ Expired</span>
-                      {% else %}
-                        <span class="px-2 py-1 bg-gray-500 text-primary-foreground rounded-md text-sm">❓ {{ event.status }}</span>
-                      {% endif %}
+                        {% if event.status == 'ACTIVE' %}
+                          <span class="px-2 py-1 bg-chart-2 text-primary-foreground rounded-md text-sm">🟢 Active</span>
+                        {% elseif event.status == 'FULL' %}
+                          <span class="px-2 py-1 bg-warning text-primary-foreground rounded-md text-sm">🔴 Full</span>
+                        {% elseif event.status == 'EXPIRED' %}
+                          <span class="px-2 py-1  text-primary-foreground rounded-md text-sm">⚪ Expired</span>
+                        {% else %}
+                          <span class="px-2 py-1 bg-gray-500 text-primary-foreground rounded-md text-sm">❓ {{ event.status }}</span>
+                        {% endif %}
                     </td>
-
-
                   </tr>
                 {% else %}
                   <tr>
@@ -198,7 +190,7 @@
               <td class="p-4 text-foreground">{{ reservation.date }}</td>
               <td class="p-4 text-foreground">${{ reservation.price }}</td>
               <td class="p-4 flex gap-2">
-                <button class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-red-600 transition-colors">
+                <button onclick="cancelReservation({{ reservation.id }})" class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-red-600 transition-colors">
                   ❌ Cancel
                 </button>
                 <button class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-blue-600 transition-colors">
@@ -266,6 +258,51 @@
 
     </main>
 <script>
+function cancelReservation(reservationId) {
+    if (confirm("Are you sure you want to cancel this reservation?")) {
+        console.log("Attempting to cancel reservation:", reservationId);
+        
+        fetch(`/reservation/cancel/${reservationId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then(response => {
+            console.log("Raw response:", response);
+            
+            // Handle both JSON and text responses
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                return response.json().then(data => ({ status: response.status, body: data }));
+            } else {
+                return response.text().then(text => ({ 
+                    status: response.status, 
+                    body: { message: text } 
+                }));
+            }
+        }).then(result => {
+            console.log("Processed response:", result);
+            
+            if (result.status === 200) {
+              // Remove the canceled reservation from the DOM without reloading
+              const reservationElem = document.getElementById(`reservation-${reservationId}`);
+              if (reservationElem) {
+                  reservationElem.remove();
+              } else {
+                  console.warn('Reservation element not found in the DOM.');
+              }
+          } else {
+              alert("Failed to cancel reservation: " + (result.body.message || "Unknown error"));
+          }
+
+        }).catch(error => {
+            console.error("Error:", error);
+            alert("Network error occurred.");
+        });
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const events = {{ events|json_encode|raw }};
   const initialPromos = {{ promos|json_encode|raw }};
