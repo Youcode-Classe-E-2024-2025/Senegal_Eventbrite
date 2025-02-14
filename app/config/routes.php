@@ -1,10 +1,10 @@
 <?php
 namespace Config;
 
+use Controller_back\CategoryController;
 use Core\Router;
 use Controller_front\HomeController;
 use Controller_front\UserController;
-use Controller_back\categoryController;
 use Controller_back\dashboardController;
 use Controller_front\AuthController;
 use Controller_front\EventController;
@@ -30,7 +30,7 @@ $routes = [
         '/reservations/qr/{id}'=> [ReservationController::class, 'generateQr'],
     ],
     'POST' => [
-        '/createCtaegory' => [categoryController::class, 'createCategory'],
+        '/createCtaegory' => [CategoryController::class, 'createCategory'],
         '/deleteCategory' => [categoryController::class, 'deleteCategory'],
         '/deleteEvent' => [dashboardController::class, 'deleteEvent'],
         '/signup' => [AuthController::class, 'signupPost'],

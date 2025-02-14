@@ -6,8 +6,15 @@ use PDO;
 class Event extends Model{
 
     public function getAll(){
-        return $this->fetchAll("events");
+        $stmt = $this->db->prepare("
+            SELECT events.*, users.name AS organizer_name
+            FROM events
+            JOIN users ON events.organizer_id = users.id
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
 
     public function getAllEvent($userId)
     {
