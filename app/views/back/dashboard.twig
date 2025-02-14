@@ -8,26 +8,47 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50">
-    <!-- Navbar fixe -->
-    <nav class="fixed top-0 left-0 right-0 bg-black border-b border-gray-200 z-50 ">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between h-16">
-                <div class="mr-auto md:w-48 flex-shrink-0">
-					<a href="/"><img class="h-16 md:h-20 ml-4" src="../../../public/assets/Logo/banner.png" alt=""/></a>
+<body class="bg-gray-900">
+<header class="bg-gray-900 fixed top-0 left-0 right-0  z-50 bg-[#] shadow-sm text-white">
+				<div
+					class="container mx-auto px-4 flex items-center">
+					<!-- logo -->
+					<div class="mr-auto md:w-48 flex-shrink-0">
+						<a href="/"><img class="h-16 md:h-20 ml-4" src="../../../public/assets/Logo/banner.png" alt=""/></a>
+					</div>
+					<!-- buttons -->
+					<nav class="contents">
+						<ul class="ml-4 flex items-center justify-end">
+							{% if session.user %}
+								<a class="ml-2 lg:ml-4 pt-4 relative inline-block hover:bg-gray-800 rounded-md flex flex-col items-center cursor-pointer" href='/userDash'>
+									<img class="h-8 w-8 rounded-full" src="{{ session.user.avatar_url ?: '/assets/uploads/userAvatar/5856.jpg' }}" alt="Profile Image"/>
+									<span class="px-4 py-2 text-white duration-200 hover:text-white">
+										{{session.user.name}}
+									</span>
+								</a>
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white flex items-center" href="/logout">
+										<i class="fas fa-sign-out-alt mr-2"></i> Logout
+									</a>
+								</li>
+							{% else %}
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/login">
+										Login
+									</a>
+								</li>
+								<li class="ml-2 lg:ml-4 relative inline-block">
+									<a class="px-4 py-2 rounded-md text-white duration-200 hover:bg-gray-800 hover:text-white" href="/signup">
+										Register
+									</a>
+								</li>
+							{% endif %}
+						</ul>
+					</nav>
 				</div>
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-3">
-                        <a href="/userDash">
-                            <img  src="{{ session.user.avatar_url ?: '/assets/uploads/userAvatar/5856.jpg' }}" alt="Avatar" class="w-10 h-10 cursor-pointer rounded-full border-2 border-indigo-500">
-                        </a>
-                            <span class="font-medium text-gray-200">{{session.user.name}}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <!-- Contenu principal -->
+				<hr/>
+				
+			</header>
     <main class="pt-16 p-8 mt-10">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition-all duration-300">
@@ -57,17 +78,27 @@
          <div class="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8"> 
     <div class="p-6 border-b border-gray-100">
         <div class="flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-800">Utilisateurs</h2>
+            <h2 class="text-xl font-semibold text-gray-800">
+                <i class="fas fa-user text-blue-600 mr-2"></i>Utilisateurs
+            </h2>
         </div>
     </div>
-    <div class="overflow-x-auto">
-        <table class="w-full">
-            <thead class="bg-gray-50">
+    <div class="overflow-x-auto ">
+        <table class="w-full ">
+            <thead class="bg-gray-100 text-gray-700">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-user text-gray-500 mr-1"></i>Utilisateur
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-envelope text-gray-500 mr-1"></i>Email
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-user-tag text-gray-500 mr-1"></i>Role
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-cogs text-gray-500 mr-1"></i>Actions
+                    </th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200" id="user-list">
@@ -75,7 +106,7 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <img src="" alt="User" class="w-10 h-10 rounded-full">
+                                <img src="{{ user.avatar_url }}" alt="User" class="w-10 h-10 rounded-full">
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
                                 </div>
@@ -132,92 +163,44 @@
     </div>
 </div>
         <!-- Table des catégories -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8">
-            <div class="p-6 border-b border-gray-100">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-semibold text-gray-800">Catégories</h2>
-                    <button onclick="openCategoryModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
-                        <i class="fas fa-plus mr-2"></i>Ajouter
-                    </button>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">title</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">image</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        {% for category in categorys %}
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ category.title }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <img src="{{ category.image }}" alt="{{ category.title }}" width="30" height="30">
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-    <form id="deleteForm" action="/deleteCategory" method="POST">
-        <input type="hidden" name="id" value="{{ category.id }}">
-        <button type="button" class="text-red-600 hover:text-red-900" onclick="deleteCategory(event)">
-            <i class="fas fa-trash"></i>
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-200 mb-8">
+    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-gray-800">
+            <i class="fas fa-tags text-green-600 mr-2"></i>Catégories
+        </h2>
+        <button onclick="openCategoryModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+            <i class="fas fa-plus mr-2"></i>Ajouter
         </button>
-    </form>
-</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    </div>
 
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100">
-            <div class="p-6 border-b border-gray-100">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-semibold text-gray-800">Event</h2>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-        <table class="w-full">
-            <thead class="bg-gray-50">
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse rounded-2xl">
+            <thead class="bg-gray-100 text-gray-700">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">title</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">artist name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">price</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">capacity</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">organizer id</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">category</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-heading text-gray-500 mr-1"></i>Titre
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-image text-gray-500 mr-1"></i>Image
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-cogs text-gray-500 mr-1"></i>Actions
+                    </th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-                {% for event in events %}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">{{ event.title }}</div>
+                {% for category in categorys %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 text-gray-900 text-sm font-medium">{{ category.title }}</td>
+                    <td class="px-6 py-4">
+                        <img src="{{ category.image }}" alt="{{ category.title }}" class="w-10 h-10 rounded-lg shadow">
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ event.artist_name}}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ event.price }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ event.capacity }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ event.organizer_id }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ event.category }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <form  id="deleteForm" action="/deleteEvent" method="POST">
-                            <input type="hidden" name="id" value="{{ event.id }}">
-                            <button type="button" class="text-red-600 hover:text-red-900" onclick="deleteCategory(event)"><i class="fas fa-trash"></i></button>
+                    <td class="px-6 py-4">
+                        <form action="/deleteCategory" method="POST" class="inline">
+                            <input type="hidden" name="id" value="{{ category.id }}">
+                            <button type="submit" class="text-red-600 hover:text-red-800 transition">
+                                <i class="fas fa-trash-alt text-lg"></i>
+                            </button>
                         </form>
                     </td>
                 </tr>
@@ -225,7 +208,67 @@
             </tbody>
         </table>
     </div>
-        </div>
+</div>
+
+
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 mb-8">
+    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-gray-800">
+            <i class="fas fa-calendar-alt text-indigo-600 mr-2"></i>Événements
+        </h2>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+            <thead class="bg-gray-100 text-gray-700">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-heading text-gray-500 mr-1"></i>Titre
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-microphone-alt text-gray-500 mr-1"></i>Artiste
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-dollar-sign text-gray-500 mr-1"></i>Prix
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-users text-gray-500 mr-1"></i>Capacité
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-user text-gray-500 mr-1"></i>Organisateur
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-layer-group text-gray-500 mr-1"></i>Catégorie
+                    </th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">
+                        <i class="fas fa-cogs text-gray-500 mr-1"></i>Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for event in events %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 text-gray-900 text-sm font-medium">{{ event.title }}</td>
+                    <td class="px-6 py-4 text-gray-900 text-sm">{{ event.artist_name }}</td>
+                    <td class="px-6 py-4 text-gray-900 text-sm">{{ event.price }} <i class="fas fa-coins text-yellow-500"></i></td>
+                    <td class="px-6 py-4 text-gray-900 text-sm">{{ event.capacity }} <i class="fas fa-user-friends text-blue-500"></i></td>
+                    <td class="px-6 py-4 text-gray-900 text-sm">{{ event.organizer_name }}</td>
+                    <td class="px-6 py-4 text-gray-900 text-sm">{{ event.category }}</td>
+                    <td class="px-6 py-4 text-sm">
+                        <form action="/deleteEvent" method="POST" class="inline">
+                            <input type="hidden" name="id" value="{{ event.id }}">
+                            <button type="submit" class="text-red-600 hover:text-red-800 transition">
+                                <i class="fas fa-trash-alt text-lg"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
 
         
         </div>
