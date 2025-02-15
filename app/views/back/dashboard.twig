@@ -120,7 +120,7 @@
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap text-sm">
 										<button class="px-3 py-1 text-white rounded-md toggle-status
-																																												                                    {% if user.is_active %}bg-green-500 hover:bg-green-600{% else %}bg-red-500 hover:bg-red-600{% endif %}" data-id="{{ user.id }}" data-status="{{ user.is_active | lower }}">
+											{% if user.is_active %}bg-green-500 hover:bg-green-600{% else %}bg-red-500 hover:bg-red-600{% endif %}" data-id="{{ user.id }}" data-status="{{ user.is_active | lower }}">
 											{% if user.is_active %}
 												Active
 											{% else %}
@@ -290,11 +290,9 @@
 					</table>
 				</div>
 			</div>
-
-
 		</div>
-	</body>
-</html></main><div id="categoryModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
+</main>
+<div id="categoryModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
 <div class="bg-white p-6 rounded-lg shadow-lg w-96">
 	<h2 class="text-xl font-bold mb-4">Créer une catégorie</h2>
 
@@ -314,100 +312,104 @@
 			</button>
 		</div>
 	</form>
-</div></div> <script>
-	    function openCategoryModal() {
-				        document.getElementById("categoryModal").classList.remove("hidden");
-				    }
+</div>
+</div> 
+<script>
+function openCategoryModal() {
+		document.getElementById("categoryModal").classList.remove("hidden");
+	}
+
+	function closeCategoryModal() {
+		document.getElementById("categoryModal").classList.add("hidden");
+	}
+
+function deleteCategory(event) {
+		event.preventDefault(); 
+		const form = event.target.closest('form');
+		
+		fetch(form.action, {
+			method: 'POST',
+			body: new FormData(form), 
+		})
+		.then(response => {
+			if (response.ok) {
+				form.closest('tr').remove(); 
+			} else {
+				alert('Failed to delete category');
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+			alert('An error occurred');
+		});
+	}
+document.addEventListener("DOMContentLoaded", function() {
+	function attachStatusToggleEvents() {
+		document.querySelectorAll(".toggle-status").forEach(button => {
+			button.addEventListener("click", function() {
+				const userId = this.getAttribute("data-id");
+				const currentStatus = this.getAttribute("data-status") === "true"; 
+				const newStatus = !currentStatus; 
+
+				fetch("/update-status", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({ id: userId, is_active: newStatus })
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						this.setAttribute("data-status", newStatus);
+						this.textContent = newStatus ? "Active" : "Désactivé";
+						this.classList.toggle("bg-green-500", newStatus);
+						this.classList.toggle("hover:bg-green-600", newStatus);
+						this.classList.toggle("bg-red-500", !newStatus);
+						this.classList.toggle("hover:bg-red-600", !newStatus);
+					} else {
+						alert("Erreur lors de la mise à jour.");
+					}
+				})
+				.catch(error => console.error("Erreur AJAX:", error));
+			});
+		});
+	}
+
+	function fetchUsers(page) {
+		fetch(`/admin?page=${page}`, { cache: "no-store" })
+			.then(response => response.text())
+			.then(data => {
+				console.log(data);
+				document.getElementById("user-list").innerHTML = extractUserList(data);
+				document.getElementById("pagination-links").innerHTML = extractPaginationLinks(data);
 				
-				    function closeCategoryModal() {
-				        document.getElementById("categoryModal").classList.add("hidden");
-				    }
-				
-	    function deleteCategory(event) {
-				        event.preventDefault(); 
-				        const form = event.target.closest('form');
-				        
-				        fetch(form.action, {
-				            method: 'POST',
-				            body: new FormData(form), 
-				        })
-				        .then(response => {
-				            if (response.ok) {
-				                form.closest('tr').remove(); 
-				            } else {
-				                alert('Failed to delete category');
-				            }
-				        })
-				        .catch(error => {
-				            console.error('Error:', error);
-				            alert('An error occurred');
-				        });
-				    }
-				document.addEventListener("DOMContentLoaded", function() {
-				    function attachStatusToggleEvents() {
-				        document.querySelectorAll(".toggle-status").forEach(button => {
-				            button.addEventListener("click", function() {
-				                const userId = this.getAttribute("data-id");
-				                const currentStatus = this.getAttribute("data-status") === "true"; 
-				                const newStatus = !currentStatus; 
-				
-				                fetch("/update-status", {
-				                    method: "POST",
-				                    headers: {
-				                        "Content-Type": "application/json"
-				                    },
-				                    body: JSON.stringify({ id: userId, is_active: newStatus })
-				                })
-				                .then(response => response.json())
-				                .then(data => {
-				                    if (data.success) {
-				                        this.setAttribute("data-status", newStatus);
-				                        this.textContent = newStatus ? "Active" : "Désactivé";
-				                        this.classList.toggle("bg-green-500", newStatus);
-				                        this.classList.toggle("hover:bg-green-600", newStatus);
-				                        this.classList.toggle("bg-red-500", !newStatus);
-				                        this.classList.toggle("hover:bg-red-600", !newStatus);
-				                    } else {
-				                        alert("Erreur lors de la mise à jour.");
-				                    }
-				                })
-				                .catch(error => console.error("Erreur AJAX:", error));
-				            });
-				        });
-				    }
-				
-				    function fetchUsers(page) {
-				        fetch(`/admin?page=${page}`, { cache: "no-store" })
-				            .then(response => response.text())
-				            .then(data => {
-				                console.log(data);
-				                document.getElementById("user-list").innerHTML = extractUserList(data);
-				                document.getElementById("pagination-links").innerHTML = extractPaginationLinks(data);
-				                
-				                attachPaginationEvents(); 
-				                attachStatusToggleEvents();
-				            })
-				            .catch(error => console.error("Error fetching users:", error));
-				    }
-				
-				    function extractUserList(html) {
-				        return new DOMParser().parseFromString(html, "text/html").querySelector("#user-list").innerHTML;
-				    }
-				
-				    function extractPaginationLinks(html) {
-				        return new DOMParser().parseFromString(html, "text/html").querySelector("#pagination-links").innerHTML;
-				    }
-				
-				    function attachPaginationEvents() {
-				        document.querySelectorAll("#pagination-links a").forEach(link => {
-				            link.addEventListener("click", function(e) {
-				                e.preventDefault();
-				                fetchUsers(this.getAttribute("data-page"));
-				            });
-				        });
-				    }
-				
-				    attachPaginationEvents(); 
-				    attachStatusToggleEvents(); 
-				});
-				</script></body></html>
+				attachPaginationEvents(); 
+				attachStatusToggleEvents();
+			})
+			.catch(error => console.error("Error fetching users:", error));
+	}
+
+	function extractUserList(html) {
+		return new DOMParser().parseFromString(html, "text/html").querySelector("#user-list").innerHTML;
+	}
+
+	function extractPaginationLinks(html) {
+		return new DOMParser().parseFromString(html, "text/html").querySelector("#pagination-links").innerHTML;
+	}
+
+	function attachPaginationEvents() {
+		document.querySelectorAll("#pagination-links a").forEach(link => {
+			link.addEventListener("click", function(e) {
+				e.preventDefault();
+				fetchUsers(this.getAttribute("data-page"));
+			});
+		});
+	}
+
+	attachPaginationEvents(); 
+	attachStatusToggleEvents(); 
+});
+</script>
+</body>
+</html>

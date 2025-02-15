@@ -7,6 +7,7 @@ use Controller_front\HomeController;
 use Controller_front\UserController;
 use Controller_back\dashboardController;
 use Controller_front\AuthController;
+use Controller_front\ErrorController;
 use Controller_front\EventController;
 use Controller_front\PromoController;
 use Controller_front\ReservationController;
@@ -28,6 +29,7 @@ $routes = [
         '/events/search-suggestions' => [EventController::class, 'searchSuggestions'],
         '/events' => [EventController::class, 'eventPage'],
         '/reservations/qr/{id}'=> [ReservationController::class, 'generateQr'],
+        '/403' => [ErrorController::class, "index"],
     ],
     'POST' => [
         '/createCtaegory' => [CategoryController::class, 'createCategory'],

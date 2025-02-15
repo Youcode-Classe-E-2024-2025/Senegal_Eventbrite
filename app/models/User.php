@@ -63,7 +63,7 @@ class User
     public static function findByEmail($email)
     {
         $db = Database::getInstance()->getConnection();
-        $query = 'SELECT * FROM users WHERE email = :email LIMIT 1';
+        $query = 'SELECT * FROM users WHERE email = :email AND is_active = true LIMIT 1';
         $stmt = $db->prepare($query);
         $stmt->bindParam(':email', $email);
         $stmt->execute();
