@@ -30,6 +30,7 @@ $routes = [
         '/events' => [EventController::class, 'eventPage'],
         '/reservations/qr/{id}'=> [ReservationController::class, 'generateQr'],
         '/403' => [ErrorController::class, "index"],
+        '/events/filter' => [EventController::class, 'filterEvents'],
     ],
     'POST' => [
         '/createCtaegory' => [CategoryController::class, 'createCategory'],
@@ -43,7 +44,6 @@ $routes = [
         '/updateProfileImage' => [UserController::class, 'updateProfileImage'],
         '/updatePassword' => [UserController::class, 'updatePassword'],
         '/events/{id}/participate' => [EventController::class, 'participate'],
-        '/events/filter' => [EventController::class, 'filter'],
         '/update-status' => [dashboardController::class, 'updateStatus'],
         '/reservation/cancel/{id}'=> [ReservationController::class, 'cancel'],
     ]
