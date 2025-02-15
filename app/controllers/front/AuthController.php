@@ -428,10 +428,18 @@ class AuthController extends Controller
                 'name' => $name,
                 'avatar_url' => $avatar,
                 'role' => 'user',
-                'password' => password_hash($randomPassword, PASSWORD_DEFAULT)
+                'password' => password_hash($randomPassword, PASSWORD_DEFAULT),
+                'is_active' => 1
             ]);
 
             $user = $userModel->getUserById($userId);
+        }
+
+        // Block inactive users
+        if (!$user || !$user['is_active']) {
+            $_SESSION['error'] = "Your account is inactive. Please contact support.";
+            header("Location: /403");
+            exit();
         }
 
         if ($user && is_array($user)) {
@@ -489,10 +497,18 @@ class AuthController extends Controller
                 'name' => $user['name'] ?? 'GitHub User',
                 'avatar_url' => $user['avatar_url'] ?? 'default_avatar.png',
                 'role' => 'user',
-                'password' => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT)
+                'password' => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT),
+                'is_active' => 1
             ]);
 
             $existingUser = $userModel->getUserById($userId);
+        }
+
+        // Block inactive users
+        if (!$existingUser || !$existingUser['is_active']) {
+            $_SESSION['error'] = "Your account is inactive. Please contact support.";
+            header("Location: /403");
+            exit();
         }
 
         if ($existingUser && is_array($existingUser)) {
