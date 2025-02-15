@@ -15,7 +15,13 @@ class Event extends Model{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-
+    public function getCategoryTitleById($id) {
+        $stmt = $this->db->prepare("SELECT title FROM categorys WHERE id = :id");
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        return $stmt->fetchColumn(); // Returns the title if found or false
+    }
+    
     public function getAllEvent($userId)
     {
         $query = "SELECT * FROM events WHERE organizer_id = ?";
@@ -70,46 +76,45 @@ class Event extends Model{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getFilteredEvents($categoryId, $dateFilter, $priceFilter, $searchQuery)
-{
-    // Join the reservations count like in getActiveEvents
-    $query = "SELECT events.*, 
-              (SELECT COUNT(*) FROM reservations WHERE event_id = events.id) as participants_count 
-              FROM events 
-              WHERE 1=1";
+// In Event model
+public function getFilteredEvents($searchTerm = null, $categoryId = null, $priceFilter = null) {
+    $baseQuery = "SELECT * FROM events WHERE isActif = TRUE AND status = 'ACTIVE'";
+    $conditions = [];
     $params = [];
 
-    if ($categoryId) {
-        $query .= " AND category = :category";
-        $params[':category'] = $categoryId;
+    // Search filter
+    if (!empty($searchTerm)) {
+        $conditions[] = "(title ILIKE :searchTerm OR artist_name ILIKE :searchTerm OR EXISTS (SELECT 1 FROM unnest(tags) tag WHERE tag ILIKE :searchTerm))";
+        $params['searchTerm'] = "%$searchTerm%";
     }
 
+    // Category filter - convert category ID to category title
+    if (!empty($categoryId)) {
+        $categoryTitle = $this->getCategoryTitleById($categoryId);
+        if ($categoryTitle) {
+            $conditions[] = "category = :categoryTitle";
+            $params['categoryTitle'] = $categoryTitle;
+        }
+    }
+
+    // Price filter
     if ($priceFilter === 'free') {
-        $query .= " AND price = 0";
+        $conditions[] = "price = 0";
     } elseif ($priceFilter === 'paid') {
-        $query .= " AND price > 0";
+        $conditions[] = "price > 0";
     }
 
-    if ($searchQuery) {
-        // Remove PostgreSQL-specific cast if using MySQL
-        $query .= " AND (title LIKE :search OR artist_name LIKE :search OR tags LIKE :search)";
-        $params[':search'] = "%$searchQuery%";
+    // Combine conditions
+    if (!empty($conditions)) {
+        $baseQuery .= " AND " . implode(" AND ", $conditions);
     }
 
-    $stmt = $this->db->prepare($query);
-    $stmt->execute($params);
+    $stmt = $this->db->prepare($baseQuery);
+    foreach ($params as $key => $value) {
+        $stmt->bindValue(":$key", $value);
+    }
+    $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-
-    public function getSearchSuggestions($query)
-    {
-        $stmt = $this->db->prepare("SELECT title FROM events 
-            WHERE title ILIKE :query 
-            AND status = 'ACTIVE'
-            LIMIT 5
-        ");
-        $stmt->execute([':query' => "%$query%"]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
 }
