@@ -4,6 +4,7 @@ use Core\Controller;
 use Exception;
 use Model\Event;
 use Model\Category;
+use PDO;
 use PHPMailer\PHPMailer\PHPMailer;
 
 
@@ -202,7 +203,7 @@ class EventController extends Controller
         } catch (Exception $e) {
             error_log("Event creation email could not be sent. Mailer Error: {$mail->ErrorInfo}");
         }
-}
+    }
     public function eventPage()
     {
         $eventModel = new Event();
@@ -215,39 +216,14 @@ class EventController extends Controller
         ]);
     }
 
-    public function filter()
-    {
-        header('Content-Type: application/json');
-        header("Access-Control-Allow-Origin: *");
+    public function filterEvents() {
+        header('Content-Type: text/html'); // Return HTML partial
+        $searchTerm = $_GET['search'] ?? '';
+        $categoryId = $_GET['category'] ?? '';
+        $priceFilter = $_GET['price'] ?? '';
 
-        // Decode the JSON body; if it's null, fallback to an empty array.
-        $data = json_decode(file_get_contents("php://input"), true) ?? [];
-
-        $eventModel = new Event();
-
-        $filteredEvents = $eventModel->getFilteredEvents(
-            $data['category'] ?? null,
-            $data['date'] ?? null,
-            $data['price'] ?? null,
-            $data['search'] ?? null
-        );
-        
-        echo json_encode($filteredEvents);
+        $filteredEvents = (new Event())->getFilteredEvents($searchTerm, $categoryId, $priceFilter);
+        $this->view('front/events_list', ['events' => $filteredEvents]);
     }
 
-
-    public function searchSuggestions()
-    {
-        $query = $this->router->getQueryParams()['query'] ?? '';
-        $eventModel = new Event();
-        $suggestions = $eventModel->getSearchSuggestions($query);
-        
-        header('Content-Type: application/json');
-        echo json_encode($suggestions);
-    }
-
-    public function participate($eventId)
-    {
-        // Handle participation logic
-    }
 }
